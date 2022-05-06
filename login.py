@@ -34,11 +34,10 @@ def login():
 
 @app.route('/user/<username>')
 def user(username):
-    # 각 사용자의 프로필과 글을 모아볼 수 있는 공간
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        status = (username == payload["id"])  # 내 프로필이면 True, 다른 사람 프로필 페이지면 False
+        status = (username == payload["id"])
 
         user_info = db.users.find_one({"username": username}, {"_id": False})
         return render_template('user.html', user_info=user_info, status=status)
@@ -82,7 +81,7 @@ def sign_up():
         "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
         "profile_info": "",                                         # 프로필 한 마디
         "nickname": nickname_receive,                               # 닉네임
-        "address" : address_receive
+        "address" : address_receive                                 # 주소
     }
     db.users.insert_one(doc)
     return jsonify({'result': 'success'})
