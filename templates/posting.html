@@ -57,6 +57,10 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+        .posting {
+            margin-right: 20px;
+            float: right;
+        }
 
     </style>
     <script>
@@ -98,6 +102,7 @@
 
         //지도 띄우는 코드
         function map() {
+            $("#map").toggleClass("is-hidden")
             let local = $('#local_address').val()
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div
                 mapOption = {
@@ -112,7 +117,7 @@
             var geocoder = new kakao.maps.services.Geocoder();
 
             // 주소로 좌표를 검색합니다
-            geocoder.addressSearch('local', function (result, status) {
+            geocoder.addressSearch(local, function (result, status) {
 
                 // 정상적으로 검색이 완료됐으면
                 if (status === kakao.maps.services.Status.OK) {
@@ -127,7 +132,7 @@
 
                     // 인포윈도우로 장소에 대한 설명을 표시합니다
                     var infowindow = new kakao.maps.InfoWindow({
-                        content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">직거래장소</div>'
                     });
                     infowindow.open(map, marker);
 
@@ -147,14 +152,6 @@
                 }
             }).open();
         }
-
-
-        {#var autocomplete = new google.maps.places.Autocomplete($("#address")[0], {});#}
-        {##}
-        {#    google.maps.event.addListener(autocomplete, 'place_changed', function() {#}
-        {#        var place = autocomplete.getPlace();#}
-        {#        console.log(place.address_components);#}
-        {#    });#}
 
     </script>
 
@@ -199,8 +196,8 @@
         <input type="button" class="button is-info" onclick="map()" value="검색" style="margin-top: 10px">
     </div>
     {#지도api#}
-    <div id="map" style="width: 500px;height:300px;margin:10px auto 50px auto"></div>
+    <div id="map" class="is-hidden" style="width: 500px;height:300px;margin:10px auto 50px auto;"></div>
 </div>
-
+<button class="button is-info posting" >등록하기</button>
 </body>
 </html>
