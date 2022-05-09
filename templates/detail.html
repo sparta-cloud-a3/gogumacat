@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.js"></script>
+<script>
+    $(document).ready(function() {
+        var floatPosition = parseInt($(".sideBanner").css('top'))
+
+        $(window).scroll(function () {
+
+            // 현재 스크롤 위치
+            var currentTop = $(window).scrollTop();
+            var bannerTop = currentTop + floatPosition + "px";
+
+            //이동 애니메이션
+            $(".sideBanner").stop().animate({
+                "top": bannerTop
+            }, 500);
+
+        }).scroll();
+
+         $(".sideBanner").click(function () {
+             // window.open('http://localhost:5000/detail/100','new','width= 320px,height=480px,scrollbars=yes');
+             console.log(document.getElementById("frame").style.visibility)
+             if(document.getElementById("frame").style.visibility == "hidden") {
+                document.getElementById("frame").style.visibility = "visible"
+                 $("#frame").toggleClass("emphasized");
+
+             }else{
+                 document.getElementById("frame").style.visibility = "hidden"
+                 window.location.href="http://localhost:5000/"
+             }
+         });
+
+    });
+</script>
+<style>
+    body {
+        height: 2000px;
+    }
+    .sideBanner {
+        float: bottom;
+        float : right;
+        position : relative;
+        width: 200px;
+        height: 200px;
+        top: 1000px;
+        background-size: cover;
+        background-image: url(/static/gumatalk.png) ;
+    }
+
+    .emphasized {
+        position: fixed;
+        top: 150px;
+        left: 30px;
+        box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
+        z-index: 100;
+
+    }
+</style>
+<body>
+  <div class="sideBanner" >
+    <span class="txt-label">
+    </span>
+  </div>
+<div id="content">
+    <h1> hello</h1>
+</div>
+
+<div class="popup" id= "frame" data-popup="popup-1" style="visibility:hidden;">
+        <iframe src="http://localhost:5000/detail/100"  width="320" height="480" ></iframe>
+</div>
+
+</body>
