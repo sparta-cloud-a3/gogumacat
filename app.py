@@ -9,8 +9,18 @@ db = client.gogumacat
 
 @app.route('/')
 def home():
-    posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1))
-    return render_template('index.html', posts=posts)
+    return render_template('index.html')
+
+@app.route('/listing', methods=['GET'])
+def listing():
+    order = request.args.get('order')
+    print(order)
+    if order == "like":
+        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1))
+    else:
+        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1))
+
+    return jsonify({"posts":posts})
 
 @app.route('/posts/<int:id>')
 def give_post(id):
@@ -23,7 +33,7 @@ def search_listing():
     query_receive = request.args.get('query')
     posts = list(db.posts.find( { '$or': [ {'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}} ] }, {'_id': False}))
 
-    return render_template('search.html', query=query_receive, posts=posts)
+    return jsonify({"query": query_receive, "posts": posts})
 
 
 
