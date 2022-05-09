@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>고구마캣</title>
+
+    <!-- bulma -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+
+    <style>
+        body {
+            width: 1000px;
+            margin: auto;
+        }
+
+        .float-right {
+            float: right;
+        }
+
+        .write-btn {
+            width: 100px;
+            margin: 30px auto;
+            display: block;
+        }
+
+        .search {
+            position: relative;
+            width: 1000px;
+            margin: 0 auto 40px auto;
+            cursor: pointer;
+        }
+
+        .search-input {
+            width: 100%;
+            border: 2px solid #bbb;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 18px;
+        }
+
+        .search-img {
+            position: absolute;
+            width: 18px;
+            top: 16px;
+            right: 12px;
+        }
+
+        .card-box {
+            margin-top: 30px;
+        }
+
+        .text-box {
+            margin-top: 30px;
+        }
+    </style>
+
+    <script>
+        function search() {
+            let query = $('#search-box').val();
+            if (query == "") {
+                alert("검색어를 입력하세요");
+                return;
+            } else {
+                $('#searchform').submit();
+            }
+        }
+    </script>
+</head>
+<body>
+<section class="float-right">
+    <button class="button">로그인</button>
+</section>
+<section class="hero" onclick="window.location.href='/'">
+    <div class="hero-body">
+        <p class="title">
+            고구마캣
+        </p>
+    </div>
+</section>
+</section>
+<section class="write-btn">
+    <button class="button is-dark">상품 등록하러 가기</button>
+</section>
+
+<div class="search">
+    <form action="/search" method="GET" id="searchform">
+        <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
+        <img class="search-img" onclick="search()"
+             src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+    </form>
+</div>
+
+<section class="float-right">
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-si" data-toggle="dropdown"
+                aria-expanded="true">
+            지역을 선택하세요
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-si">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">서울특별시</a></li>
+        </ul>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-gu" data-toggle="dropdown"
+                aria-expanded="true">
+            동네를 선택하세요
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-gu">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">강남구</a></li>
+        </ul>
+    </div>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dong" data-toggle="dropdown"
+                aria-expanded="true">
+            동을 선택하세요
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-dong">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"></a>강남동</li>
+        </ul>
+    </div>
+</section>
+<section class="text-box">
+    <a><span class="tag is-medium">최신순</span></a>
+    <a><span class="tag is-medium">관심순</span></a>
+</section>
+<section class="text-box">
+    "{{query}}" 검색내역 입니다.
+</section>
+<div class="row row-cols-1 row-cols-md-3 g-4 card-box">
+{% for post in posts %}
+    <div class="col">
+        <div class="card h-100" id="card-{{post.post_id}}" onclick="location.href='/posts/{{post.post_id}}'"s>
+            <img src="" class="card-img-top" alt="">
+            <div class="card-body">
+                <h5 class="card-title">{{post.title}}</h5>
+                <p class="card-text">{{post.nickname}}</p>
+                <p class="card-text">{{post.like}}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+</body>
+</html>
