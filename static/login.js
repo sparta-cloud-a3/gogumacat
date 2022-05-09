@@ -196,28 +196,67 @@ function check_dup_nick() {
     });
 }
 window.Kakao.init('11f655feb93907f8ad76ff6dfd04102b');
+window.onload = init = () => {
+	// 버튼 이벤트 등록
+	document.querySelector("#kakao").addEventListener("click", onKakao);
 
-function kakaoLogin() {
-    window.Kakao.Auth.login({
-        scope: 'profile_nickname,profile_image',
-        success: function (authObj) {
-            console.log(authObj);
-            ACCESS_TOKEN = authObj['access_token']
-            window.Kakao.API.request({
-                url: '/v2/user/me',
-                success: res => {
-                    const kakao_account = res.kakao_account;
-                    console.log(kakao_account);
-                    let nickname = kakao_account['profile']['nickname']
-                    console.log(nickname)
-                    Kakao.Auth.setAccessToken(ACCESS_TOKEN);
-                    console.log(ACCESS_TOKEN);
-
-                }
-            });
-        }
-    });
 }
+
+
+// 카카오 서버로 url 요청
+//올바른 url이 오기 전, 이동시키면 안되기 때문에 비동기 처리로 진행했다.
+const onKakao = async () => {
+
+	let url = await fetch("/oauth/url", {
+		headers: { "Content-Type": "application/json" },
+		method: "GET"
+	})
+	.then(res => res.json())
+		//응답 값으로 카카오 서버로 요청할 수 있는 url이 온다
+	.then(res => res['kakao_oauth_url']);
+	//그 url로 이동시킨다
+	window.location.replace(url);
+}
+
+init();
+// function kakaoLogin() {
+//     window.Kakao.Auth.login({
+//         scope: 'profile_nickname,profile_image,account_email,gender',
+//         success: function (authObj) {
+//             console.log(authObj);
+//             ACCESS_TOKEN = authObj['access_token']
+//             window.Kakao.API.request({
+//                 url: '/v2/user/me',
+//                 success: res => {
+//                     const kakao_account = res.kakao_account;
+//                     console.log(kakao_account);
+//                     let nickname = kakao_account['profile']['nickname']
+//                     let email = kakao_account['email']
+//                     let gender = kakao_account['gender']
+//                     console.log(nickname,email,gender)
+//                     Kakao.Auth.setAccessToken(ACCESS_TOKEN);
+//                     console.log(ACCESS_TOKEN);
+//                     $.ajax({
+//                         type: "POST",
+//                         url: "/kakao_sign_in",
+//                         data: {
+//                             username_give: email,
+//                             password_give: email
+//                         },
+//                         success: function (response) {
+//                             if (response['result'] == 'success') {
+//                                 $.cookie('mytoken', response['token'], {path: '/'});
+//                                 window.location.replace("/")
+//                             } else {
+//                                 alert(response['msg'])
+//                             }
+//                         }
+//                     });
+//                 }
+//             });
+//         }
+//     });
+// }
 
 function juso() {
     new daum.Postcode({
@@ -236,8 +275,8 @@ function juso() {
                 extraRoadAddr = ' (' + extraRoadAddr + ')';
             }
             // document.getElementById("input-address").value = roadAddr; //도로명주소
-            document.getElementById("input-address").value = data.jibunAddress; // 지번주소
-            // console.log(data.jibunAddress.split(' '));
+            newjuso = data.jibunAddress.split(' ').slice(0,-1).join(' ')
+            document.getElementById("input-address").value = newjuso // 지번주소
         }
     }).open();
 }
