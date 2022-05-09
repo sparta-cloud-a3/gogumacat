@@ -81,6 +81,7 @@
                 }
             }
         }
+
         // 이미지 업로드 및 업로드한 이미지 미리보기
         function img_up() {
 
@@ -143,7 +144,8 @@
                 }
             });
         }
-    //주소 검색하기
+
+        //주소 검색하기
         function local_search() {
             new daum.Postcode({
                 oncomplete: function (data) {
@@ -154,7 +156,8 @@
                 }
             }).open();
         }
-    //포스팅하기
+
+        //포스팅하기
         function posting() {
             //input값 가져오기
             let title = $('#title').val()
@@ -163,7 +166,7 @@
             let content = $('#content').val()
             let address = $('#local_address').val()
             let file = $('#img')[0].files[0]
-
+            //폼데이터에 넣기
             let form_data = new FormData()
 
             form_data.append("title_give", title)
@@ -173,9 +176,7 @@
             form_data.append("content_give", content)
             form_data.append("address_give", address)
 
-
-
-
+            //포스팅 aJax 콜
             $.ajax({
                 type: "POST",
                 url: "/user_post",
