@@ -21,7 +21,8 @@
     <!-- 주소 검색 API-->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <!--지도 api-->
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
     <meta charset="UTF-8">
 
 
@@ -57,6 +58,7 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+
         .posting {
             margin-right: 20px;
             float: right;
@@ -79,9 +81,9 @@
                 }
             }
         }
-
+        // 이미지 업로드 및 업로드한 이미지 미리보기
         function img_up() {
-            // 이미지 업로드
+
             $('#img').on('change', function () {
                 ext = $(this).val().split('.').pop().toLowerCase(); //확장자
                 //배열에 추출한 확장자가 존재하는지 체크
@@ -141,7 +143,7 @@
                 }
             });
         }
-
+    //주소 검색하기
         function local_search() {
             new daum.Postcode({
                 oncomplete: function (data) {
@@ -151,6 +153,45 @@
                     document.getElementById("local_address").value = addr
                 }
             }).open();
+        }
+    //포스팅하기
+        function posting() {
+            //input값 가져오기
+            let title = $('#title').val()
+            let date = $('#date').val()
+            let price = $('#price').val()
+            let content = $('#content').val()
+            let address = $('#local_address').val()
+            let file = $('#img')[0].files[0]
+
+            let form_data = new FormData()
+
+            form_data.append("title_give", title)
+            form_data.append("file_give", file)
+            form_data.append("date_give", date)
+            form_data.append("price_give", price)
+            form_data.append("content_give", content)
+            form_data.append("address_give", address)
+
+
+
+
+            $.ajax({
+                type: "POST",
+                url: "/user_post",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                enctype: "multipart/form-data",
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert(response["msg"])
+                        console.log(response)
+                        window.location.href = '/'
+                    }
+                }
+            })
         }
 
     </script>
@@ -169,9 +210,9 @@
 <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
 {#전체 입력 글#}
 <div class="wrap">
-    <input class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
-    <input class="input is-normal" type="text" placeholder="대여 가능한 날짜를 적어주세요">
-    <input class="input is-normal" type="text" placeholder="가격(1일 기준 대여가격)">
+    <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
+    <input id="date" class="input is-normal" type="text" placeholder="대여 가능한 날짜를 적어주세요">
+    <input id="price" class="input is-normal" type="text" placeholder="가격(1일 기준 대여가격)">
     {#이미지 업로드 부분#}
     <div id="file-js-example" class="file has-name is-info">
         <label class="file-label " style="margin-top: 10px">
@@ -188,16 +229,16 @@
         <img style="width:300px;height: 200px">
     </div>
     {#상세내용#}
-    <textarea class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>
+    <textarea id="content" class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>
     {#주소 검색부분#}
     <div class="field">
         <input id="local_address" class="input" type="text" placeholder="직거래 위치 찾기" style="width: 400px"
                onclick="local_search()">
-        <input type="button" class="button is-info" onclick="map()" value="검색" style="margin-top: 10px">
+        <input type="button" class="button is-info" onclick="map()" value="지도검색" style="margin-top: 10px">
     </div>
     {#지도api#}
     <div id="map" class="is-hidden" style="width: 500px;height:300px;margin:10px auto 50px auto;"></div>
 </div>
-<button class="button is-info posting" >등록하기</button>
+<button class="button is-info posting" onclick="posting()">등록하기</button>
 </body>
 </html>
