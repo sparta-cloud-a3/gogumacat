@@ -112,25 +112,23 @@
                     $("#card-box").empty();
                     let posts = response["posts"];
                     for (let i = 0; i < posts.length; i++) {
-                        make_post(posts[i], i);
+                        make_post(posts[i]);
                     }
                 }
             });
         }
 
         function make_post(post) {
-            let temp_html = `<div class="col">
-                                <div class="card h-100" id="card-${post['post_id']}">
-                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'">
-                                    <div class="card-body">
-                                        <h5 class="card-title" onclick="location.href='/posts/${post['post_id']}'">${post['title']}</h5>
-                                        <p class="card-text">${post['nickcname']}</p>
-                                        <p class="card-text">
-                                            <i class="fa-regular fa-heart"></i>
-                                            <i class="fa-solid fa-heart"></i>
-                                            ${post['like_count']}
-                                        </p>
-                                    </div>
+            let temp_html = `<div class="card" style="width: 18rem;" id="card-${post['post_id']}">
+                                <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'" alt="card image cap">
+                                <div class="card-body">
+                                    <h5 class="card-title" onclick="location.href='/posts/${post['post_id']}'">${post['title']}</h5>
+                                    <p class="card-text">${post['nickcname']}</p>
+                                    <p class="card-text">
+                                        <i class="fa-regular fa-heart"></i>
+                                        <i class="fa-solid fa-heart"></i>
+                                        ${post['like_count']}
+                                    </p>
                                 </div>
                             </div>`
             $("#card-box").append(temp_html)
@@ -160,46 +158,12 @@
             }
         }
 
-        function sign_out() {
-            $.removeCookie('mytoken', {path: '/'});
-            alert('로그아웃!')
-            window.location.href = "/login"
-        }
-
-        function kakaoLogout() {
-            if (Kakao.Auth.getAccessToken()) {
-                Kakao.API.request({
-                    url: '/v1/user/unlink',
-                    success: function (response) {
-                        console.log(response)
-                    },
-                    fail: function (error) {
-                        console.log(error)
-                    },
-                })
-                Kakao.Auth.setAccessToken(undefined)
-            }
-        }
-
     </script>
 </head>
 <body>
 <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
-    <!--로그인-->
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-<!--    <div class="logout">-->
-<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-<!--           onclick="sign_out()">-->
-<!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
-<!--        </a>-->
-<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-<!--           onclick="kakaoLogout()">-->
-<!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
-<!--                                                                     aria-hidden="true"></i></span>-->
-<!--        </a>-->
-<!--    </div>-->
-    <!--로그인-->
 </section>
 <section class="hero" onclick="window.location.href='/'">
     <div class="hero-body">
@@ -212,10 +176,10 @@
 </section>
 <section class="write-btn">
     <button class="button is-dark">
+        <span>상품 등록하러 가기</span>
         <span class="icon is-small">
             <i class="fa-solid fa-pencil fab"></i>
         </span>
-        <span>상품 등록하러 가기</span>
     </button>
 </section>
 
@@ -265,7 +229,7 @@
 <section class="text-box is-hidden" id="query-text-box">
 </section>
 
-<div class="row row-cols-1 row-cols-md-3 g-4 card-box" id="card-box">
+<div class="card-deck card-box" id="card-box">
 </div>
 </body>
 </html>

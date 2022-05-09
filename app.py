@@ -107,7 +107,7 @@ def check_dup_nick():
 
 
 @app.route('/update_profile', methods=['POST'])
-def save_img():
+def update_profile():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -115,7 +115,7 @@ def save_img():
         name_receive = request.form["name_give"]
         about_receive = request.form["about_give"]
         new_doc = {
-            "profile_name": name_receive,
+            "nickname": name_receive,
             "profile_info": about_receive
         }
         if 'file_give' in request.files:
@@ -150,6 +150,7 @@ def search_listing():
 
     return jsonify({"query": query_receive, "posts": posts})
 
+
 @app.route('/posts/<int:id>', methods=['GET'])
 def give_post(id):
     post = db.posts.find_one({'post_id': id}, {'_id': False})
@@ -157,15 +158,15 @@ def give_post(id):
     return render_template('post.html', post=post)
 
 @app.route("/get_posts", methods=['GET'])
-def get_posts():
+def get_my_posts():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         username_receive = request.args.get("username_give")
         if username_receive=="":
-            posts = list(db.posts.find({}).sort("date", -1).limit(9))
+            posts = list(db.posts.find({}, {'_id': False}).sort('date', -1))
         else:
-            posts = list(db.posts.find({"username":username_receive}).sort("date", -1).limit(9))
+            posts = list(db.posts.find({"username":username_receive},{'_id': False}).sort("date", -1).limit(9))
         return jsonify({"posts": posts})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
