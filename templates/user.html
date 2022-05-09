@@ -117,16 +117,28 @@
                 url: `/get_posts?username_give=${username}`,
                 data: {},
                 success: function (response) {
-                    $("#card-box").empty();
+                    $("#card-box-post").empty();
+                    $("#card-box-comment").empty();
+                    $("#card-box-review").empty();
+                    $("#card-box-like").empty();
                     let posts = response["posts"];
+                    let comments = response["comments"];
+                    let reviews = response["reviews"];
+                    let likes = response["likes"];
                     for (let i = 0; i < posts.length; i++) {
-                        make_post(posts[i]);
+                        make_post(posts[i], "post");
+                    }
+                    for (let i = 0; i < comments.length; i++) {
+                        make_post(comments[i], "comment");
+                    }
+                    for (let i = 0; i < likes.length; i++) {
+                        make_post(likes[i], "like");
                     }
                 }
             });
         }
 
-        function make_post(post) {
+        function make_post(post, type) {
             let temp_html = `<div class="card" id="card-${post['post_id']}" style="width: 18rem;">
                                     <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'">
                                     <div class="card-body">
@@ -139,7 +151,7 @@
                                         </p>
                                     </div>
                                 </div>`
-            $("#card-box-post").append(temp_html)
+            $(`#card-box-${type}`).append(temp_html)
         }
 
 
@@ -319,7 +331,7 @@
         <ul>
             <li>
                 <a>
-                    <span class="icon is-small"><i class="fas fa-memo-pad"></i></span>
+                    <span class="icon is-small"><i class="fas fa-pencil"></i></span>
                     <span>작성한 글</span>
                 </a>
             </li>
@@ -345,16 +357,24 @@
     </div>
     <div>
         <section class="tab-content">
-            <div class="card-deck card-box" id="card-box-post"></div>
+            <div class="card-columns" style="margin-top: 30px;">
+                <div class="card-box" id="card-box-post"></div>
+            </div>
         </section>
         <section class="tab-content">
-            <div class="card-deck card-box" id="card-box-reply"></div>
-        </section>
-        <section class="tab-content">Videos content
-            <div class="card-deck card-box" id="card-box-review"></div>
+            <div class="card-columns" style="margin-top: 30px;">
+                <div class="card-box" id="card-box-comment"></div>
+            </div>
         </section>
         <section class="tab-content">
-            <div class="card-deck card-box" id="card-box-like"></div>
+            <div class="card-columns" style="margin-top: 30px;">
+                <div class="card-box" id="card-box-review"></div>
+            </div>
+        </section>
+        <section class="tab-content">
+            <div class="card-columns" style="margin-top: 30px;">
+                <div class="card-box" id="card-box-like"></div>
+            </div>
         </section>
     </div>
 </section>

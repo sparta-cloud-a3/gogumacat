@@ -6,6 +6,8 @@ import hashlib
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
+import math
+
 app = Flask(__name__)
 
 client = MongoClient('localhost', 27017)
@@ -133,22 +135,42 @@ def update_profile():
 
 
 @app.route('/listing', methods=['GET'])
-def listing():
+def listing_page():
     order = request.args.get('order')
-    print(order)
-    if order == "like":
-        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1))
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 10개 보여줌
+    limit = 9
+    if order == 'like':
+        posts = list(db.posts.find({},{'_id': False}).sort('liked', -1).skip((page-1)*limit).limit(limit))
     else:
-        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1))
+        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
 
-    return jsonify({"posts":posts})
+    total_count = db.posts.estimated_document_count({})
+    last_page_num = math.ceil(total_count/limit)
+
+    return jsonify({'posts': posts, 'limit':limit, 'page': page, 'last_page_num': last_page_num })
 
 @app.route('/search', methods=['GET'])
-def search_listing():
+def search_listing_page():
     query_receive = request.args.get('query')
-    posts = list(db.posts.find( { '$or': [ {'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}} ] }, {'_id': False}))
+    order = request.args.get('order')
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 10개 보여줌
+    limit = 3
 
-    return jsonify({"query": query_receive, "posts": posts})
+    if order == 'like':
+        posts = list(db.posts.find( { '$or': [ {'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}} ] }, {'_id': False}).sort('liked', -1).skip((page-1)*limit).limit(limit))
+    else:
+        posts = list(
+            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                          {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+
+    total_count = len(list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},{'_id': False})))
+    last_page_num = math.ceil(total_count / limit)
+    print(total_count)
+    return jsonify({"query": query_receive, "posts": posts, 'limit':limit, 'page': page, 'last_page_num': last_page_num })
 
 
 @app.route('/posts/<int:id>', methods=['GET'])
@@ -167,7 +189,15 @@ def get_my_posts():
             posts = list(db.posts.find({}, {'_id': False}).sort('date', -1))
         else:
             posts = list(db.posts.find({"username":username_receive},{'_id': False}).sort("date", -1).limit(9))
-        return jsonify({"posts": posts})
+            comments = list(db.comments.find({"username":username_receive},{'_id': False}).sort('_id', -1).limit(9))
+            reviews = ""
+            likes = list(db.likes.find({"username":username_receive},{'_id': False}).sort('_id', -1).limit(9))
+            for i in range(len(comments)):
+                comments[i] = db.posts.find({'post_id': comments[i]['post_id']},{'_id': False}).sort("date", -1).limit(9)
+            for i in range(len(likes)):
+                likes[i] = db.posts.find({'post_id': likes[i]['post_id']},{'_id': False}).sort("date", -1).limit(9)
+
+        return jsonify({'posts': posts, 'comments':comments, 'reviews':reviews, 'likes':likes})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 

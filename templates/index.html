@@ -85,32 +85,39 @@
         }
 
         .card-box {
-            margin-top: 30px;
+            /*display: flex;*/
+            /*flex-wrap: wrap;*/
         }
 
         .text-box {
             margin-top: 30px;
         }
-
-        .logout {
-            width: 200px;
-            margin: auto;
-        }
     </style>
 
     <script>
+        let order = "latest"
+        let page = 1
         $(document).ready(function () {
-            listing("latest");
+            order = "latest"
+            page = 1
+            listing(order, page);
         });
 
-        function listing(order) {
+        function listing(new_order, new_page) {
+            order = new_order
+            page = new_page
+            console.log(order, page)
             $.ajax({
                 type: "GET",
-                url: `/listing?order=${order}`,
+                url: `/listing?order=${order}&page=${page}`,
                 data: {},
                 success: function (response) {
                     $("#card-box").empty();
                     let posts = response["posts"];
+
+                    pagination(parseInt(response["last_page_num"]), page, "main")
+                    console.log("posts:", posts)
+
                     for (let i = 0; i < posts.length; i++) {
                         make_post(posts[i]);
                     }
@@ -134,27 +141,94 @@
             $("#card-box").append(temp_html)
         }
 
-        function search() {
+        function searching(new_order, new_page) {
+            order = new_order
+            page = new_page
             let query = $('#search-box').val();
+            if (query == "") {
+                query = $("#query-text-box").val().split[" "][0];
+            }
             if (query == "") {
                 alert("검색어를 입력하세요");
                 return;
             } else {
                 $.ajax({
                     type: "GET",
-                    url: `/search?query=${query}`,
+                    url: `/search?query=${query}&order=${order}&page=${page}`,
                     data: {},
                     success: function (response) {
                         $("#card-box").empty();
                         let posts = response["posts"];
+                        pagination(parseInt(response["last_page_num"]), page, "search")
                         for (let i = 0; i < posts.length; i++) {
                             make_post(posts[i], i);
                         }
 
+                        $("#query-text-box").empty()
                         $("#query-text-box").append(`"${query}" 검색내역 입니다.`)
-                        $("#query-text-box").removeClass("is-hidden");
+                        $("#query-text-box").removeClass("is-hidden")
                     }
-                });
+                })
+            }
+        }
+
+        function pagination(last_page_num, page, type) {
+            $("#pagination-list").empty()
+
+            if (page == 1) {
+                $("#pre-btn").addClass("is-hidden")
+            } else {
+                $("#pre-btn").removeClass("is-hidden")
+            }
+
+            if (page == last_page_num) {
+                $("#next-btn").addClass("is-hidden")
+            } else {
+                $("#next-btn").removeClass("is-hidden")
+            }
+
+            let temp_html = ""
+
+            let start = page - 4
+
+            if (start <= 0) {
+                start = 1
+            }
+
+            let cnt = 0
+            for (let i = start; i <= last_page_num; i++) {
+                if (cnt > 9) {
+                    temp_html += `<li><span class="pagination-ellipsis">&hellip;</span></li>`
+                    break
+                }
+                if (page == i) {
+                    temp_html += `<li><a class="pagination-link is-current" area-current="page">${page}</a></li>`
+                } else {
+                    if (type == "search") {
+                        temp_html += `<li><a class="pagination-link" onclick="searching(order,${i})">${i}</a></li>`
+                    } else {
+                        temp_html += `<li><a class="pagination-link" onclick="listing(order,${i})">${i}</a></li>`
+                    }
+                }
+                cnt += 1
+            }
+
+            $("#pagination-list").append(temp_html)
+        }
+
+        function click_pre_btn() {
+            if ($("#query-text-box").hasClass("is-hidden")) {
+                listing(order, page - 1)
+            } else {
+                searching(order, page - 1)
+            }
+        }
+
+        function click_next_btn() {
+            if ($("#query-text-box").hasClass("is-hidden")) {
+                listing(order, page + 1)
+            } else {
+                searching(order, page + 1)
             }
         }
 
@@ -185,7 +259,7 @@
 
 <div class="search">
     <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-    <img class="search-img" onclick="search()"
+    <img class="search-img" onclick="searching('latest',1)"
          src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
 </div>
 
@@ -222,14 +296,22 @@
     </div>
 </section>
 <section>
-    <a onclick="listing('latest')"><span class="tag is-medium">최신순</span></a>
-    <a onclick="listing('like')"><span class="tag is-medium">관심순</span></a>
+    <a onclick="listing('latest', 1)"><span class="tag is-medium">최신순</span></a>
+    <a onclick="listing('like', 1)"><span class="tag is-medium">관심순</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">
 </section>
 
-<div class="card-deck card-box" id="card-box">
+<div class="card-columns" style="margin-top: 30px;">
+    <div class="card-box" id="card-box"></div>
 </div>
+
+<nav class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
+    <a class="pagination-previous" id="pre-btn" onclick="click_pre_btn()">Previous</a>
+    <a class="pagination-next" id="next-btn" onclick="click_next_btn()">Next page</a>
+    <ul class="pagination-list" id="pagination-list">
+    </ul>
+</nav>
 </body>
 </html>
