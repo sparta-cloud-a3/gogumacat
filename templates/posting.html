@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Webpage Title -->
+    <title>GOGUMACAT</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <!-- 주소 검색 API-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!--지도 api-->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471"></script>
+    <meta charset="UTF-8">
+
+
+
+
+    <style>
+        .wrap {
+            width: 700px;
+            margin: 50px auto 0px auto;
+        }
+
+        .input {
+            margin-top: 10px;
+        }
+
+        input::placeholder {
+            color: black;
+            font-weight: bold;
+        }
+
+        textarea::placeholder {
+            color: black;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            fileupload()
+            map()
+        })
+
+        //파일 업로드 시 제목 띄우기
+        function fileupload() {
+            const fileInput = document.querySelector('#file-js-example input[type=file]');
+
+            fileInput.onchange = () => {
+                if (fileInput.files.length > 0) {
+                    const fileName = document.querySelector('#file-js-example .file-name');
+                    fileName.textContent = fileInput.files[0].name;
+                }
+            }
+        }
+
+        function img_up() {
+            // 이미지 업로드
+            $('#img').on('change', function () {
+                ext = $(this).val().split('.').pop().toLowerCase(); //확장자
+                //배열에 추출한 확장자가 존재하는지 체크
+                if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
+                    resetFormElement($(this)); //폼 초기화
+                    window.alert('이미지 파일이 아닙니다! (gif, png, jpg, jpeg 만 업로드 가능)');
+                } else {
+                    file = $('#img').prop("files")[0];
+                    blobURL = window.URL.createObjectURL(file);
+                    $('#image_preview img').attr('src', blobURL);
+                    $('#image_preview').slideDown(); //업로드한 이미지 미리보기
+                    $(this).slideUp(); //파일 양식 감춤
+                }
+            });
+        }
+
+
+        //지도 띄우는 코드
+        function map() {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapOption = {
+                    center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+                    level: 5 // 지도의 확대 레벨
+                };
+
+            //지도를 미리 생성
+            var map = new daum.maps.Map(mapContainer, mapOption);
+            //주소-좌표 변환 객체를 생성
+            var geocoder = new daum.maps.services.Geocoder();
+            //마커를 미리 생성
+            var marker = new daum.maps.Marker({
+                position: new daum.maps.LatLng(37.537187, 127.005476),
+                map: map
+            });
+        }
+
+        function local_search() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    var addr = data.address; // 최종 주소 변수
+
+                    // 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById("local").value = addr;
+                    // 주소로 상세 정보를 검색
+                    geocoder.addressSearch(data.address, function (results, status) {
+                        // 정상적으로 검색이 완료됐으면
+                        if (status === daum.maps.services.Status.OK) {
+
+                            var result = results[0]; //첫번째 결과의 값을 활용
+
+                            // 해당 주소에 대한 좌표를 받아서
+                            var coords = new daum.maps.LatLng(result.y, result.x);
+                            // 지도를 보여준다.
+                            mapContainer.style.display = "block";
+                            map.relayout();
+                            // 지도 중심을 변경한다.
+                            map.setCenter(coords);
+                            // 마커를 결과값으로 받은 위치로 옮긴다.
+                            marker.setPosition(coords)
+                        }
+                    });
+                }
+            }).open();
+        }
+
+        {#var autocomplete = new google.maps.places.Autocomplete($("#address")[0], {});#}
+        {##}
+        {#    google.maps.event.addListener(autocomplete, 'place_changed', function() {#}
+        {#        var place = autocomplete.getPlace();#}
+        {#        console.log(place.address_components);#}
+        {#    });#}
+
+    </script>
+
+</head>
+<body>
+{#상단 배너#}
+<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
+
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="static/image.png">고구마캣</a>
+    </div>
+    <img src="..." style="margin-left: auto">
+</nav>
+{#전체 입력 글#}
+<div class="wrap">
+    <h3 class="title is-3" style="text-align: center">등록하기 </h3>
+    <input class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
+    <input class="input is-normal" type="text" placeholder="대여 가능한 날짜를 적어주세요">
+    <input class="input is-normal" type="text" placeholder="가격(1일 기준 대여가격)">
+{#이미지 업로드 부분#}
+    <div id="file-js-example" class="file has-name is-info">
+        <label class="file-label " style="margin-top: 10px">
+            <input class="file-input" type="file" name="resume" id="img" onclick="img_up()">
+            <span class="file-cta">
+      <span class="file-label">제품 사진</span>
+    </span>
+            <span class="file-name"></span>
+        </label>
+    </div>
+{#이미지 미리보기#}
+    <div id="image_preview">
+        <img style="width:126px;height: 165px">
+    </div>
+    {#상세내용#}
+    <textarea class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="10"></textarea>
+    {#주소 검색부분#}
+    <div class="field has-addons">
+        <div class="control">
+            <input id="local" class="input" type="text" placeholder="직거래 위치 찾기" style="width: 400px">
+        </div>
+        <div class="control" style="margin-top: 10px; margin-left: 5px">
+            <input type="button" class="button is-info" onclick="local_search()" value="검색">
+        </div>
+    </div>
+    {#지도api#}
+    <div id="map" style="width: 500px;height:300px;margin:10px auto 50px auto"></div>
+</div>
+
+</body>
+</html>
