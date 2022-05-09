@@ -1,20 +1,21 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
 from pymongo import MongoClient
-
 import jwt
+import datetime
 import hashlib
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
+
+
 app = Flask(__name__)
-
-client = MongoClient('localhost', 27017)
-db = client.gogumacat
-
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 
+
 SECRET_KEY = 'MSG'
+client = MongoClient('localhost', 27017)
+db = client.gocat
 
 @app.route('/')
 def home():
@@ -44,7 +45,6 @@ def user(username):
         status = (username == payload["id"])  # 내 프로필이면 True, 다른 사람 프로필 페이지면 False
 
         user_info = db.users.find_one({"username": username}, {"_id": False})
-
         return render_template('user.html', user_info=user_info, status=status)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -81,7 +81,7 @@ def sign_up():
     doc = {
         "username": username_receive,                               # 아이디
         "password": password_hash,                                  # 비밀번호
-        # "profile_name": username_receive,                           # 프로필 이름 기본값은 아이디 -> 이부분이 닉네임이 이니깐 없어도 될듯
+        "profile_name": username_receive,                           # 프로필 이름 기본값은 아이디
         "profile_pic": "",                                          # 프로필 사진 파일 이름
         "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
         "profile_info": "",                                         # 프로필 한 마디
@@ -98,13 +98,11 @@ def check_dup():
     exists = bool(db.users.find_one({"username": username_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
-
 @app.route('/sign_up/check_dup_nick', methods=['POST'])
 def check_dup_nick():
     nickname_receive = request.form['nickname_give']
     exists = bool(db.users.find_one({"nickname": nickname_receive}))
     return jsonify({'result': 'success', 'exists': exists})
-
 
 @app.route('/update_profile', methods=['POST'])
 def save_img():
@@ -131,44 +129,7 @@ def save_img():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-
-@app.route('/listing', methods=['GET'])
-def listing():
-    order = request.args.get('order')
-    print(order)
-    if order == "like":
-        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1))
-    else:
-        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1))
-
-    return jsonify({"posts":posts})
-
-@app.route('/search', methods=['GET'])
-def search_listing():
-    query_receive = request.args.get('query')
-    posts = list(db.posts.find( { '$or': [ {'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}} ] }, {'_id': False}))
-
-    return jsonify({"query": query_receive, "posts": posts})
-
-@app.route('/posts/<int:id>', methods=['GET'])
-def give_post(id):
-    post = db.posts.find_one({'post_id': id}, {'_id': False})
-
-    return render_template('post.html', post=post)
-
-@app.route("/get_posts", methods=['GET'])
-def get_posts():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        username_receive = request.args.get("username_give")
-        if username_receive=="":
-            posts = list(db.posts.find({}).sort("date", -1).limit(9))
-        else:
-            posts = list(db.posts.find({"username":username_receive}).sort("date", -1).limit(9))
-        return jsonify({"posts": posts})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
+#카카오 로그인
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

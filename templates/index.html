@@ -91,13 +91,17 @@
         .text-box {
             margin-top: 30px;
         }
+
+        .logout {
+            width: 200px;
+            margin: auto;
+        }
     </style>
 
     <script>
         $(document).ready(function () {
             listing("latest");
         });
-
 
         function listing(order) {
             $.ajax({
@@ -111,7 +115,7 @@
                         make_post(posts[i], i);
                     }
                 }
-            })
+            });
         }
 
         function make_post(post) {
@@ -156,11 +160,46 @@
             }
         }
 
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('로그아웃!')
+            window.location.href = "/login"
+        }
+
+        function kakaoLogout() {
+            if (Kakao.Auth.getAccessToken()) {
+                Kakao.API.request({
+                    url: '/v1/user/unlink',
+                    success: function (response) {
+                        console.log(response)
+                    },
+                    fail: function (error) {
+                        console.log(error)
+                    },
+                })
+                Kakao.Auth.setAccessToken(undefined)
+            }
+        }
+
     </script>
 </head>
 <body>
-<section class="float-right login-btn">
-    <button class="button is-light">로그인 하러 가기</button>
+<section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
+    <!--로그인-->
+    <i class="fa-solid fa-cat fa-lg"></i>
+    <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
+<!--    <div class="logout">-->
+<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+<!--           onclick="sign_out()">-->
+<!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+<!--        </a>-->
+<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+<!--           onclick="kakaoLogout()">-->
+<!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+<!--                                                                     aria-hidden="true"></i></span>-->
+<!--        </a>-->
+<!--    </div>-->
+    <!--로그인-->
 </section>
 <section class="hero" onclick="window.location.href='/'">
     <div class="hero-body">
