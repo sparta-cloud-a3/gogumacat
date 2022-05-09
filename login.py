@@ -2,13 +2,16 @@ from pymongo import MongoClient
 import jwt
 import datetime
 import hashlib
-from flask import Flask, render_template, jsonify, request, redirect, url_for,session
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
+
+
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
+
 
 SECRET_KEY = 'MSG'
 client = MongoClient('localhost', 27017)
@@ -26,6 +29,7 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
+
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
@@ -34,10 +38,11 @@ def login():
 
 @app.route('/user/<username>')
 def user(username):
+    # 각 사용자의 프로필과 글을 모아볼 수 있는 공간
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        status = (username == payload["id"])
+        status = (username == payload["id"])  # 내 프로필이면 True, 다른 사람 프로필 페이지면 False
 
         user_info = db.users.find_one({"username": username}, {"_id": False})
         return render_template('user.html', user_info=user_info, status=status)
@@ -81,7 +86,7 @@ def sign_up():
         "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
         "profile_info": "",                                         # 프로필 한 마디
         "nickname": nickname_receive,                               # 닉네임
-        "address" : address_receive                                 # 주소
+        "address" : address_receive
     }
     db.users.insert_one(doc)
     return jsonify({'result': 'success'})
@@ -124,6 +129,7 @@ def save_img():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+#카카오 로그인
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

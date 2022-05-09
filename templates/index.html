@@ -10,6 +10,7 @@
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
     <script>
         function sign_out() {
@@ -17,6 +18,21 @@
                 alert('로그아웃!')
                 window.location.href = "/login"
             }
+
+        function kakaoLogout() {
+            if (Kakao.Auth.getAccessToken()) {
+                Kakao.API.request({
+                    url: '/v1/user/unlink',
+                    success: function (response) {
+                        console.log(response)
+                    },
+                    fail: function (error) {
+                        console.log(error)
+                    },
+                })
+                Kakao.Auth.setAccessToken(undefined)
+            }
+        }
     </script>
     <style>
         .logout{
@@ -26,11 +42,18 @@
     </style>
 </head>
 <body>
-'{{user_info.nickname}}'님 환영합니다.
+<h2>'{{user_info.nickname}}'님 환영합니다.</h2>
+<p>ID : {{user_info.username}}</p>
+<p>주소 : {{user_info.address}}</p>
+
 <div class="logout">
     <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
        onclick="sign_out()">
         로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>
+    </a>
+    <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
+       onclick="kakaoLogout()">
+        카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>
     </a>
 </div>
 
