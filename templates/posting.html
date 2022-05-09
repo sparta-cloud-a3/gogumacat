@@ -28,9 +28,20 @@
 
 
     <style>
+        .hero-img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .hero-font {
+            /*color: #C886A4;*/
+            color: #543343;
+            font-family: 'Noto Sans KR', sans-serif;
+
+        }
         .wrap {
             width: 700px;
-            margin: 50px auto 0px auto;
+            margin: 100px auto 0px auto;
         }
 
         .input {
@@ -146,17 +157,18 @@
 </head>
 <body>
 {#상단 배너#}
-<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <img src="static/image.png">고구마캣</a>
+<section class="hero" onclick="window.location.href='/'" style="width: 250px;height: 50px; cursor: pointer; ">
+    <div class="hero-body">
+        <img class="hero-img" src="/static/gogumacat.png">
+        <span class="title hero-font">
+            고구마캣
+        </span>
     </div>
-    <img src="..." style="margin-left: auto">
-</nav>
+</section>
+<h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
 {#전체 입력 글#}
 <div class="wrap">
-    <h3 class="title is-3" style="text-align: center">등록하기 </h3>
+
     <input class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
     <input class="input is-normal" type="text" placeholder="대여 가능한 날짜를 적어주세요">
     <input class="input is-normal" type="text" placeholder="가격(1일 기준 대여가격)">
