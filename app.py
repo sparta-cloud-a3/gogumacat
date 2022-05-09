@@ -227,7 +227,8 @@ def posting():
             'price': price,
             'file' : f'{filename}.{extension}',
             'content':content,
-            'address':address
+            'address':address,
+            'like_count': ""
         }
         print(doc)
         db.posts.insert_one(doc)
