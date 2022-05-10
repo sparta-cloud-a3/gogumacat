@@ -85,158 +85,99 @@
         }
 
         .card-box {
-            /*display: flex;*/
-            /*flex-wrap: wrap;*/
+            margin-top: 30px;
         }
 
         .text-box {
             margin-top: 30px;
         }
+
+        .logout {
+            width: 200px;
+            margin: auto;
+        }
     </style>
 
     <script>
-        let order = "latest"
-        let page = 1
         $(document).ready(function () {
-            order = "latest"
-            page = 1
-            listing(order, page);
+            listing("latest");
         });
 
-        function listing(new_order, new_page) {
-            order = new_order
-            page = new_page
-            console.log(order, page)
+        function listing(order) {
             $.ajax({
                 type: "GET",
-                url: `/listing?order=${order}&page=${page}`,
+                url: `/listing?order=${order}`,
                 data: {},
                 success: function (response) {
                     $("#card-box").empty();
                     let posts = response["posts"];
-
-                    pagination(parseInt(response["last_page_num"]), page, "main")
-                    console.log("posts:", posts)
-
                     for (let i = 0; i < posts.length; i++) {
-                        make_post(posts[i]);
+                        make_post(posts[i], i);
                     }
                 }
             });
         }
 
         function make_post(post) {
-            let temp_html = `<div class="card" style="width: 18rem;" id="card-${post['post_id']}">
-                                <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'" alt="card image cap">
-                                <div class="card-body">
-                                    <h5 class="card-title" onclick="location.href='/posts/${post['post_id']}'">${post['title']}</h5>
-                                    <p class="card-text">${post['nickcname']}</p>
-                                    <p class="card-text">
-                                        <i class="fa-regular fa-heart"></i>
-                                        <i class="fa-solid fa-heart"></i>
-                                        ${post['like_count']}
-                                    </p>
+            let temp_html = `<div class="col">
+                                <div class="card h-100" id="card-${post['idx']}">
+                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'">
+                                    <div class="card-body">
+                                        <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
+                                        <p class="card-text">${post['nickname']}</p>
+                                        <p class="card-text">
+                                            <i class="fa-regular fa-heart"></i>
+                                            <i class="fa-solid fa-heart"></i>
+                                            ${post['like_count']}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>`
             $("#card-box").append(temp_html)
         }
 
-        function searching(new_order, new_page) {
-            order = new_order
-            page = new_page
+        function search() {
             let query = $('#search-box').val();
-            if (query == "") {
-                query = $("#query-text-box").val().split[" "][0];
-            }
             if (query == "") {
                 alert("검색어를 입력하세요");
                 return;
             } else {
                 $.ajax({
                     type: "GET",
-                    url: `/search?query=${query}&order=${order}&page=${page}`,
+                    url: `/search?query=${query}`,
                     data: {},
                     success: function (response) {
                         $("#card-box").empty();
                         let posts = response["posts"];
-                        pagination(parseInt(response["last_page_num"]), page, "search")
                         for (let i = 0; i < posts.length; i++) {
                             make_post(posts[i], i);
                         }
 
-                        $("#query-text-box").empty()
                         $("#query-text-box").append(`"${query}" 검색내역 입니다.`)
-                        $("#query-text-box").removeClass("is-hidden")
+                        $("#query-text-box").removeClass("is-hidden");
                     }
+                });
+            }
+        }
+
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('로그아웃!')
+            window.location.href = "/login"
+        }
+
+        function kakaoLogout() {
+            if (Kakao.Auth.getAccessToken()) {
+                Kakao.API.request({
+                    url: '/v1/user/unlink',
+                    success: function (response) {
+                        console.log(response)
+                    },
+                    fail: function (error) {
+                        console.log(error)
+                    },
                 })
-            }
-        }
-
-        function pagination(last_page_num, page, type) {
-            $("#pagination-list").empty()
-
-            if (page == 1) {
-                $("#pre-btn").addClass("is-hidden")
-            } else {
-                $("#pre-btn").removeClass("is-hidden")
-            }
-
-            if (page == last_page_num) {
-                $("#next-btn").addClass("is-hidden")
-            } else {
-                $("#next-btn").removeClass("is-hidden")
-            }
-
-            let temp_html = ""
-
-            let start = page - 4
-
-            if (start <= 0) {
-                start = 1
-            }
-
-            let cnt = 0
-            for (let i = start; i <= last_page_num; i++) {
-                if (cnt > 9) {
-                    temp_html += `<li><span class="pagination-ellipsis">&hellip;</span></li>`
-                    break
-                }
-                if (page == i) {
-                    temp_html += `<li><a class="pagination-link is-current" area-current="page">${page}</a></li>`
-                } else {
-                    if (type == "search") {
-                        temp_html += `<li><a class="pagination-link" onclick="searching(order,${i})">${i}</a></li>`
-                    } else {
-                        temp_html += `<li><a class="pagination-link" onclick="listing(order,${i})">${i}</a></li>`
-                    }
-                }
-                cnt += 1
-            }
-
-            $("#pagination-list").append(temp_html)
-        }
-
-        function click_pre_btn() {
-            if ($("#query-text-box").hasClass("is-hidden")) {
-                listing(order, page - 1)
-            } else {
-                searching(order, page - 1)
-            }
-        }
-
-        function click_next_btn() {
-            if ($("#query-text-box").hasClass("is-hidden")) {
-                listing(order, page + 1)
-            } else {
-                searching(order, page + 1)
-            }
-        }
-
-        function click_sort_btn(order_type, page) {
-            if ($("#query-text-box").hasClass("is-hidden")) {
-                listing(order_type, page)
-            } else {
-                searching(order_type, page)
+                Kakao.Auth.setAccessToken(undefined)
             }
         }
 
@@ -244,8 +185,21 @@
 </head>
 <body>
 <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
+    <!--로그인-->
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
+<!--    <div class="logout">-->
+<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+<!--           onclick="sign_out()">-->
+<!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+<!--        </a>-->
+<!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+<!--           onclick="kakaoLogout()">-->
+<!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+<!--                                                                     aria-hidden="true"></i></span>-->
+<!--        </a>-->
+<!--    </div>-->
+    <!--로그인-->
 </section>
 <section class="hero" onclick="window.location.href='/'">
     <div class="hero-body">
@@ -257,17 +211,17 @@
 </section>
 </section>
 <section class="write-btn">
-    <button class="button is-dark">
-        <span>상품 등록하러 가기</span>
+    <button class="button is-dark" onclick="location.href='/posting/{{ user_info.username}}'">
         <span class="icon is-small">
             <i class="fa-solid fa-pencil fab"></i>
         </span>
+        <span>상품 등록하러 가기</span>
     </button>
 </section>
 
 <div class="search">
     <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-    <img class="search-img" onclick="searching('latest',1)"
+    <img class="search-img" onclick="search()"
          src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
 </div>
 
@@ -304,22 +258,14 @@
     </div>
 </section>
 <section>
-    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium">최신순</span></a>
-    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium">관심순</span></a>
+    <a onclick="listing('latest')"><span class="tag is-medium">최신순</span></a>
+    <a onclick="listing('like')"><span class="tag is-medium">관심순</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">
 </section>
 
-<div class="card-columns" style="margin-top: 30px;">
-    <div class="card-box" id="card-box"></div>
+<div class="row row-cols-1 row-cols-md-3 g-4 card-box" id="card-box">
 </div>
-
-<nav class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
-    <a class="pagination-previous" id="pre-btn" onclick="click_pre_btn()">Previous</a>
-    <a class="pagination-next" id="next-btn" onclick="click_next_btn()">Next page</a>
-    <ul class="pagination-list" id="pagination-list">
-    </ul>
-</nav>
 </body>
 </html>
