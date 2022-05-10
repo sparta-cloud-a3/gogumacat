@@ -38,11 +38,54 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
-
+#회원 로그인
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
     return render_template('login.html', msg=msg)
+
+#카카오 로그인
+@app.route('/kakao_sign_in', methods=['POST'])
+def kakao_sign_in():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    nickname_receive = request.form['nickname_give']
+    img_receive = request.form['img_give']
+
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+
+    if result is not None:
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공'})
+    # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
+    else:
+        doc = {
+            "username": username_receive,
+            "password": pw_hash,
+            "profile_name": username_receive,
+            "profile_pic": img_receive,
+            "profile_pic_real": "profile_pics/profile_placeholder.png",
+            "profile_info": "",
+            "nickname": nickname_receive,
+            "address": ''
+        }
+        db.users.insert_one(doc)
+
+        #DB 업데이트 이후 토큰 발행
+
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 회원가입 성공'})
 
 
 @app.route('/user/<username>')
