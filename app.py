@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
 import math
+from json import dumps
 
 async_mode = None
 
@@ -38,11 +39,54 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
-
+#회원 로그인
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
     return render_template('login.html', msg=msg)
+
+#카카오 로그인
+@app.route('/kakao_sign_in', methods=['POST'])
+def kakao_sign_in():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    nickname_receive = request.form['nickname_give']
+    img_receive = request.form['img_give']
+
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+
+    if result is not None:
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공'})
+    # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
+    else:
+        doc = {
+            "username": username_receive,
+            "password": pw_hash,
+            "profile_name": username_receive,
+            "profile_pic": img_receive,
+            "profile_pic_real": "profile_pics/profile_placeholder.png",
+            "profile_info": "",
+            "nickname": nickname_receive,
+            "address": ''
+        }
+        db.users.insert_one(doc)
+
+        #DB 업데이트 이후 토큰 발행
+
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 회원가입 성공'})
 
 
 @app.route('/user/<username>')
@@ -125,9 +169,14 @@ def update_profile():
         username = payload["id"]
         name_receive = request.form["name_give"]
         about_receive = request.form["about_give"]
+        address_receive = request.form["address_give"]
+        password_receive = request.form["password_give"]
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
         new_doc = {
             "nickname": name_receive,
-            "profile_info": about_receive
+            "profile_info": about_receive,
+            "address": address_receive,
+            "password": pw_hash
         }
         if 'file_give' in request.files:
             file = request.files["file_give"]
@@ -197,14 +246,15 @@ def get_my_posts():
         if username_receive == "":
             posts = list(db.posts.find({}, {'_id': False}).sort('date', -1))
         else:
-            posts = list(db.posts.find({"username": username_receive}, {'_id': False}).sort("date", -1).limit(9))
-            comments = list(db.comments.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
+            posts = list(db.posts.find({"username": username_receive}, {'_id': False}).sort("date", -1))
+            comments = list(db.comments.find({"username": username_receive}, {'_id': False}).sort('_id', -1))
             reviews = ""
-            likes = list(db.likes.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
+            likes = list(db.likes.find({"username": username_receive}, {'_id': False}).sort('_id', -1))
+
             for i in range(len(comments)):
-                comments[i] = db.posts.find({'idx': comments[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
+                comments[i] = db.posts.find_one({'idx': comments[i]['idx']}, {'_id': False})
             for i in range(len(likes)):
-                likes[i] = db.posts.find({'idx': likes[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
+                likes[i] = db.posts.find_one({'idx': likes[i]['idx']}, {'_id': False})
 
         return jsonify({'posts': posts, 'comments': comments, 'reviews': reviews, 'likes': likes})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -312,6 +362,24 @@ def update_like():
         return jsonify({"result": "success", "count": count})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
+@app.route('/check', methods=['POST'])
+def check_pw():
+    password_receive = request.form['password_give']
+
+    token_receive = request.cookies.get('mytoken')
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        result = bool(db.users.find_one({'username': payload["id"], 'password': pw_hash}))
+
+        return jsonify({'result': result})
+
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 
 # def background_thread():
