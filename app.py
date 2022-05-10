@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
 import math
+from json import dumps
 
 async_mode = None
 
@@ -125,9 +126,14 @@ def update_profile():
         username = payload["id"]
         name_receive = request.form["name_give"]
         about_receive = request.form["about_give"]
+        address_receive = request.form["address_give"]
+        password_receive = request.form["password_give"]
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
         new_doc = {
             "nickname": name_receive,
-            "profile_info": about_receive
+            "profile_info": about_receive,
+            "address": address_receive,
+            "password": pw_hash
         }
         if 'file_give' in request.files:
             file = request.files["file_give"]
@@ -197,14 +203,15 @@ def get_my_posts():
         if username_receive == "":
             posts = list(db.posts.find({}, {'_id': False}).sort('date', -1))
         else:
-            posts = list(db.posts.find({"username": username_receive}, {'_id': False}).sort("date", -1).limit(9))
-            comments = list(db.comments.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
+            posts = list(db.posts.find({"username": username_receive}, {'_id': False}).sort("date", -1))
+            comments = list(db.comments.find({"username": username_receive}, {'_id': False}).sort('_id', -1))
             reviews = ""
-            likes = list(db.likes.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
+            likes = list(db.likes.find({"username": username_receive}, {'_id': False}).sort('_id', -1))
+
             for i in range(len(comments)):
-                comments[i] = db.posts.find({'idx': comments[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
+                comments[i] = db.posts.find_one({'idx': comments[i]['idx']}, {'_id': False})
             for i in range(len(likes)):
-                likes[i] = db.posts.find({'idx': likes[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
+                likes[i] = db.posts.find_one({'idx': likes[i]['idx']}, {'_id': False})
 
         return jsonify({'posts': posts, 'comments': comments, 'reviews': reviews, 'likes': likes})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -312,6 +319,24 @@ def update_like():
         return jsonify({"result": "success", "count": count})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
+@app.route('/check', methods=['POST'])
+def check_pw():
+    password_receive = request.form['password_give']
+
+    token_receive = request.cookies.get('mytoken')
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        result = bool(db.users.find_one({'username': payload["id"], 'password': pw_hash}))
+
+        return jsonify({'result': result})
+
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 
 # def background_thread():
