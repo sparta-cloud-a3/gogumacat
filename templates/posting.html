@@ -100,20 +100,21 @@
             $('#img').on('change', function () {
                 ext = $(this).val().split('.').pop().toLowerCase(); //확장자
                 //배열에 추출한 확장자가 존재하는지 체크
-                if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
-                    resetFormElement($(this)); //폼 초기화
-                    alert('이미지 파일이 아닙니다! (gif, png, jpg, jpeg 만 업로드 가능)');
+                if ($.inArray(ext, [ 'png', 'jpg', 'jpeg']) == -1) {
+                    alert("jpg,jpeg,png 이미지만 사용 가능합니다.")
+                    const fileName = document.querySelector('#file-js-example .file-name');
+                    fileName.textContent = "";//스팬 값 초기화
+                    $("#image_preview").toggleClass("is-hidden")
                 } else {
                     file = $('#img').prop("files")[0];
                     blobURL = window.URL.createObjectURL(file);
                     $('#image_preview img').attr('src', blobURL);
                     $('#image_preview').slideDown(); //업로드한 이미지 미리보기
                     $(this).slideUp(); //파일 양식 감춤
-                    $("#image_preview").toggleClass("is-hidden")
+                    $("#image_preview").removeClass("is-hidden")
                 }
             });
         }
-
 
 
         //지도 띄우는 코드
@@ -121,11 +122,11 @@
             let local = $('#local_address').val()
             //주소 확인
             if (local == "") {
-                 $("#local_warning").addClass("is-danger").removeClass("is-hidden")
+                $("#local_warning").addClass("is-danger").removeClass("is-hidden")
             } else {
                 $('#local_warning').addClass("is-hidden")
                 $("#map").toggleClass("is-hidden")
-            //지도 작동
+                //지도 작동
                 var mapContainer = document.getElementById('map'), // 지도를 표시할 div
                     mapOption = {
                         center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
@@ -188,34 +189,49 @@
             let content = $('#content').val()
             let address = $('#local_address').val()
             let file = $('#img')[0].files[0]
-            //폼데이터에 넣기
-
+            //form 데이터 넣기
             let form_data = new FormData()
-
             form_data.append("title_give", title)
             form_data.append("file_give", file)
             form_data.append("date_give", date)
             form_data.append("price_give", price)
             form_data.append("content_give", content)
             form_data.append("address_give", address)
-
-            //포스팅 aJax 콜
-            $.ajax({
-                type: "POST",
-                url: "/user_post",
-                data: form_data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                enctype: "multipart/form-data",
-                success: function (response) {
-                    if (response["result"] == "success") {
-                        alert(response["msg"])
-                        console.log(response)
-                        window.location.href = '/'
+            if (title == "") {
+                alert("제목,물품명을 입력해주세요")
+            } else if (date == "") {
+                alert("대여 기간을 입력해주세요")
+            } else if (price == "") {
+                alert("가격을 입력해주세요")
+            } else if (file == undefined) {
+                alert("제품 사진을 첨부해주세요")
+            } else if (file.name.split('.').reverse()[0].indexOf("jpg", "png", "jpeg") == -1) {
+                alert("jpg,png,jpeg 이미지 파일만 첨부 가능합니다.")
+            } else if (content == "") {
+                alert("내용을 적어주세요")
+            } else if (address == "") {
+                alert("주소를 입력해주세요")
+            } else {
+                //포스팅 aJax 콜
+                $.ajax({
+                    type: "POST",
+                    url: "/user_post",
+                    data: form_data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    enctype: "multipart/form-data",
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert(response["msg"])
+                            console.log(response)
+                            window.location.href = '/'
+                        } else {
+                            alert("내용을 다시 확인해 주세요요")
+                        }
                     }
-                }
-            })
+                })
+            }
         }
         //캘린더 함수
         function calender_select() {
@@ -230,19 +246,29 @@
                         "weekLabel": "W",
                         "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
                         "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-                        "firstDay": 1
+                        "firstDay": 1,
                     },
+                    autoUpdateInput: false,
                     autoApply: true,
                     "drops": "down",
+
                 }, function (start, end, label) {
                 });
             });
+            $('input[name="datefilter"]').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            });
+
+            $('input[name="datefilter"]').on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+            })
         }
+
         //가격정보 숫자만 받도록
         function price(t) {
             // 콤마 빼고
             var x = t.value
-            x = x.replace(/,/gi,'');
+            x = x.replace(/,/gi, '');
             // 숫자 정규식 확인
             var regexp = /^[0-9]*$/;
             if (!regexp.test(x)) {
@@ -276,7 +302,7 @@
     {#캘린더 부분#}
     <div class="calender">
         <span style="font-size: 20px">대여 가능 기간</span>
-        <input id="calender" class="calender" type="text" name="daterange" value=""/>
+        <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
     </div>
     {#가격#}
     <input id="price" class="input is-normal" type="text" onchange="price(this)"
