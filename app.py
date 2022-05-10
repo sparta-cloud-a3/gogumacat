@@ -307,7 +307,7 @@ def posting():
         filename = f'file-{mytime}'
         print(extension, filename)
         # static폴더에 파일 저장
-        save_to = f'static/{filename}.{extension}'
+        save_to = f'static/post_pic/{filename}.{extension}'
         file.save(save_to)
         # 데이터 DB에 저장하기
         doc = {
