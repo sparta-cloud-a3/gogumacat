@@ -395,7 +395,8 @@ def my_room_event(message):
     username = payload['id']
     user_info = db.users.find_one({"username": username}, {"_id": False})
     emit('my_response',
-        {'data': message['data'], 'count': session['receive_count'],'type': 1 ,'name' : user_info['nickname']},
+        {'data': message['data'], 'count': session['receive_count'],'type': 1 ,'name' : user_info['nickname'],
+            'image' : user_info['profile_pic_real']},
         to=message['room'])
 
 @socketio.event
