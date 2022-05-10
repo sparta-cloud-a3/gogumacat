@@ -202,40 +202,54 @@ function kakaoLogin() {
         scope: 'profile_nickname,profile_image,account_email,gender',
         success: function (authObj) {
             console.log(authObj);
-            ACCESS_TOKEN = authObj['access_token']
             window.Kakao.API.request({
                 url: '/v2/user/me',
                 success: res => {
+                    let accesstoken = Kakao.Auth.getAccessToken()
                     const kakao_account = res.kakao_account;
                     console.log(kakao_account);
                     let nickname = kakao_account['profile']['nickname']
                     let email = kakao_account['email']
                     let gender = kakao_account['gender']
+                    let img = kakao_account['profile']['profile_image_url']
                     console.log(nickname,email,gender)
-                    Kakao.Auth.setAccessToken(ACCESS_TOKEN);
-                    console.log(ACCESS_TOKEN);
-                    // $.ajax({
-                    //     type: "POST",
-                    //     url: "/kakao_sign_in",
-                    //     data: {
-                    //         username_give: email,
-                    //         password_give: email,
-                    //         nickname_give: nickname
-                    //     },
-                    //     success: function (response) {
-                    //         if (response['result'] == 'success') {
-                    //             $.cookie('mytoken', response['token'], {path: '/'});
-                    //             alert(response['msg'])
-                    //             window.location.replace("/")
-                    //         } else {
-                    //             alert(response['msg'])
-                    //         }
-                    //     }
-                    // });
+                    console.log(accesstoken);
+                    kakaoLogout();
+                    $.ajax({
+                        type: "POST",
+                        url: "/kakao_sign_in",
+                        data: {
+                            username_give: email,
+                            password_give: email,
+                            nickname_give: nickname,
+                            img_give: img
+                        },
+                        success: function (response) {
+                            if (response['result'] == 'success') {
+                                $.cookie('mytoken', response['token'], {path: '/'});
+                                alert(response['msg'])
+                                kakaoLogout()
+                                window.location.replace("/")
+                            } else {
+                                alert(response['msg'])
+                            }
+                        }
+                    });
                 }
             });
         }
     });
+}
+function kakaoLogout() {
+    if (!Kakao.Auth.getAccessToken()) {
+        console.log('Not logged in.')
+        return
+    }
+    Kakao.Auth.logout(function () {
+        console.log('logout ok\naccess token -> ' + Kakao.Auth.getAccessToken())
+        console.log(Kakao.Auth.getAccessToken())
+
+    })
 }
 
 function juso() {
