@@ -85,12 +85,16 @@
         }
 
         .card-box {
-            /*display: flex;*/
-            /*flex-wrap: wrap;*/
+            margin-top: 30px;
         }
 
         .text-box {
             margin-top: 30px;
+        }
+
+        .logout {
+            width: 200px;
+            margin: auto;
         }
     </style>
 
@@ -126,16 +130,18 @@
         }
 
         function make_post(post) {
-            let temp_html = `<div class="card" style="width: 18rem;" id="card-${post['idx']}">
-                                <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'" alt="card image cap">
-                                <div class="card-body">
-                                    <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
-                                    <p class="card-text">${post['nickname']}</p>
-                                    <p class="card-text">
-                                        <i class="fa-regular fa-heart"></i>
-                                        <i class="fa-solid fa-heart"></i>
-                                        ${post['like_count']}
-                                    </p>
+            let temp_html = `<div class="col">
+                                <div class="card h-100" id="card-${post['idx']}">
+                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'">
+                                    <div class="card-body">
+                                        <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
+                                        <p class="card-text">${post['nickname']}</p>
+                                        <p class="card-text">
+                                            <i class="fa-regular fa-heart"></i>
+                                            <i class="fa-solid fa-heart"></i>
+                                            ${post['like_count']}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>`
             $("#card-box").append(temp_html)
@@ -257,8 +263,7 @@
 </section>
 </section>
 <section class="write-btn">
-    <button class="button is-dark">
-        <span>상품 등록하러 가기</span>
+    <button class="button is-dark" onclick="location.href='/posting/{{ user_info.username}}'">
         <span class="icon is-small">
             <i class="fa-solid fa-pencil fab"></i>
         </span>

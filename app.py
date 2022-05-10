@@ -201,5 +201,80 @@ def get_my_posts():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+#유저 개인의 물품 등록페이지 띄우기
+@app.route('/posting/<username>')
+def post_page(username):
+    token_receive = request.cookies.get('mytoken')
+    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    username = payload["id"]
+    user_info = db.users.find_one({"username": username}, {"_id": False})
+
+    return render_template("posting.html", user_info=user_info )
+
+# 등록할 내용 DB저장
+@app.route('/user_post',methods=['POST'])
+def posting():
+    print(request.form)
+#DB 포스트 값에 고유번호 부여하기
+    if 0 >= db.posts.estimated_document_count():
+        idx = 1
+    else:
+        idx = list(db.posts.find({}, sort=[('_id', -1)]).limit(1))[0]['idx'] + 1
+#토큰확인
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        userdata = db.users.find_one({"username": payload["id"]})  # payload속 id 값 받기
+# 클라이언트 post 데이터 받기
+        username = userdata['username']
+        nickname = userdata['nickname']
+        print(username,nickname)
+        title = request.form['title_give']
+        date = request.form['date_give']
+        price = request.form['price_give']
+        file = request.files['file_give']
+        content = request.form['content_give']
+        address = request.form['address_give']
+        print(title,date,price,file,content,address)
+
+    #현재 시각 체크하기
+        today = datetime.now()
+        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+    #파일 확장자 빼고 시간을 이름에 붙이기
+        extension = file.filename.split('.')[-1]
+        filename = f'file-{mytime}'
+        print(extension,filename)
+    #static폴더에 파일 저장
+        save_to = f'static/{filename}.{extension}'
+        file.save(save_to)
+    #데이터 DB에 저장하기
+        doc = {
+            'idx': idx,
+            'username': username,
+            'nickname' : nickname,
+            'title': title,
+            'date' : date,
+            'price': price,
+            'file' : f'{filename}.{extension}',
+            'content':content,
+            'address':address,
+            'like_count': ""
+        }
+        print(doc)
+        db.posts.insert_one(doc)
+        return jsonify({"result": "success", 'msg': '등록이 완료되었습니다.'})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect()
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
