@@ -126,11 +126,11 @@
         }
 
         function make_post(post) {
-            let temp_html = `<div class="card" style="width: 18rem;" id="card-${post['post_id']}">
-                                <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'" alt="card image cap">
+            let temp_html = `<div class="card" style="width: 18rem;" id="card-${post['idx']}">
+                                <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'" alt="card image cap">
                                 <div class="card-body">
-                                    <h5 class="card-title" onclick="location.href='/posts/${post['post_id']}'">${post['title']}</h5>
-                                    <p class="card-text">${post['nickcname']}</p>
+                                    <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
+                                    <p class="card-text">${post['nickname']}</p>
                                     <p class="card-text">
                                         <i class="fa-regular fa-heart"></i>
                                         <i class="fa-solid fa-heart"></i>
@@ -247,7 +247,7 @@
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
 </section>
-<section class="hero" onclick="window.location.href='/'">
+<section class="hero" onclick="window.location.href='/posting/{{user_info.username}}'">
     <div class="hero-body">
         <img class="hero-img" src="/static/gogumacat.png">
         <span class="title hero-font">
