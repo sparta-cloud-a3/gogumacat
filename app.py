@@ -18,6 +18,7 @@ app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 
 SECRET_KEY = 'MSG'
 
+
 @app.route('/')
 def home():
     token_receive = request.cookies.get('mytoken')
@@ -51,6 +52,7 @@ def user(username):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     # 로그인
@@ -62,8 +64,8 @@ def sign_in():
 
     if result is not None:
         payload = {
-         'id': username_receive,
-         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -81,14 +83,14 @@ def sign_up():
     address_receive = request.form['address_give']
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     doc = {
-        "username": username_receive,                               # 아이디
-        "password": password_hash,                                  # 비밀번호
+        "username": username_receive,  # 아이디
+        "password": password_hash,  # 비밀번호
         # "profile_name": username_receive,                           # 프로필 이름 기본값은 아이디 -> 이부분이 닉네임이 이니깐 없어도 될듯
-        "profile_pic": "",                                          # 프로필 사진 파일 이름
-        "profile_pic_real": "profile_pics/profile_placeholder.png", # 프로필 사진 기본 이미지
-        "profile_info": "",                                         # 프로필 한 마디
-        "nickname": nickname_receive,                               # 닉네임
-        "address" : address_receive
+        "profile_pic": "",  # 프로필 사진 파일 이름
+        "profile_pic_real": "profile_pics/profile_placeholder.png",  # 프로필 사진 기본 이미지
+        "profile_info": "",  # 프로필 한 마디
+        "nickname": nickname_receive,  # 닉네임
+        "address": address_receive
     }
     db.users.insert_one(doc)
     return jsonify({'result': 'success'})
@@ -125,10 +127,10 @@ def update_profile():
             filename = secure_filename(file.filename)
             extension = filename.split(".")[-1]
             file_path = f"profile_pics/{username}.{extension}"
-            file.save("./static/"+file_path)
+            file.save("./static/" + file_path)
             new_doc["profile_pic"] = filename
             new_doc["profile_pic_real"] = file_path
-        db.users.update_one({'username': payload['id']}, {'$set':new_doc})
+        db.users.update_one({'username': payload['id']}, {'$set': new_doc})
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -142,14 +144,15 @@ def listing_page():
     # 한 페이지당 10개 보여줌
     limit = 9
     if order == 'like':
-        posts = list(db.posts.find({},{'_id': False}).sort('liked', -1).skip((page-1)*limit).limit(limit))
+        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
 
     total_count = db.posts.estimated_document_count({})
-    last_page_num = math.ceil(total_count/limit)
+    last_page_num = math.ceil(total_count / limit)
 
-    return jsonify({'posts': posts, 'limit':limit, 'page': page, 'last_page_num': last_page_num })
+    return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
 
 @app.route('/search', methods=['GET'])
 def searching_page():
@@ -161,23 +164,29 @@ def searching_page():
     limit = 3
 
     if order == 'like':
-        posts = list(db.posts.find( { '$or': [ {'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}} ] }, {'_id': False}).sort('liked', -1).skip((page-1)*limit).limit(limit))
+        posts = list(
+            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                          {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
                           {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
 
-    total_count = len(list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},{'_id': False})))
+    total_count = len(list(
+        db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                      {'_id': False})))
     last_page_num = math.ceil(total_count / limit)
     print(total_count)
-    return jsonify({"query": query_receive, "posts": posts, 'limit':limit, 'page': page, 'last_page_num': last_page_num })
+    return jsonify(
+        {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
 @app.route('/posts/<int:id>', methods=['GET'])
 def give_post(id):
-    post = db.posts.find_one({'post_id': id}, {'_id': False})
+    post = db.posts.find_one({'idx': id}, {'_id': False})
 
     return render_template('post.html', post=post)
+
 
 @app.route("/get_posts", methods=['GET'])
 def get_my_posts():
@@ -185,23 +194,24 @@ def get_my_posts():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         username_receive = request.args.get("username_give")
-        if username_receive=="":
+        if username_receive == "":
             posts = list(db.posts.find({}, {'_id': False}).sort('date', -1))
         else:
-            posts = list(db.posts.find({"username":username_receive},{'_id': False}).sort("date", -1).limit(9))
-            comments = list(db.comments.find({"username":username_receive},{'_id': False}).sort('_id', -1).limit(9))
+            posts = list(db.posts.find({"username": username_receive}, {'_id': False}).sort("date", -1).limit(9))
+            comments = list(db.comments.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
             reviews = ""
-            likes = list(db.likes.find({"username":username_receive},{'_id': False}).sort('_id', -1).limit(9))
+            likes = list(db.likes.find({"username": username_receive}, {'_id': False}).sort('_id', -1).limit(9))
             for i in range(len(comments)):
-                comments[i] = db.posts.find({'post_id': comments[i]['post_id']},{'_id': False}).sort("date", -1).limit(9)
+                comments[i] = db.posts.find({'idx': comments[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
             for i in range(len(likes)):
-                likes[i] = db.posts.find({'post_id': likes[i]['post_id']},{'_id': False}).sort("date", -1).limit(9)
+                likes[i] = db.posts.find({'idx': likes[i]['idx']}, {'_id': False}).sort("date", -1).limit(9)
 
-        return jsonify({'posts': posts, 'comments':comments, 'reviews':reviews, 'likes':likes})
+        return jsonify({'posts': posts, 'comments': comments, 'reviews': reviews, 'likes': likes})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-#유저 개인의 물품 등록페이지 띄우기
+
+# 유저 개인의 물품 등록페이지 띄우기
 @app.route('/posting/<username>')
 def post_page(username):
     token_receive = request.cookies.get('mytoken')
@@ -209,56 +219,57 @@ def post_page(username):
     username = payload["id"]
     user_info = db.users.find_one({"username": username}, {"_id": False})
 
-    return render_template("posting.html", user_info=user_info )
+    return render_template("posting.html", user_info=user_info)
+
 
 # 등록할 내용 DB저장
-@app.route('/user_post',methods=['POST'])
+@app.route('/user_post', methods=['POST'])
 def posting():
     print(request.form)
-#DB 포스트 값에 고유번호 부여하기
+    # DB 포스트 값에 고유번호 부여하기
     if 0 >= db.posts.estimated_document_count():
         idx = 1
     else:
         idx = list(db.posts.find({}, sort=[('_id', -1)]).limit(1))[0]['idx'] + 1
-#토큰확인
+    # 토큰확인
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         userdata = db.users.find_one({"username": payload["id"]})  # payload속 id 값 받기
-# 클라이언트 post 데이터 받기
+        # 클라이언트 post 데이터 받기
         username = userdata['username']
         nickname = userdata['nickname']
-        print(username,nickname)
+        print(username, nickname)
         title = request.form['title_give']
         date = request.form['date_give']
         price = request.form['price_give']
         file = request.files['file_give']
         content = request.form['content_give']
         address = request.form['address_give']
-        print(title,date,price,file,content,address)
+        print(title, date, price, file, content, address)
 
-    #현재 시각 체크하기
+        # 현재 시각 체크하기
         today = datetime.now()
         mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
-    #파일 확장자 빼고 시간을 이름에 붙이기
+        # 파일 확장자 빼고 시간을 이름에 붙이기
         extension = file.filename.split('.')[-1]
         filename = f'file-{mytime}'
-        print(extension,filename)
-    #static폴더에 파일 저장
+        print(extension, filename)
+        # static폴더에 파일 저장
         save_to = f'static/{filename}.{extension}'
         file.save(save_to)
-    #데이터 DB에 저장하기
+        # 데이터 DB에 저장하기
         doc = {
             'idx': idx,
             'username': username,
-            'nickname' : nickname,
+            'nickname': nickname,
             'title': title,
-            'date' : date,
+            'date': date,
             'price': price,
-            'file' : f'{filename}.{extension}',
-            'content':content,
-            'address':address,
+            'file': f'{filename}.{extension}',
+            'content': content,
+            'address': address,
             'like_count': ""
         }
         print(doc)
@@ -266,14 +277,6 @@ def posting():
         return jsonify({"result": "success", 'msg': '등록이 완료되었습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect()
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
