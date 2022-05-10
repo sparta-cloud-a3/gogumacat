@@ -139,18 +139,20 @@
         }
 
         function make_post(post, type) {
-            let temp_html = `<div class="card" id="card-${post['post_id']}" style="width: 18rem;">
-                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['post_id']}'">
+            let temp_html = `<div class="col">
+                                <div class="card h-100" id="card-${post['idx']}">
+                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'">
                                     <div class="card-body">
-                                        <h5 class="card-title" onclick="location.href='/posts/${post['post_id']}'">${post['title']}</h5>
-                                        <p class="card-text">${post['nickcname']}</p>
+                                        <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
+                                        <p class="card-text">${post['nickname']}</p>
                                         <p class="card-text">
                                             <i class="fa-regular fa-heart"></i>
                                             <i class="fa-solid fa-heart"></i>
                                             ${post['like_count']}
                                         </p>
                                     </div>
-                                </div>`
+                                </div>
+                            </div>`
             $(`#card-box-${type}`).append(temp_html)
         }
 

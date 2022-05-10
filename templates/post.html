@@ -29,6 +29,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
+    <script src="{{ url_for('static',filename='like.js') }}"></script>
 
     <style>
         body {
@@ -259,9 +260,15 @@
     <div class ="user-info" id = "user_information">
         <p id="user_name">{{post.username}}</p>
         <p id="user_locate"> {{post.address}}</p>
-        <a class="level-item" aria-label="like" onclick="toggle_like('', 'like')" style="float:right">
-            <span class="icon is-small" ><i class="fa-solid fa-thumbs-up fa-3x" aria-hidden="true"></i></span>
-            <br class="like-num"><br><br>2.7k</span>
+        <a class="level-item" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
+            <span class="icon is-small" >
+                {% if post.like_by_me %}
+                    <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
+                {% else %}
+                    <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
+                {% endif %}
+            </span>
+            <p class="like-num" id="heart-count-box">{{post.like_count}}</p>
         </a>
     </div>
     <div class = content-name;>
