@@ -97,10 +97,12 @@
             width: 200px;
             margin: auto;
         }
-        .like{
-            width:400px;
+
+        .like {
+            width: 400px;
             margin-left: auto;
         }
+
         #map {
             width: 60%;
             height: 500px;
@@ -109,30 +111,57 @@
         }
 
         .sideBanner {
-        float : right;
-        position : relative;
-        width: 150px;
-        height: 150px;
-        top: 1000px;
-        background-size: cover;
-        background-image: url(/static/gogumacat.png) ;
-    }
+            float: right;
+            position: relative;
+            width: 150px;
+            height: 150px;
+            top: 1000px;
+            background-size: cover;
+            background-image: url(/static/gogumacat.png);
+        }
 
-    .emphasized {
-        position: fixed;
-        top: 150px;
-        left: 30px;
-        box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
-        z-index: 100;
+        .emphasized {
+            position: fixed;
+            top: 150px;
+            left: 30px;
+            box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
+            z-index: 100;
 
-    }
+        }
 
-    .user {
-        height: 34px;
-    }
+        .user {
+            height: 34px;
+        }
+
+        .like-box {
+            float: right;
+        }
+
+        .like-num {
+
+        }
+
+        .heart-icon {
+
+        }
     </style>
 
     <script>
+        let y_cen = {
+        {
+            post.y
+        }
+        }
+        ;   // lat
+        let x_cen = {
+        {
+            post.x
+        }
+        }
+        ;  // long
+        let map;
+        let markers = [];
+        let infowindows = [];
         $(document).ready(function () {
             var floatPosition = parseInt($(".sideBanner").css('top'))
 
@@ -162,8 +191,21 @@
                     window.location.href = "http://localhost:5000/posts/{{ post.idx }}"
                 }
             });
-        });
 
+
+            map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(y_cen, x_cen),
+                zoom: 12,
+                zoomControl: true,
+                zoomControlOptions: {
+                    style: naver.maps.ZoomControlStyle.SMALL,
+                    position: naver.maps.Position.TOP_RIGHT
+                }
+            });
+
+            get_locate();
+
+        });
 
         function search() {
             let query = $('#search-box').val();
@@ -213,22 +255,22 @@
     </script>
 </head>
 <body>
-<div class = "user">
+<div class="user">
     <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
         <!--로그인-->
         <i class="fa-solid fa-cat fa-lg"></i>
         <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-    <!--    <div class="logout">-->
-    <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-    <!--           onclick="sign_out()">-->
-    <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
-    <!--        </a>-->
-    <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-    <!--           onclick="kakaoLogout()">-->
-    <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
-    <!--                                                                     aria-hidden="true"></i></span>-->
-    <!--        </a>-->
-    <!--    </div>-->
+        <!--    <div class="logout">-->
+        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+        <!--           onclick="sign_out()">-->
+        <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+        <!--        </a>-->
+        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+        <!--           onclick="kakaoLogout()">-->
+        <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+        <!--                                                                     aria-hidden="true"></i></span>-->
+        <!--        </a>-->
+        <!--    </div>-->
         <!--로그인-->
     </section>
 </div>
@@ -251,27 +293,29 @@
     <img class="search-img" onclick="search()"
          src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
 </div>
- <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <img src="{{ post.img_url}}"></h1>
-            </div>
- </div>
-<div class = "content">
-    <div class ="user-info" id = "user_information">
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <img src="{{ post.img_url}}"></h1>
+    </div>
+</div>
+<div class="content">
+    <div class="user-info" id="user_information">
         <p id="user_name">{{post.username}}</p>
         <p id="user_locate"> {{post.address}}</p>
-        <a class="level-item" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
-            <span class="icon is-small" >
+        <div class="like-box">
+            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
+            <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
                 {% else %}
                     <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
                 {% endif %}
             </span>
-            <p class="like-num" id="heart-count-box">{{post.like_count}}</p>
-        </a>
+            </a>
+            <div class="like-num" id="heart-count-box"><script>num2str({{post.like_count}})</script></div>
+        </div>
     </div>
-    <div class = content-name;>
+    <div class=content-name;>
         <h1>{{ post.title }}</h1>
         <h3>가격:{{ post.price }}</h3>
     </div>
