@@ -204,6 +204,9 @@ def listing_page():
     else:
         posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
 
+    for i in range(len(posts)):
+        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
     total_count = db.posts.estimated_document_count({})
     last_page_num = math.ceil(total_count / limit)
 
