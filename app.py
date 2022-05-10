@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session, copy_current_request_context
 from pymongo import MongoClient
 from threading import Lock
-# from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
+from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
 import jwt
 import hashlib
@@ -14,7 +14,7 @@ from json import dumps
 async_mode = None
 
 app = Flask(__name__)
-# socketio = SocketIO(app, async_mode=async_mode)
+socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 
@@ -63,7 +63,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공\n초기 비밀번호...변경하셨죠..?ㅠㅠㅠ'})
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공'})
     # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
     else:
         doc = {
@@ -86,7 +86,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : f'아이디와 초기 비밀번호는 "{username_receive}"입니다!\n개인정보를 위해 반드시 변경해주세요!'})
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 회원가입 성공'})
 
 
 @app.route('/user/<username>')
