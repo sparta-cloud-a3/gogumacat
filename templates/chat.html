@@ -37,41 +37,10 @@
             font-size: 12px;
         }
 
-        .jstalktheme .msg .time {
-            font-size: 10px;
+         .jstalktheme .msg .othertalk .box .time {
+            float: right;
         }
 
-        .jstalktheme .msg .mytalk {
-            float: right;
-            width: 100%;
-        }
-
-        .jstalktheme .msg .mytalk .time {
-            float: right;
-            bottom: 0;
-        }
-
-        .jstalktheme .msg .mytalk .a {
-            float: right;
-            position: relative;
-            min-height: 24px;
-            max-width: calc(100% - 64px);
-            left: 2px;
-            background-color: #ffec42;
-            border-radius: 3px;
-            z-index: 2;
-            padding: 0px 4px 0px 4px;
-            word-break: break-all;
-        }
-
-        .jstalktheme .msg .mytalk .b {
-            float: right;
-            position: relative;
-            width: 8px;
-            height: 22px;
-            /*background: url(/static/chat_balloon_yellow.right.png) no-repeat;*/
-            z-index: 1;
-        }
 
         .jstalktheme .msg .othertalk {
             float: left;
@@ -176,11 +145,15 @@
                 let time = ampm + " " + h + ":" + m;
                 if (msg.type==0) {
                     let temp_html = `<div class="mytalk">
-                                            <div class="b"></div>
-                                            <div class="a">${msg.data}</div>
-                                            <div class="time">${time}</div>
+                                            <div class="profile_image" style="background:url(/static/profile_image.png) no-repeat;"></div>
+                                            <div class="box">
+                                                <div class="profile_name">{{user_info.username}}</div>
+                                                <div class="a"></div>
+                                                <div class="b">${msg.data}</div>
+                                                <div class="time">${time}</div>
+                                            </div>
                                             <div class="clear"></div>
-                                       </div>
+                                      </div>
                                       <div class="blank"></div>`
                      $('#msg').append(temp_html)
                 } else if(msg.type==2){
@@ -191,7 +164,7 @@
                     let temp_html = `<div class="othertalk">
                                             <div class="profile_image" style="background:url(/static/profile_image.png) no-repeat;"></div>
                                             <div class="box">
-                                                <div class="profile_name">상대방</div>
+                                                <div class="profile_name"><strong>${msg.name}</strong></div>
                                                 <div class="a"></div>
                                                 <div class="b">${msg.data}</div>
                                                 <div class="time">${time}</div>
@@ -207,7 +180,7 @@
                     cb();
             });
 
-            socket.emit('join', {room: '{{idx}}'});
+            socket.emit('join', {room: '{{post.idx}}',type:2});
 
             $('form#leave').submit(function(event) { //방나가기
                 socket.emit('leave', {room: $('#leave_room').val()});
@@ -222,7 +195,8 @@
                  if($('#jstalktheme_testmsg').val()==''){ // 메세지가 없으면 함수 종료
                     return;
                 }
-                socket.emit('my_room_event', {room: '{{idx}}', data: $('#jstalktheme_testmsg').val(),type : 0});
+                socket.emit('my_room_event', {room: '{{post.idx}}', data: $('#jstalktheme_testmsg').val(),
+                                name : '{{ user_info.username }}'});
                 $('#jstalktheme_testmsg').val("");
                 return false;
              });
@@ -242,12 +216,13 @@
                     return;
                 }
                 if(e.keyCode == 13) {
-                    socket.emit('my_room_event', {room: '{{idx}}', data: $('textarea#jstalktheme_testmsg').val() ,type : 1});
+                    socket.emit('my_room_event', {room: '{{post.idx}}', data: $('textarea#jstalktheme_testmsg').val() ,name : '{{user_info.username}}'});
                     $('textarea#jstalktheme_testmsg').val("");
                     return false;
-                    }else if(event.keyCode==10){
-                        this.value += '\n';
-                    }
+                }
+                else if(event.keyCode==10){
+                    this.value += '\n';
+                }
             });
         });
 
