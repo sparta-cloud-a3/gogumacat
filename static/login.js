@@ -1,9 +1,6 @@
-// $(document).ready(function () {
-//     {% if msg %}
-//         alert("{{ msg }}")
-//     {% endif %}
-// });
-
+// {% if msg %}
+//     alert("{{ msg }}")
+// {% endif %}
 function sign_in() {
     let username = $("#input-username").val()
     let password = $("#input-password").val()
@@ -198,12 +195,11 @@ function check_dup_nick() {
         }
     });
 }
-
 window.Kakao.init('11f655feb93907f8ad76ff6dfd04102b');
 
 function kakaoLogin() {
     window.Kakao.Auth.login({
-        scope: 'profile_nickname,profile_image',
+        scope: 'profile_nickname,profile_image,account_email,gender',
         success: function (authObj) {
             console.log(authObj);
             ACCESS_TOKEN = authObj['access_token']
@@ -213,10 +209,29 @@ function kakaoLogin() {
                     const kakao_account = res.kakao_account;
                     console.log(kakao_account);
                     let nickname = kakao_account['profile']['nickname']
-                    console.log(nickname)
+                    let email = kakao_account['email']
+                    let gender = kakao_account['gender']
+                    console.log(nickname,email,gender)
                     Kakao.Auth.setAccessToken(ACCESS_TOKEN);
                     console.log(ACCESS_TOKEN);
-
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "/kakao_sign_in",
+                    //     data: {
+                    //         username_give: email,
+                    //         password_give: email,
+                    //         nickname_give: nickname
+                    //     },
+                    //     success: function (response) {
+                    //         if (response['result'] == 'success') {
+                    //             $.cookie('mytoken', response['token'], {path: '/'});
+                    //             alert(response['msg'])
+                    //             window.location.replace("/")
+                    //         } else {
+                    //             alert(response['msg'])
+                    //         }
+                    //     }
+                    // });
                 }
             });
         }
@@ -240,8 +255,8 @@ function juso() {
                 extraRoadAddr = ' (' + extraRoadAddr + ')';
             }
             // document.getElementById("input-address").value = roadAddr; //도로명주소
-            document.getElementById("input-address").value = data.jibunAddress; // 지번주소
-            // console.log(data.jibunAddress.split(' '));
+            newjuso = data.jibunAddress.split(' ').slice(0,-1).join(' ')
+            document.getElementById("input-address").value = newjuso // 지번주소
         }
     }).open();
 }
