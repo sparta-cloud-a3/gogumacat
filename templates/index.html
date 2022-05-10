@@ -232,6 +232,14 @@
             }
         }
 
+        function click_sort_btn(order_type, page) {
+            if ($("#query-text-box").hasClass("is-hidden")) {
+                listing(order_type, page)
+            } else {
+                searching(order_type, page)
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -296,8 +304,8 @@
     </div>
 </section>
 <section>
-    <a onclick="listing('latest', 1)"><span class="tag is-medium">최신순</span></a>
-    <a onclick="listing('like', 1)"><span class="tag is-medium">관심순</span></a>
+    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium">최신순</span></a>
+    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium">관심순</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">

@@ -152,7 +152,7 @@ def listing_page():
     return jsonify({'posts': posts, 'limit':limit, 'page': page, 'last_page_num': last_page_num })
 
 @app.route('/search', methods=['GET'])
-def search_listing_page():
+def searching_page():
     query_receive = request.args.get('query')
     order = request.args.get('order')
     # default는 1이고 type은 int
