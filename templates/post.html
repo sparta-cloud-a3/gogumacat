@@ -145,8 +145,8 @@
 
         }
 
-        .heart-icon {
-
+        #heart {
+            color : red;
         }
 
     </style>
@@ -291,15 +291,16 @@
 </div>
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
-        <img src="{{ post.img_url}}"></h1>
+        <img src="{{post.img_url}}"></h1>
     </div>
 </div>
 <div class="content">
     <div class="user-info" id="user_information">
-        <p id="user_name">{{post.username}}</p>
-        <p id="user_locate"> {{post.address}}</p>
+        <h4 id="user_name">{{post.username}}</h4>
+        <h6 id="user_locate"> {{post.address}}</h6>
+        <hr>
         <div class="like-box">
-            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
+            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
