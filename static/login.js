@@ -212,6 +212,7 @@ function kakaoLogin() {
                     let email = kakao_account['email']
                     let gender = kakao_account['gender']
                     let img = kakao_account['profile']['profile_image_url']
+                    let username = kakao_account['email']
                     console.log(nickname,email,gender)
                     console.log(accesstoken);
                     kakaoLogout();
@@ -229,7 +230,7 @@ function kakaoLogin() {
                                 $.cookie('mytoken', response['token'], {path: '/'});
                                 alert(response['msg'])
                                 kakaoLogout()
-                                window.location.replace("/")
+                                window.location.replace(`/user/${username}`)
                             } else {
                                 alert(response['msg'])
                             }

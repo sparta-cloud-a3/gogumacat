@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session, copy_current_request_context
 from pymongo import MongoClient
 from threading import Lock
-from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
+# from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
 import jwt
 import hashlib
@@ -14,7 +14,7 @@ from json import dumps
 async_mode = None
 
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode=async_mode)
+# socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 
@@ -63,7 +63,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공'})
+        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공\n초기 비밀번호...변경하셨죠..?ㅠㅠㅠ'})
     # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
     else:
         doc = {
@@ -86,7 +86,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 회원가입 성공'})
+        return jsonify({'result': 'success', 'token': token, 'msg' : f'아이디와 초기 비밀번호는 "{username_receive}"입니다!\n개인정보를 위해 반드시 변경해주세요!'})
 
 
 @app.route('/user/<username>')
@@ -197,15 +197,21 @@ def listing_page():
     order = request.args.get('order')
     # default는 1이고 type은 int
     page = request.args.get('page', 1, type=int)
-    # 한 페이지당 10개 보여줌
+    # 한 페이지당 9개 보여줌
     limit = 9
+
+    posts = list(db.posts.find({}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
     if order == 'like':
-        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
+        for i in range(total_count):
+            db.posts.update_one({'idx':posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(db.posts.find({}, {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-
-    total_count = db.posts.estimated_document_count({})
-    last_page_num = math.ceil(total_count / limit)
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
     return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
@@ -216,23 +222,27 @@ def searching_page():
     order = request.args.get('order')
     # default는 1이고 type은 int
     page = request.args.get('page', 1, type=int)
-    # 한 페이지당 10개 보여줌
-    limit = 3
+    # 한 페이지당 9개 보여줌
+    limit = 9
+
+    posts = list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                      {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
 
     if order == 'like':
+        for i in range(total_count):
+            db.posts.update_one({'idx': posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                          {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
+                          {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
                           {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
-    total_count = len(list(
-        db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                      {'_id': False})))
-    last_page_num = math.ceil(total_count / limit)
-    print(total_count)
     return jsonify(
         {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
