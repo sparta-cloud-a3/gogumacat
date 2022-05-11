@@ -99,14 +99,16 @@
         .address-text {
             font-size: 14px;
         }
+
         .small-text {
             font-size: 12px;
             color: gray;
             margin-top: 5px;
         }
+
         .image {
-            width :280px;
-            height:240px;
+            width: 280px;
+            height: 240px;
             margin: 5px auto 0px auto;
         }
 
@@ -259,6 +261,48 @@
             }
         }
 
+        function get_gu(si) {
+            $("#gu-box").addClass("is-hidden")
+            $("#dong-box").addClass("is-hidden")
+            $.ajax({
+                type: "GET",
+                url: `/get_gu?si=${si}`,
+                data: {},
+                success: function (response) {
+                    if (response["gu"] == "세종특별자치시") {
+                        get_dong("세종특별자치시")
+                        return
+                    }
+                    $("#gu-select").empty();
+                    let gu = response["gu"];
+                    let temp_html = "<option>동네를 선택하세요</option>"
+                    for (let i = 0; i < gu.length; i++) {
+                        temp_html += `<option value="${gu[i]}">${gu[i]}</option>`
+                    }
+                    $("#gu-select").append(temp_html)
+                    $("#gu-box").removeClass("is-hidden")
+                }
+            });
+        }
+
+        function get_dong(gu) {
+            $.ajax({
+                type: "GET",
+                url: `/get_dong?gu=${gu}`,
+                data: {},
+                success: function (response) {
+                    $("#dong-select").empty();
+                    let dong = response["dong"];
+                    let temp_html = "<option>동을 선택하세요</option>"
+                    for (let i = 0; i < dong.length; i++) {
+                        temp_html += `<option value="${dong[i]}">${dong[i]}</option>`
+                    }
+                    $("#dong-select").append(temp_html)
+                    $("#dong-box").removeClass("is-hidden")
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -291,35 +335,21 @@
 </div>
 
 <section class="float-right">
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-si" data-toggle="dropdown"
-                aria-expanded="true">
-            지역을 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-si">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">서울특별시</a></li>
-        </ul>
+    <div class="select">
+        <select onchange="get_gu(this.options[this.selectedIndex].value)">
+            <option>지역을 선택하세요</option>
+            {% for si in si_s %}
+                <option value="{{si}}">{{si}}</option>
+            {% endfor %}
+        </select>
     </div>
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-gu" data-toggle="dropdown"
-                aria-expanded="true">
-            동네를 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-gu">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">강남구</a></li>
-        </ul>
+    <div class="select is-hidden" id="gu-box">
+        <select id="gu-select" onchange="get_dong(this.options[this.selectedIndex].value)">
+        </select>
     </div>
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dong" data-toggle="dropdown"
-                aria-expanded="true">
-            동을 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-dong">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"></a>강남동</li>
-        </ul>
+    <div class="select is-hidden" id="dong-box">
+        <select id="dong-select" onchange="(this.options[this.selectedIndex].value)">
+        </select>
     </div>
 </section>
 <section>
@@ -337,8 +367,7 @@
 <nav class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
     <a class="pagination-previous" id="pre-btn" onclick="click_pre_btn()">Previous</a>
     <a class="pagination-next" id="next-btn" onclick="click_next_btn()">Next page</a>
-    <ul class="pagination-list" id="pagination-list">
-    </ul>
+    <ul class="pagination-list" id="pagination-list"></ul>
 </nav>
 </body>
 </html>
