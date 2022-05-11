@@ -27,13 +27,14 @@
     <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
 
     <!--지도 api-->
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
 
     <script src="{{ url_for('static',filename='like.js') }}"></script>
+
     <!-- css 분리-->
     <link rel="stylesheet" type="text/css" href="/static/css/post.css"/>
 
@@ -93,36 +94,37 @@
             content += '</div>';
 
             geocoder.addressSearch(local, function (result, status) {
-                if (status === kakao.maps.services.Status.OK) {
-                    // 커스텀 오버레이가 표시될 위치입니다
-                    var position = new kakao.maps.LatLng(result[0].y, result[0].x);
+                    if (status === kakao.maps.services.Status.OK) {
+                        // 커스텀 오버레이가 표시될 위치입니다
+                        var position = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-                    // 커스텀 오버레이를 생성합니다
-                    var mapCustomOverlay = new kakao.maps.CustomOverlay({
-                        position: position,
-                        content: content,
-                        xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
-                        yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
-                    });
+                        // 커스텀 오버레이를 생성합니다
+                        var mapCustomOverlay = new kakao.maps.CustomOverlay({
+                            position: position,
+                            content: content,
+                            xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
+                            yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
+                        });
 
-                    // 커스텀 오버레이를 지도에 표시합니다
-                    mapCustomOverlay.setMap(map);
+                        // 커스텀 오버레이를 지도에 표시합니다
+                        mapCustomOverlay.setMap(map);
 
-                    map.setCenter(position);
+                        map.setCenter(position);
 
-                    var rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
-                    var rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
-                    var rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+                        var rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
+                        var rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
+                        var rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
 
-                    //지도의 오버레이좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
-                    rvClient.getNearestPanoId(position, 50, function (panoId) {
-                        rv.setPanoId(panoId, position); //panoId와 오버레이좌표를 통해 로드뷰 실행
-                    });
+                        //지도의 오버레이좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+                        rvClient.getNearestPanoId(position, 50, function (panoId) {
+                            rv.setPanoId(panoId, position); //panoId와 오버레이좌표를 통해 로드뷰 실행
+                        });
 
-                    kakao.maps.event.addListener(rv, 'init', function () {
+                        kakao.maps.event.addListener(rv, 'init', function () {
 
-                    });
-                }}
+                        });
+                    }
+                }
             )
 
         }
@@ -149,7 +151,7 @@
             }
         }
 
-    //로드뷰 창 띄우기
+        //로드뷰 창 띄우기
         function roadview() {
             $('#map').toggleClass('is-hidden')
             $('#roadview').toggleClass('is-hidden')
@@ -206,9 +208,7 @@
     <section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
         <div class="hero-body">
             <img class="hero-img" src="/static/gogumacat.png">
-            <span class="title hero-font">
-            고구마캣
-        </span>
+            <span class="title hero-font">고구마캣</span>
         </div>
     </section>
     </section>
@@ -227,14 +227,14 @@
         <div class="user-info" id="user_information">
             <img src="/static/{{ user.profile_pic_real }}" id=user_profile>
             {% if user_info.nickname == user.nickname %}
-                <div class="menu dropdown" style="float: right">
-                    <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
-                       style="float:right; margin: auto 20px 0px auto; "></i>
-                    <div id="myDropdown" class="dropdown-content">
-                        <a href="#">수정하기<i class="fa-solid fa-pencil"></i></a>
-                        <a href="#">삭제하기<i class="fa-solid fa-trash-can" style="color: red"></i></a>
-                    </div>
+            <div class="menu dropdown" style="float: right">
+                <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
+                   style="float:right; margin: auto 20px 0px auto; "></i>
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="#">수정하기<i class="fa-solid fa-pencil"></i></a>
+                    <a href="#">삭제하기<i class="fa-solid fa-trash-can" style="color: red"></i></a>
                 </div>
+            </div>
             {% endif %}
             <h4 id="user_name">{{ post.nickname }}</h4>
             <h6 id="user_locate"> {{ post.address }}</h6>
@@ -252,7 +252,11 @@
             </span>
                 </a>
                 <div class="like-num" id="heart-count-box">
-                    <script>num2str({{post.like_count}})</script>
+                    <script>num2str({
+                    {
+                        post.like_count
+                    }
+                    })</script>
                 </div>
             </div>
         </div>
