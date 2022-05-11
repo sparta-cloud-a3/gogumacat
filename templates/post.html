@@ -32,6 +32,9 @@
     <script src="{{ url_for('static',filename='like.js') }}"></script>
 
     <style>
+        *{
+            font-family: 'Noto Sans KR', sans-serif;
+        }
         body {
             width: 1200px;
             margin: auto;
@@ -61,6 +64,18 @@
             margin-top: 10px;
         }
 
+        .jumbo{
+            padding-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        .container{
+            width : 600px;
+            height : 600px;
+            padding-top: 0px;
+            margin-top: 0px;
+        }
+
         .write-btn {
             width: 100px;
             margin: 30px auto;
@@ -87,6 +102,19 @@
             width: 18px;
             top: 16px;
             right: 12px;
+        }
+        #user_profile{
+            float : left;
+            width : 50px;
+            height : 50px;
+        }
+
+        #user_name{
+            margin-bottom: 0px;
+        }
+
+        .content-name{
+            margin-left: 10px;
         }
 
         .card-box {
@@ -147,6 +175,77 @@
 
         #heart {
             color : red;
+        }
+
+        .fa-solid{
+
+        }
+
+        .jello-horizontal {
+            -webkit-animation: jello-horizontal 0.9s both;
+            animation: jello-horizontal 0.9s both;
+        }
+
+        @-webkit-keyframes jello-horizontal {
+            0% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+            30% {
+                -webkit-transform: scale3d(1.25, 0.75, 1);
+                transform: scale3d(1.25, 0.75, 1);
+            }
+            40% {
+                -webkit-transform: scale3d(0.75, 1.25, 1);
+                transform: scale3d(0.75, 1.25, 1);
+            }
+            50% {
+                -webkit-transform: scale3d(1.15, 0.85, 1);
+                transform: scale3d(1.15, 0.85, 1);
+            }
+            65% {
+                -webkit-transform: scale3d(0.95, 1.05, 1);
+                transform: scale3d(0.95, 1.05, 1);
+            }
+            75% {
+                -webkit-transform: scale3d(1.05, 0.95, 1);
+                transform: scale3d(1.05, 0.95, 1);
+            }
+            100% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
+
+        @keyframes jello-horizontal {
+            0% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+            30% {
+                -webkit-transform: scale3d(1.25, 0.75, 1);
+                transform: scale3d(1.25, 0.75, 1);
+            }
+            40% {
+                -webkit-transform: scale3d(0.75, 1.25, 1);
+                transform: scale3d(0.75, 1.25, 1);
+            }
+            50% {
+                -webkit-transform: scale3d(1.15, 0.85, 1);
+                transform: scale3d(1.15, 0.85, 1);
+            }
+            65% {
+                -webkit-transform: scale3d(0.95, 1.05, 1);
+                transform: scale3d(0.95, 1.05, 1);
+            }
+            75% {
+                -webkit-transform: scale3d(1.05, 0.95, 1);
+                transform: scale3d(1.05, 0.95, 1);
+            }
+            100% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
         }
 
     </style>
@@ -246,6 +345,7 @@
             }
         }
 
+
     </script>
 </head>
 <body>
@@ -289,18 +389,19 @@
     <img class="search-img" onclick="search()"
          src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
 </div>
-<div class="jumbotron jumbotron-fluid">
+<div class="jumbo" >
     <div class="container">
-        <img src="{{post.img_url}}"></h1>
+        <img src="/static/post_pic/{{post.file}}" style="width : 600px; height: 600px;">
     </div>
 </div>
 <div class="content">
     <div class="user-info" id="user_information">
-        <h4 id="user_name">{{post.username}}</h4>
+        <img src = "/static/{{user.profile_pic_real}}" id = user_profile>
+        <h4 id="user_name">{{post.nickname}}</h4>
         <h6 id="user_locate"> {{post.address}}</h6>
         <hr>
         <div class="like-box">
-            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
+            <a class="heart-icon" id="heart_a" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
@@ -314,12 +415,13 @@
     </div>
     <div class=content-name;>
         <h1>{{ post.title }}</h1>
-        <h3>가격:{{ post.price }}</h3>
+        <h3>{{ post.price }}원 (1일 기준)</h3>
     </div>
     <div id="map">
         <h1>지도 들어가요</h1>
     </div>
     <div class="content-info">
+        <p>상품 설명</p>
         <h1> {{post.content}}</h1>
     </div>
 </div>
