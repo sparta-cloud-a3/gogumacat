@@ -29,12 +29,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
+    <!--지도 api-->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
+
     <script src="{{ url_for('static',filename='like.js') }}"></script>
 
     <style>
         body {
-            width: 1000px;
+            width: 1200px;
             margin: auto;
+        }
+
+        .size {
+            width: 1000px;
         }
 
         .hero-img {
@@ -141,169 +149,158 @@
 
         }
 
-        .heart-icon {
-
+        #heart {
+            color: red;
         }
+
     </style>
 
     <script>
-        let y_cen = {
-        {
-            post.y
-        }
-        }
-        ;   // lat
-        let x_cen = {
-        {
-            post.x
-        }
-        }
-        ;  // long
-        let map;
-        let markers = [];
-        let infowindows = [];
         $(document).ready(function () {
-            var floatPosition = parseInt($(".sideBanner").css('top'))
+            map()
+        })
 
-            $(window).scroll(function () {
+        //맵 생성하기
+        function map() {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                    level: 3 // 지도의 확대 레벨
+                };
 
-                // 현재 스크롤 위치
-                var currentTop = $(window).scrollTop();
-                var bannerTop = currentTop + floatPosition + "px";
+            // 지도를 생성합니다
+            var map = new kakao.maps.Map(mapContainer, mapOption);
 
-                //이동 애니메이션
-                $(".sideBanner").stop().animate({
-                    "top": bannerTop
-                }, 500);
+            // 주소-좌표 변환 객체를 생성합니다
+            var geocoder = new kakao.maps.services.Geocoder();
 
-            }).scroll();
+            // 주소로 좌표를 검색합니다
+            geocoder.addressSearch('{{ post.address }}', function (result, status) {
 
-            $(".sideBanner").click(function () {
-                // window.open('http://localhost:5000/detail/100','new','width= 320px,height=480px,scrollbars=yes');
-                console.log(document.getElementById("frame").style.visibility)
-                if (document.getElementById("frame").style.visibility == "hidden") {
-                    document.getElementById("frame").style.visibility = "visible"
-                    $("#frame").toggleClass("emphasized");
+                // 정상적으로 검색이 완료됐으면
+                if (status === kakao.maps.services.Status.OK) {
 
-                } else {
-                    document.getElementById("frame").style.visibility = "hidden"
-                    window.location.href = "http://localhost:5000/"
-                }
-            });
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
+                    // 결과값으로 받은 위치를 마커로 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
 
-            map = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(y_cen, x_cen),
-                zoom: 12,
-                zoomControl: true,
-                zoomControlOptions: {
-                    style: naver.maps.ZoomControlStyle.SMALL,
-                    position: naver.maps.Position.TOP_RIGHT
-                }
-            });
+                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">직거래장소</div>'
+                    });
+                    infowindow.open(map, marker);
 
-            get_locate();
+                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                    map.setCenter(coords);
 
-        });
+                    function search() {
+                        let query = $('#search-box').val();
+                        if (query == "") {
+                            alert("검색어를 입력하세요");
+                            return;
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: `/search?query=${query}`,
+                                data: {},
+                                success: function (response) {
+                                    $("#card-box").empty();
+                                    let posts = response["posts"];
+                                    for (let i = 0; i < posts.length; i++) {
+                                        make_post(posts[i], i);
+                                    }
 
-        function search() {
-            let query = $('#search-box').val();
-            if (query == "") {
-                alert("검색어를 입력하세요");
-                return;
-            } else {
-                $.ajax({
-                    type: "GET",
-                    url: `/search?query=${query}`,
-                    data: {},
-                    success: function (response) {
-                        $("#card-box").empty();
-                        let posts = response["posts"];
-                        for (let i = 0; i < posts.length; i++) {
-                            make_post(posts[i], i);
+                                    $("#query-text-box").append(`"${query}" 검색내역 입니다.`)
+                                    $("#query-text-box").removeClass("is-hidden");
+                                }
+                            });
                         }
-
-                        $("#query-text-box").append(`"${query}" 검색내역 입니다.`)
-                        $("#query-text-box").removeClass("is-hidden");
                     }
-                });
-            }
+                }
+            })
         }
 
-        function sign_out() {
-            $.removeCookie('mytoken', {path: '/'});
-            alert('로그아웃!')
-            window.location.href = "/login"
-        }
+                    function sign_out() {
+                        $.removeCookie('mytoken', {path: '/'});
+                        alert('로그아웃!')
+                        window.location.href = "/login"
+                    }
 
-        function kakaoLogout() {
-            if (Kakao.Auth.getAccessToken()) {
-                Kakao.API.request({
-                    url: '/v1/user/unlink',
-                    success: function (response) {
-                        console.log(response)
-                    },
-                    fail: function (error) {
-                        console.log(error)
-                    },
-                })
-                Kakao.Auth.setAccessToken(undefined)
-            }
-        }
-
+                    function kakaoLogout() {
+                        if (Kakao.Auth.getAccessToken()) {
+                            Kakao.API.request({
+                                url: '/v1/user/unlink',
+                                success: function (response) {
+                                    console.log(response)
+                                },
+                                fail: function (error) {
+                                    console.log(error)
+                                },
+                            })
+                            Kakao.Auth.setAccessToken(undefined)
+                        }
+                    }
 
     </script>
 </head>
 <body>
-<div class="user">
-    <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
-        <!--로그인-->
-        <i class="fa-solid fa-cat fa-lg"></i>
-        <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-        <!--    <div class="logout">-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="sign_out()">-->
-        <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="kakaoLogout()">-->
-        <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
-        <!--                                                                     aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--    </div>-->
-        <!--로그인-->
-    </section>
-</div>
 <div class="sideBanner">
     <span class="txt-label">
     </span>
 </div>
-<section class="hero" onclick="window.location.href='/'">
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
+<div class="size">
+    <div class="user">
+        <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
+            <!--로그인-->
+            <i class="fa-solid fa-cat fa-lg"></i>
+            <span style="font-weight: bold">&nbsp;&nbsp;"{{ user_info.nickname }}"</span>님 환영합니다.
+            <!--    <div class="logout">-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="sign_out()">-->
+            <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="kakaoLogout()">-->
+            <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+            <!--                                                                     aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--    </div>-->
+            <!--로그인-->
+        </section>
+    </div>
+
+    <section class="hero" onclick="window.location.href='/'">
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font">
             고구마캣
         </span>
-    </div>
-</section>
-</section>
+        </div>
+    </section>
+    </section>
 
-<div class="search">
-    <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-    <img class="search-img" onclick="search()"
-         src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
-</div>
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <img src="{{ post.img_url}}"></h1>
+    <div class="search">
+        <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
+        <img class="search-img" onclick="search()"
+             src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
     </div>
-</div>
-<div class="content">
-    <div class="user-info" id="user_information">
-        <p id="user_name">{{post.username}}</p>
-        <p id="user_locate"> {{post.address}}</p>
-        <div class="like-box">
-            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <img src="{{ post.img_url }}"></h1>
+        </div>
+    </div>
+    <div class="content">
+        <div class="user-info" id="user_information">
+            <h4 id="user_name">{{ post.username }}</h4>
+            <h6 id="user_locate"> {{ post.address }}</h6>
+            <hr>
+            <div class="like-box">
+                <a class="heart-icon" aria-label="like" onclick="toggle_like({{ post.idx }})"
+                   style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
@@ -311,24 +308,25 @@
                     <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
                 {% endif %}
             </span>
-            </a>
-            <div class="like-num" id="heart-count-box"><script>num2str({{post.like_count}})</script></div>
+                </a>
+                <div class="like-num" id="heart-count-box">
+                    <script>num2str({{post.like_count}})</script>
+                </div>
+            </div>
+        </div>
+        <div class=content-name;>
+            <h1>{{ post.title }}</h1>
+            <h3>가격:{{ post.price }}</h3>
+        </div>
+        <div id="map" style="width:500px;height:350px;"></div>
+        <div class="content-info">
+            <h1> {{ post.content }}</h1>
         </div>
     </div>
-    <div class=content-name;>
-        <h1>{{ post.title }}</h1>
-        <h3>가격:{{ post.price }}</h3>
-    </div>
-    <div id="map">
-        <h1>지도 들어가요</h1>
-    </div>
-    <div class="content-info">
-        <h1> {{post.content}}</h1>
-    </div>
-</div>
 
-<div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden;">
-    <iframe src="http://localhost:5000/posts/{{ post.post_id }}/chat" width="320" height="480"></iframe>
+    <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
+        <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>
+    </div>
 </div>
 </body>
 </html>
