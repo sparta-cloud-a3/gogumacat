@@ -352,11 +352,12 @@ def detail(idx):
     username = payload["id"]
     user_info = db.users.find_one({"username": username}, {"_id": False})
     post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+    user = db.users.find_one({'username': post["username"]}, {'_id': False})
 
     post["like_count"] = db.likes.count_documents({"idx": int(idx)})
     post["like_by_me"] = bool(db.likes.find_one({"idx": int(idx), "username": payload['id']}))
 
-    return render_template("post.html", post=post, user_info=user_info)
+    return render_template("post.html", post = post, user_info=user_info, user = user)
 
 
 @app.route('/posts/<int:idx>/chat')
