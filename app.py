@@ -601,8 +601,8 @@ def update_page(username,idx):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/user_post_update', methods=['POST'])
-def updating():
+@app.route('/user_post_update/<int:idx>', methods=['POST'])
+def updating(idx):
     # 토큰확인
     token_receive = request.cookies.get('mytoken')
     try:
@@ -611,14 +611,19 @@ def updating():
         # 클라이언트 post 데이터 받기
         username = userdata['username']
         nickname = userdata['nickname']
-        print(username, nickname)
         title = request.form['title_give']
         date = request.form['date_give']
         price = request.form['price_give']
         file = request.files['file_give']
         content = request.form['content_give']
         address = request.form['address_give']
-        print(title, date, price, file, content, address)
+        post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+
+        if(post["title"]!=title) : #타이틀 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
+
+
+
 
         # 현재 시각 체크하기
         today = datetime.now()
@@ -644,9 +649,8 @@ def updating():
             'address': address,
             'like_count': 0
         }
-        print(doc)
-        db.posts.insert_one(doc)
-        return jsonify({"result": "success", 'msg': '등록이 완료되었습니다.'})
+
+        return jsonify({"result": "success", 'msg': '수정이 완료되었습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect()
 

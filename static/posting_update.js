@@ -123,7 +123,6 @@ function posting() {
     let content = $('#content').val()
     let address = $('#local_address').val()
     let file = $('#img')[0].files[0]
-    let idx = '{{ post.idx }}'
     //form 데이터 넣기
     let form_data = new FormData()
     form_data.append("title_give", title)
