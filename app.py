@@ -622,8 +622,14 @@ def updating(idx):
         if(post["title"]!=title) : #타이틀 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
 
+        if (post["date"] != date):  # 날짜 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'date': date}})
 
+        if (post["price"] != price):  # 가격 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
 
+        # if (post["file"] != file):  # 타이틀 업데이트
+        #     db.posts.update_one({'idx': int(idx)}, {'$set': {'file': file}})
 
         # 현재 시각 체크하기
         today = datetime.now()
@@ -636,23 +642,16 @@ def updating(idx):
         # static폴더에 파일 저장
         save_to = f'static/post_pic/{filename}.{extension}'
         file.save(save_to)
-        # 데이터 DB에 저장하기
-        doc = {
-            'idx': idx,
-            'username': username,
-            'nickname': nickname,
-            'title': title,
-            'date': date,
-            'price': price,
-            'file': f'{filename}.{extension}',
-            'content': content,
-            'address': address,
-            'like_count': 0
-        }
+
+        if (post["content"] != content):  # 내용 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'content': content}})
+
+        if (post["address"] != address):  # 주소 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'address': address}})
 
         return jsonify({"result": "success", 'msg': '수정이 완료되었습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect()
+        return redirect(url_for("home"))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

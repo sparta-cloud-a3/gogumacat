@@ -158,8 +158,7 @@ function posting() {
             success: function (response) {
                 if (response["result"] == "success") {
                     alert(response["msg"])
-                    console.log(response)
-                    window.location.href = '/'
+                    window.location.href = '/posts/{{ post.idx }}'
                 } else {
                     alert("내용을 다시 확인해 주세요요")
                 }
