@@ -239,6 +239,14 @@
             } else {
                 searching(order_type, page)
             }
+
+            if (order_type=="latest") {
+                $('#latest-tag').addClass("is-dark")
+                $('#like-tag').removeClass("is-dark")
+            } else {
+                $('#like-tag').addClass("is-dark")
+                $('#latest-tag').removeClass("is-dark")
+            }
         }
 
         function get_gu(si) {
@@ -355,8 +363,8 @@
     <button class="button is-hidden" id="juso-search-btn" onclick="search_by_address(order,1)">검색</button>
 </section>
 <section>
-    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium">최신순</span></a>
-    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium">관심순</span></a>
+    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium is-dark" id="latest-tag">최신순</span></a>
+    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium" id="like-tag">관심순</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">
