@@ -37,10 +37,35 @@
     <!-- css 분리-->
     <link rel="stylesheet" type="text/css" href="/static/css/post.css"/>
 
-
     <script>
         $(document).ready(function () {
-            map()
+            map();
+            var floatPosition = parseInt($(".sideBanner").css('top'))
+
+            $(window).scroll(function () {
+
+                // 현재 스크롤 위치
+                var currentTop = $(window).scrollTop();
+                var bannerTop = currentTop + floatPosition + "px";
+
+                //이동 애니메이션
+                $(".sideBanner").stop().animate({
+                    "top": bannerTop
+                }, 500);
+
+            }).scroll();
+
+            $(".sideBanner").click(function () {
+                console.log(document.getElementById("frame").style.visibility)
+                if (document.getElementById("frame").style.visibility == "hidden") {
+                    document.getElementById("frame").style.visibility = "visible"
+                    $("#frame").toggleClass("emphasized");
+
+                } else {
+                    document.getElementById("frame").style.visibility = "hidden"
+                    window.location.href = "http://localhost:5000/posts/{{ post.idx }}"
+                }
+            });
         })
 
         //맵 생성하기
@@ -134,6 +159,25 @@
 
         }
 
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // Close the dropdown menu if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -173,24 +217,34 @@
     </section>
     </section>
 
-    <div class="search">
-        <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-        <img class="search-img" onclick="search()"
-             src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+<div class="search">
+    <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
+    <img class="search-img" onclick="search()"
+         src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+</div>
+<div class="jumbo" >
+    <div class="container">
+        <img src="/static/post_pic/{{post.file}}" style="width : 600px; height: 600px;">
     </div>
-    <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-            <img src="{{ post.img_url }}"></h1>
-        </div>
-    </div>
-    <div class="content">
-        <div class="user-info" id="user_information">
-            <h4 id="user_name">{{ post.username }}</h4>
-            <h6 id="user_locate"> {{ post.address }}</h6>
-            <hr>
-            <div class="like-box">
-                <a class="heart-icon" aria-label="like" onclick="toggle_like({{ post.idx }})"
-                   style="float:right; margin: 40px 20px 0px 0px">
+</div>
+<div class="content">
+    <div class="user-info" id="user_information">
+        <img src = "/static/{{user.profile_pic_real}}" id = user_profile>
+        {% if user_info.nickname == user.nickname %}
+            <div class="menu dropdown" style="float: right">
+                <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()" style="float:right; margin: auto 20px 0px auto; "></i>
+                 <div id="myDropdown" class="dropdown-content">
+                    <a href="#">수정하기<i class="fa-solid fa-pencil" ></i></a>
+                    <a href="#">삭제하기<i class="fa-solid fa-trash-can" style="color: red"></i></a>
+                  </div>
+            </div>
+        {% endif %}
+        <h4 id="user_name">{{post.nickname}}</h4>
+        <h6 id="user_locate"> {{post.address}}</h6>
+
+        <hr>
+        <div class="like-box">
+            <a class="heart-icon" id="heart_a" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
@@ -198,26 +252,23 @@
                     <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
                 {% endif %}
             </span>
-                </a>
-                <div class="like-num" id="heart-count-box">
-                    <script>num2str({{post.like_count}})</script>
-                </div>
-            </div>
-        </div>
-        <div class=content-name;>
-            <h1>{{ post.title }}</h1>
-            <h3>가격:{{ post.price }}</h3>
-        </div>
-{#지도, 로드뷰 띄우기 #}
-        <div class="map" id="mapping">
-            <div id="map" class="local" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
-            <div id="roadview" class="road is-hidden" style="width:400px;height:350px"></div> <!-- 로드뷰를 표시할 div 입니다 -->
-        </div>
-        <button class="button is-info" style="display:block;margin:  auto" onclick="roadview()">로드뷰 보기</button>
-        <div class="content-info">
-            <h1> {{ post.content }}</h1>
+            </a>
+            <div class="like-num" id="heart-count-box"><script>num2str({{post.like_count}})</script></div>
         </div>
     </div>
+    <div class=content-name;>
+        <h1>{{ post.title }}</h1>
+        <h3>{{ post.price }}원 (1일 기준)</h3>
+    </div>
+    <div id="map">
+        <h1>지도 들어가요</h1>
+    </div>
+
+    <div class="content-info">
+        <p>상품 설명</p>
+        <h1> {{post.content}}</h1>
+    </div>
+</div>
 
     <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
         <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>

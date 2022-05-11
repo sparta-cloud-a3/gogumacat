@@ -12,6 +12,7 @@ function toggle_like(idx) {
                 console.log("unlike")
                 $("#heart").addClass("fa-regular").removeClass("fa-solid")
                 $("#heart-count-box").text(num2str(response["count"]))
+                $("#heart_a").removeClass("jello-horizontal")
             }
         })
     } else {
@@ -26,6 +27,7 @@ function toggle_like(idx) {
                 console.log("like")
                 $("#heart").addClass("fa-solid").removeClass("fa-regular")
                 $("#heart-count-box").text(num2str(response["count"]))
+                $("#heart_a").addClass("jello-horizontal")
             }
         })
     }
