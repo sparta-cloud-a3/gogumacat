@@ -46,11 +46,13 @@
         $(document).ready(function () {
             fileupload()
             calender_select()
+            file_name()
             $('#title').val('{{ post.title }}');
             $('#calender').val('{{ post.date}}');
             $('#price').val('{{ post.price }}');
             $('#content').val('{{ post.content }}');
             $('#local_address').val('{{ post.address }}');
+
         })
         function file_name(){
             const fileName = document.querySelector('#file-js-example .file-name');
