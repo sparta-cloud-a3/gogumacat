@@ -382,13 +382,13 @@ def leave(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
          {'data': 'In rooms: ' + ', '.join(rooms()),
-          'count': session['receive_count'],'type':message['type']})
+          'count': session['receive_count'], 'type': 0})
 
 
 @socketio.on('close_room')
 def on_close_room(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my_response', {'data': 'Room ' + message['room'] + ' is closing.',
+    emit('my_response', {'data': '',
                          'count': session['receive_count']},
          to=message['room'])
     close_room(message['room'])
