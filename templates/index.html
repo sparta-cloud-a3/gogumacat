@@ -112,6 +112,29 @@
             height: 240px;
             margin: 5px auto 0px auto;
         }
+        .home-img{
+            color: whitesmoke;
+            background-color: #333333;
+            width: 100%;
+            height: 480px;
+            overflow:hidden;
+        }
+        .img-home{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        footer{
+            background-color: #495057;
+            color: #fff;
+            padding: 40px;
+        }
+        .footer-list{
+            width: 200px;
+            float: left;
+            text-align: center;
+        }
+
 
     </style>
 
@@ -328,6 +351,9 @@
     </div>
 </section>
 </section>
+<div class="home-img">
+    <img class="img-home" src="/static/home.jpg">
+</div>
 <section class="write-btn">
     <button class="button is-dark" onclick="location.href='/posting/{{ user_info.username}}'">
         <span class="icon is-small">
@@ -377,5 +403,13 @@
 <nav id="page-box" class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
     <ul class="pagination-list" id="pagination-list"></ul>
 </nav>
+
+<footer id="footer">
+    <div style="margin-bottom: 10px"> <만든 사람들> </div>
+    <ul class="footer-list">승호</ul>
+    <ul class="footer-list">우남</ul>
+    <ul class="footer-list">호인</ul>
+    <ul class="footer-list">홍서</ul>
+</footer>
 </body>
 </html>
