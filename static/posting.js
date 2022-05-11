@@ -92,11 +92,15 @@ function map() {
 function local_search() {
     new daum.Postcode({
         oncomplete: function (data) {
-
             var jibun = data.autoJibunAddress
             // 주소 정보를 해당 필드에 넣는다.
-            console.log(data, jibun)
-            document.getElementById("local_address").value = jibun
+            if (jibun == "") {
+                var juso = data.jibunAddress
+                document.getElementById("local_address").value = juso
+            } else {
+                document.getElementById("local_address").value = jibun
+            }
+
         }
     }).open();
 }
