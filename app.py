@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
 import math
-from json import dumps
 
 async_mode = None
 
@@ -33,7 +32,7 @@ def home():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({"username": payload["id"]})
-        return render_template('index.html', user_info=user_info)
+        return render_template('index.html', user_info=user_info, si_s=get_si())
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -178,6 +177,9 @@ def update_profile():
             "address": address_receive,
             "password": pw_hash
         }
+
+        db.posts.update_many({'username': username}, {'$set': {'nickname': name_receive}})
+
         if 'file_give' in request.files:
             file = request.files["file_give"]
             filename = secure_filename(file.filename)
@@ -186,7 +188,7 @@ def update_profile():
             file.save("./static/" + file_path)
             new_doc["profile_pic"] = filename
             new_doc["profile_pic_real"] = file_path
-        db.users.update_one({'username': payload['id']}, {'$set': new_doc})
+        db.users.update_one({'username': username}, {'$set': new_doc})
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -481,6 +483,26 @@ def check_pw():
         return redirect(url_for("home"))
 
 
+def get_si():
+    si = list(db.korea_address.distinct('si'))
+    return si
+
+@app.route('/get_gu', methods=['GET'])
+def get_gu():
+    si = request.args.get('si')
+    if si=='세종특별자치시':
+        return jsonify({'gu': '세종특별자치시'})
+    gu = list(db.korea_address.distinct('gu', {'si': si}))
+    return jsonify({'gu': gu})
+
+@app.route('/get_dong', methods=['GET'])
+def get_dong():
+    gu = request.args.get('gu')
+    if gu=='세종특별자치시':
+        dong = list(db.korea_address.distinct('dong', {'si': gu}))
+    else:
+        dong = list(db.korea_address.distinct('dong', {'gu': gu}))
+    return jsonify({'dong': dong})
 
 
 

@@ -29,6 +29,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
+    <!--지도 api-->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
+
     <script src="{{ url_for('static',filename='like.js') }}"></script>
 
     <style>
@@ -40,7 +44,7 @@
             margin: auto;
         }
 
-        .size{
+        .size {
             width: 1000px;
         }
 
@@ -174,7 +178,7 @@
         }
 
         #heart {
-            color : red;
+            color: red;
         }
 
         .fa-solid{
@@ -248,80 +252,146 @@
             }
         }
 
+        .infowindow {
+            width: 150px;
+            text-align: center;
+            padding: 6px 0;
+        }
+
+        .overlay_info {
+            border-radius: 6px;
+            margin-bottom: 12px;
+            float: left;
+            position: relative;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid #ddd;
+            background-color: #fff;
+        }
+
+        .overlay_info:nth-of-type(n) {
+            border: 0;
+            box-shadow: 0px 1px 2px #888;
+        }
+
+        .overlay_info a {
+            display: block;
+            background: #d95050;
+            background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+            text-decoration: none;
+            color: #fff;
+            padding: 12px 36px 12px 14px;
+            font-size: 14px;
+            border-radius: 6px 6px 0 0
+        }
+
+        .overlay_info a strong {
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_icon.png) no-repeat;
+            padding-left: 27px;
+        }
+
+        .overlay_info .desc {
+            padding: 14px;
+            position: relative;
+            min-width: 190px;
+            height: 56px
+        }
+
+        .overlay_info img {
+            vertical-align: top;
+        }
+
+        .overlay_info .address {
+            font-size: 12px;
+            color: #333;
+            position: absolute;
+            left: 80px;
+            right: 14px;
+            top: 24px;
+            white-space: normal
+        }
+
+        .overlay_info:after {
+            content: '';
+            position: absolute;
+            margin-left: -11px;
+            left: 50%;
+            bottom: -12px;
+            width: 22px;
+            height: 12px;
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
+        }
+
     </style>
 
     <script>
-        {#let y_cen = {{post.y }};   // lat#}
-        {#let x_cen = {{post.x}};  // long#}
-        let map;
-        let markers = [];
-        let infowindows = [];
-
         $(document).ready(function () {
-            var floatPosition = parseInt($(".sideBanner").css('top'))
+            map()
+        })
 
-            $(window).scroll(function () {
+        //맵 생성하기
+        function map() {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapCenter = new kakao.maps.LatLng(33.5563, 126.7958), // 지도의 중심좌표
+                mapOption = {
+                    center: mapCenter, // 지도의 중심좌표
+                    level: 3 // 지도의 확대 레벨
+                };
 
-                // 현재 스크롤 위치
-                var currentTop = $(window).scrollTop();
-                var bannerTop = currentTop + floatPosition + "px";
+            var map = new kakao.maps.Map(mapContainer, mapOption);
 
-                //이동 애니메이션
-                $(".sideBanner").stop().animate({
-                    "top": bannerTop
-                }, 500);
+// 커스텀 오버레이에 표시할 내용입니다
+// HTML 문자열 또는 Dom Element 입니다
+            var content = '<div class="overlay_info">';
+            content += '    <a href="https://place.map.kakao.com/17600274" target="_blank"><strong>월정리 해수욕장</strong></a>';
+            content += '    <div class="desc">';
+            content += '        <img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_thumb.png" alt="">';
+            content += '        <span class="address">{{ post.address }}</span>';
+            content += '    </div>';
+            content += '</div>';
 
-            }).scroll();
+// 커스텀 오버레이가 표시될 위치입니다
+            var position = new kakao.maps.LatLng(33.55635, 126.795841);
 
-            $(".sideBanner").click(function () {
-                console.log(document.getElementById("frame").style.visibility)
-                if (document.getElementById("frame").style.visibility == "hidden") {
-                    document.getElementById("frame").style.visibility = "visible"
-                    $("#frame").toggleClass("emphasized");
-
-                } else {
-                    document.getElementById("frame").style.visibility = "hidden"
-                    window.location.href = "http://localhost:5000/posts/{{ post.idx }}"
-                }
+// 커스텀 오버레이를 생성합니다
+            var mapCustomOverlay = new kakao.maps.CustomOverlay({
+                position: position,
+                content: content,
+                xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
+                yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
             });
 
+// 커스텀 오버레이를 지도에 표시합니다
+            mapCustomOverlay.setMap(map);
 
-            map = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(y_cen, x_cen),
-                zoom: 12,
-                zoomControl: true,
-                zoomControlOptions: {
-                    style: naver.maps.ZoomControlStyle.SMALL,
-                    position: naver.maps.Position.TOP_RIGHT
-                }
+            var rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
+            var rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
+            var rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+
+//지도의 중심좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+            rvClient.getNearestPanoId(mapCenter, 50, function (panoId) {
+                rv.setPanoId(panoId, mapCenter); //panoId와 중심좌표를 통해 로드뷰 실행
             });
 
-            //get_locate();
+            kakao.maps.event.addListener(rv, 'init', function () {
 
-        });
-
-        function search() {
-            let query = $('#search-box').val();
-            if (query == "") {
-                alert("검색어를 입력하세요");
-                return;
-            } else {
-                $.ajax({
-                    type: "GET",
-                    url: `/search?query=${query}`,
-                    data: {},
-                    success: function (response) {
-                        $("#card-box").empty();
-                        let posts = response["posts"];
-                        for (let i = 0; i < posts.length; i++) {
-                            make_post(posts[i], i);
-                        }
-
-                        $("#query-text-box").append(`"${query}" 검색내역 입니다.`)
-                        $("#query-text-box").removeClass("is-hidden");
-                    }
+                // 커스텀 오버레이를 생성합니다
+                var rvCustomOverlay = new kakao.maps.CustomOverlay({
+                    position: position,
+                    content: content,
+                    xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
+                    yAnchor: 0.5 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
                 });
-            }
+
+                //rvCustomOverlay.setAltitude(2); //커스텀 오버레이의 고도값을 설정합니다.(로드뷰 화면 중앙이 0입니다)
+                rvCustomOverlay.setMap(rv);
+
+                var projection = rv.getProjection(); // viewpoint(화면좌표)값을 추출할 수 있는 projection 객체를 가져옵니다.
+
+                // 커스텀오버레이의 position과 altitude값을 통해 viewpoint값(화면좌표)를 추출합니다.
+                var viewpoint = projection.viewpointFromCoords(rvCustomOverlay.getPosition(), rvCustomOverlay.getAltitude());
+
+                rv.setViewpoint(viewpoint); //커스텀 오버레이를 로드뷰의 가운데에 오도록 로드뷰의 시점을 변화 시킵니다.
+            });
         }
 
         function sign_out() {
@@ -353,36 +423,36 @@
     <span class="txt-label">
     </span>
 </div>
-<div class = "size">
-<div class="user">
-    <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
-        <!--로그인-->
-        <i class="fa-solid fa-cat fa-lg"></i>
-        <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-        <!--    <div class="logout">-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="sign_out()">-->
-        <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="kakaoLogout()">-->
-        <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
-        <!--                                                                     aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--    </div>-->
-        <!--로그인-->
-    </section>
-</div>
+<div class="size">
+    <div class="user">
+        <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
+            <!--로그인-->
+            <i class="fa-solid fa-cat fa-lg"></i>
+            <span style="font-weight: bold">&nbsp;&nbsp;"{{ user_info.nickname }}"</span>님 환영합니다.
+            <!--    <div class="logout">-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="sign_out()">-->
+            <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="kakaoLogout()">-->
+            <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+            <!--                                                                     aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--    </div>-->
+            <!--로그인-->
+        </section>
+    </div>
 
-<section class="hero" onclick="window.location.href='/'">
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
+    <section class="hero" onclick="window.location.href='/'">
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font">
             고구마캣
         </span>
-    </div>
-</section>
-</section>
+        </div>
+    </section>
+    </section>
 
 <div class="search">
     <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
@@ -420,15 +490,16 @@
     <div id="map">
         <h1>지도 들어가요</h1>
     </div>
+
     <div class="content-info">
         <p>상품 설명</p>
         <h1> {{post.content}}</h1>
     </div>
 </div>
 
-<div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
-    <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468" ></iframe>
-</div>
+    <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
+        <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>
+    </div>
 </div>
 </body>
 </html>
