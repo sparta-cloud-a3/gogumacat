@@ -549,6 +549,17 @@ def search_by_address():
             posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
+#게시물 삭제
+@app.route('/posts/delete', methods=['POST'])
+def delete_post():
+
+    idx = request.form.get('idx');
+
+    db.posts.delete_one({"idx": int(idx)})
+    db.likes.delete_many({'idx': int(idx)})
+
+    return {"result": "success"}
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
