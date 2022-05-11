@@ -550,5 +550,27 @@ def search_by_address():
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
+@app.route('/myaddress', methods=['GET'])
+def get_my_address():
+    # 일단 동만 사용해서 검색
+    address = request.args.get("address")
+    order = request.args.get('order')
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 9개 보여줌
+    limit = 9
+
+    total_count = db.posts.count_documents({})
+    last_page_num = math.ceil(total_count / limit)
+
+    posts = list(
+        db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+            limit))
+    for i in range(len(posts)):
+        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
