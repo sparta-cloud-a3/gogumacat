@@ -100,7 +100,6 @@ function local_search() {
             } else {
                 document.getElementById("local_address").value = jibun
             }
-
         }
     }).open();
 }

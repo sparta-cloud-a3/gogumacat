@@ -154,7 +154,7 @@ function posting() {
                     console.log(response)
                     window.location.href = '/'
                 } else {
-                    alert("내용을 다시 확인해 주세요요")
+                    alert("내용을 다시 확인해 주세요")
                 }
             }
         })

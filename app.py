@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from threading import Lock
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
+import os
 import jwt
 import hashlib
 from werkzeug.utils import secure_filename
@@ -612,10 +613,28 @@ def updating(idx):
         title = request.form['title_give']
         date = request.form['date_give']
         price = request.form['price_give']
-        #file = request.files['file_give']
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+        try:
+            file = request.files['file_give']
+            #현재 시간 체크
+            today = datetime.now()
+            mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+            # 파일 확장자 빼고 시간을 이름에 붙이기
+            extension = file.filename.split('.')[-1]
+            filename = f'file-{mytime}'
+            print(extension, filename)
+            # static폴더에 파일 저장
+            save_to = f'static/post_pic/{filename}.{extension}'
+            file.save(save_to)
+            file_name = post['file']
+            file_remove=f'static/post_pic/{file_name}'
+            if os.path.isfile(file_remove):
+                os.remove(file_remove)
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'file': f'{filename}.{extension}'}})
+        except: pass
 
         if(post["title"]!=title) : #타이틀 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
@@ -626,22 +645,6 @@ def updating(idx):
         if (post["price"] != price):  # 가격 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'price': price}})
 
-        # if (post["file"] != file):  # 타이틀 업데이트
-        #     db.posts.update_one({'idx': int(idx)}, {'$set': {'file': file}})
-        #print(file)
-        #
-        # print(post.file)
-        # # 현재 시각 체크하기
-        # today = datetime.now()
-        # mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
-        #
-        # # 파일 확장자 빼고 시간을 이름에 붙이기
-        # extension = file.filename.split('.')[-1]
-        # filename = f'file-{mytime}'
-        # print(extension, filename)
-        # # static폴더에 파일 저장
-        # save_to = f'static/post_pic/{filename}.{extension}'
-        # file.save(save_to)
 
         if (post["content"] != content):  # 내용 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'content': content}})
