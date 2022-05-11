@@ -116,27 +116,29 @@
             height: 240px;
             margin: 5px auto 0px auto;
         }
-        .home-img{
+
+        .home-img {
             color: whitesmoke;
             background-color: #333333;
             width: 100%;
             height: 480px;
-            overflow:hidden;
+            overflow: hidden;
         }
-        .img-home{
+
+        .img-home {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        footer{
+
+        footer {
             background-color: #495057;
             color: #fff;
             padding: 40px;
         }
-        .footer-list{
-            width: 200px;
-            float: left;
-            text-align: center;
+
+        select::-ms-expand {
+            border-color: black;
         }
 
 
@@ -248,9 +250,9 @@
                         temp_html += `<li><a class="pagination-link" onclick="searching(order,${i})">${i}</a></li>`
                     } else if (type == "address") {
                         temp_html += `<li><a class="pagination-link" onclick="search_by_address(order,${i})">${i}</a></li>`
-                    } else if (type=="my_address") {
+                    } else if (type == "my_address") {
                         temp_html += `<li><a class="pagination-link" onclick="find_location(order,${i})">${i}</a></li>`
-                    } else{
+                    } else {
                         temp_html += `<li><a class="pagination-link" onclick="listing(order,${i})">${i}</a></li>`
                     }
                 }
@@ -269,7 +271,7 @@
                 searching(order_type, page)
             }
 
-            if (order_type=="latest") {
+            if (order_type == "latest") {
                 $('#latest-tag').addClass("is-dark")
                 $('#like-tag').removeClass("is-dark")
                 $('#address-tag').removeClass("is-dark")
@@ -373,7 +375,7 @@
 
 <div class="search">
     <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력"
-    onkeyup="if(window.event.keyCode==13){searching()}">
+           onkeyup="if(window.event.keyCode==13){searching()}">
     <img class="search-img" onclick="searching('latest',1)"
          src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
 </div>
@@ -414,11 +416,11 @@
     <ul class="pagination-list" id="pagination-list"></ul>
 </nav>
 </body>
-<footer class="footer" style="margin-top: 100px;">
-  <div class="content">
-    <p style="color: black;">
-      <strong>고구마캣</strong> by <a href="https://github.com/sparta-cloud-a3/gogumacat">승호, 우남, 호인, 홍서</a>
-    </p>
-  </div>
+<footer class="footer">
+    <div class="content">
+        <p style="color: black;">
+            <strong>고구마캣</strong> by <a href="https://github.com/sparta-cloud-a3/gogumacat">승호, 우남, 호인, 홍서</a>
+        </p>
+    </div>
 </footer>
 </html>

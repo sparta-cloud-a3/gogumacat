@@ -42,10 +42,11 @@ textarea::placeholder {
     float: right;
 }
 
-.calender {
-    font-size: 17px;
-    margin: 15px 0px 0px 5px;
+.calender-box {
+    margin-top: 15px;
+    font-size: 16px;
 }
+
 /*지도 커스텀 오버레이 CSS*/
 .overlay_info {
     border-radius: 6px;
