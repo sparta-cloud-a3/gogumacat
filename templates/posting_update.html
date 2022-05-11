@@ -46,13 +46,18 @@
         $(document).ready(function () {
             fileupload()
             calender_select()
+            file_name()
             $('#title').val('{{ post.title }}');
             $('#calender').val('{{ post.date}}');
             $('#price').val('{{ post.price }}');
-            $('#resume').val('{{ post.file }}');
             $('#content').val('{{ post.content }}');
             $('#local_address').val('{{ post.address }}');
+
         })
+        function file_name(){
+            const fileName = document.querySelector('#file-js-example .file-name');
+            fileName.textContent = `{{ post.file }}`
+        }
 
         //포스팅하기
         function posting() {
@@ -80,7 +85,7 @@
                 alert("대여 기간을 입력해주세요")
             } else if (price == "") {
                 alert("가격을 입력해주세요")
-            } else if (fileName.textContent = "") {
+            } else if (fileName.textContent == "") {
                 alert("제품 사진을 첨부해주세요")
             } else if (content == "") {
                 alert("내용을 적어주세요")
