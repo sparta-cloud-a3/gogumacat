@@ -29,11 +29,21 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
-
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
 
 
     <style>
+        body {
+            width: 1000px;
+            margin: auto;
+        }
+        .hero-body {
+            padding: 16px;
+        }
         .hero-img {
             width: 60px;
             height: 60px;
@@ -287,15 +297,19 @@
 </head>
 <body>
 {#상단 배너#}
-<section class="hero" onclick="window.location.href='/'" style="width: 250px;height: 50px; cursor: pointer; ">
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
-            고구마캣
-        </span>
-    </div>
-</section>
-<h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+<div>
+    <section class="hero" onclick="window.location.href='/'" style="width: 400px;height: 50px; cursor: pointer; ">
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font">고구마캣</span>
+        </div>
+    </section>
+    <section>
+        <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+    </section>
+</div>
+
+
 {#전체 입력 글#}
 <div class="wrap">
     <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">

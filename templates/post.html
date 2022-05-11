@@ -33,8 +33,11 @@
 
     <style>
         body {
-            width: 1200px;
+            width: 1000px;
             margin: auto;
+        }
+        .hero-body {
+            padding: 16px;
         }
 
         .size{
@@ -55,10 +58,12 @@
 
         .float-right {
             float: right;
+            position: relative;
+            right: -150px;
         }
 
         .login-btn {
-            margin-top: 10px;
+            margin-top: 16px;
         }
 
         .write-btn {
@@ -119,7 +124,7 @@
             position: relative;
             width: 150px;
             height: 150px;
-            top: 1000px;
+            top: 750px;
             background-size: cover;
             background-image: url(/static/gogumacat.png);
         }
@@ -253,54 +258,52 @@
     <span class="txt-label">
     </span>
 </div>
-<div class = "size">
-<div class="user">
-    <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
-        <!--로그인-->
-        <i class="fa-solid fa-cat fa-lg"></i>
-        <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-        <!--    <div class="logout">-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="sign_out()">-->
-        <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
-        <!--           onclick="kakaoLogout()">-->
-        <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
-        <!--                                                                     aria-hidden="true"></i></span>-->
-        <!--        </a>-->
-        <!--    </div>-->
-        <!--로그인-->
+
+<div class="size">
+    <div>
+        <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
+            <!--로그인-->
+            <i class="fa-solid fa-cat fa-lg"></i>
+            <span style="font-weight: bold">&nbsp;&nbsp;"{{ user_info.nickname }}"</span>님 환영합니다.
+            <!--    <div class="logout">-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="sign_out()">-->
+            <!--            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out" aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"-->
+            <!--           onclick="kakaoLogout()">-->
+            <!--            카카오 로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"-->
+            <!--                                                                     aria-hidden="true"></i></span>-->
+            <!--        </a>-->
+            <!--    </div>-->
+            <!--로그인-->
+        </section>
+    </div>
+    <section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font">고구마캣</span>
+        </div>
     </section>
-</div>
 
-<section class="hero" onclick="window.location.href='/'">
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
-            고구마캣
-        </span>
+    <div class="search">
+        <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
+        <img class="search-img" onclick="search()"
+             src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
     </div>
-</section>
-</section>
-
-<div class="search">
-    <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-    <img class="search-img" onclick="search()"
-         src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
-</div>
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <img src="{{post.img_url}}"></h1>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <img src="{{ post.img_url }}"></h1>
+        </div>
     </div>
-</div>
-<div class="content">
-    <div class="user-info" id="user_information">
-        <h4 id="user_name">{{post.username}}</h4>
-        <h6 id="user_locate"> {{post.address}}</h6>
-        <hr>
-        <div class="like-box">
-            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
+    <div class="content">
+        <div class="user-info" id="user_information">
+            <h4 id="user_name">{{ post.username }}</h4>
+            <h6 id="user_locate"> {{ post.address }}</h6>
+            <hr>
+            <div class="like-box">
+                <a class="heart-icon" aria-label="like" onclick="toggle_like({{ post.idx }})"
+                   style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
@@ -308,25 +311,27 @@
                     <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
                 {% endif %}
             </span>
-            </a>
-            <div class="like-num" id="heart-count-box"><script>num2str({{post.like_count}})</script></div>
+                </a>
+                <div class="like-num" id="heart-count-box">
+                    <script>num2str({{post.like_count}})</script>
+                </div>
+            </div>
+        </div>
+        <div class=content-name;>
+            <h1>{{ post.title }}</h1>
+            <h3>가격:{{ post.price }}</h3>
+        </div>
+        <div id="map">
+            <h1>지도 들어가요</h1>
+        </div>
+        <div class="content-info">
+            <h1> {{ post.content }}</h1>
         </div>
     </div>
-    <div class=content-name;>
-        <h1>{{ post.title }}</h1>
-        <h3>가격:{{ post.price }}</h3>
-    </div>
-    <div id="map">
-        <h1>지도 들어가요</h1>
-    </div>
-    <div class="content-info">
-        <h1> {{post.content}}</h1>
-    </div>
-</div>
 
-<div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
-    <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468" ></iframe>
-</div>
+    <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
+        <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>
+    </div>
 </div>
 </body>
 </html>
