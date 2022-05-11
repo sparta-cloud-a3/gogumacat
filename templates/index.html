@@ -40,6 +40,7 @@
             width: 60px;
             height: 60px;
         }
+
         .hero-body {
             padding: 16px;
         }
@@ -153,7 +154,6 @@
                                     <div class="card-body">
                                         <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
                                         <p class="card-text" style="font-weight: bold;">${post['price']}원</p>
-<!--                                        동으로 뜨면 좋을듯-->
                                         <p class="address-text">${post['address']}</p>
                                         <p class="card-text small-text">관심 ${post['like_count']}</p>
                                     </div>
@@ -313,7 +313,12 @@
                 url: `/search/address?si=${si}&gu=${gu}&dong=${dong}`,
                 data: {},
                 success: function (response) {
-
+                    $("#card-box").empty();
+                    let posts = response["posts"];
+                    // pagination(parseInt(response["last_page_num"]), page, "search")
+                    for (let i = 0; i < posts.length; i++) {
+                        make_post(posts[i], i);
+                    }
                 }
             });
         }
@@ -353,7 +358,7 @@
         <select id="si-select" onchange="get_gu(this.options[this.selectedIndex].value)">
             <option>지역을 선택하세요</option>
             {% for si in si_s %}
-                <option value="{{si}}">{{si}}</option>
+            <option value="{{si}}">{{si}}</option>
             {% endfor %}
         </select>
     </div>

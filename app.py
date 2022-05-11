@@ -38,13 +38,15 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
-#회원 로그인
+
+# 회원 로그인
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
     return render_template('login.html', msg=msg)
 
-#카카오 로그인
+
+# 카카오 로그인
 @app.route('/kakao_sign_in', methods=['POST'])
 def kakao_sign_in():
     username_receive = request.form['username_give']
@@ -62,7 +64,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 로그인 성공'})
+        return jsonify({'result': 'success', 'token': token, 'msg': '카카오 로그인 성공'})
     # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
     else:
         doc = {
@@ -77,7 +79,7 @@ def kakao_sign_in():
         }
         db.users.insert_one(doc)
 
-        #DB 업데이트 이후 토큰 발행
+        # DB 업데이트 이후 토큰 발행
 
         payload = {
             'id': username_receive,
@@ -85,7 +87,7 @@ def kakao_sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg' : '카카오 회원가입 성공'})
+        return jsonify({'result': 'success', 'token': token, 'msg': '카카오 회원가입 성공'})
 
 
 @app.route('/user/<username>')
@@ -208,7 +210,8 @@ def listing_page():
 
     if order == 'like':
         for i in range(total_count):
-            db.posts.update_one({'idx':posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
         posts = list(db.posts.find({}, {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
@@ -228,13 +231,14 @@ def searching_page():
     limit = 9
 
     posts = list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                      {'_id': False}))
+                               {'_id': False}))
     total_count = len(posts)
     last_page_num = math.ceil(total_count / limit)
 
     if order == 'like':
         for i in range(total_count):
-            db.posts.update_one({'idx': posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
                           {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
@@ -332,12 +336,14 @@ def posting():
             'file': f'{filename}.{extension}',
             'content': content,
             'address': address,
+            'like_count': 0
         }
         print(doc)
         db.posts.insert_one(doc)
         return jsonify({"result": "success", 'msg': '등록이 완료되었습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect()
+
 
 @app.route('/posts/<int:idx>')
 def detail(idx):
@@ -350,7 +356,8 @@ def detail(idx):
     post["like_count"] = db.likes.count_documents({"idx": int(idx)})
     post["like_by_me"] = bool(db.likes.find_one({"idx": int(idx), "username": payload['id']}))
 
-    return render_template("post.html", post = post, user_info=user_info)
+    return render_template("post.html", post=post, user_info=user_info)
+
 
 @app.route('/posts/<int:idx>/chat')
 def chat(idx):
@@ -359,7 +366,8 @@ def chat(idx):
     username = payload["id"]
     user_info = db.users.find_one({"username": username}, {"_id": False})
     post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-    return render_template("chat.html", post = post, user_info=user_info,id = username)
+    return render_template("chat.html", post=post, user_info=user_info, id=username)
+
 
 def background_thread():
     """Example of how to send server generated events to clients."""
@@ -370,11 +378,12 @@ def background_thread():
         # socketio.emit('my_response',
         #               {'data': 'Server generated event', 'count': count})
 
+
 @socketio.event
 def my_event(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-         {'data': message['data'], 'count': session['receive_count'],'type':2})
+         {'data': message['data'], 'count': session['receive_count'], 'type': 2})
 
 
 @socketio.event
@@ -383,7 +392,7 @@ def join(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
          {'data': '',
-          'count': session['receive_count'],'type': message['type']},
+          'count': session['receive_count'], 'type': message['type']},
          to=message['room'])
 
 
@@ -413,9 +422,10 @@ def my_room_event(message):
     username = payload['id']
     user_info = db.users.find_one({"username": username}, {"_id": False})
     emit('my_response',
-        {'data': message['data'], 'count': session['receive_count'],'type': 1 ,'name' : user_info['nickname'],
-            'image' : user_info['profile_pic_real']},
-        to=message['room'])
+         {'data': message['data'], 'count': session['receive_count'], 'type': 1, 'name': user_info['nickname'],
+          'image': user_info['profile_pic_real']},
+         to=message['room'])
+
 
 @socketio.event
 def disconnect_request():
@@ -435,12 +445,13 @@ def connect():
     with thread_lock:
         if thread is None:
             thread = socketio.start_background_task(background_thread)
-    emit('my_response', {'data': '연결되었습니다.', 'count': 0 , 'type': 2})
+    emit('my_response', {'data': '연결되었습니다.', 'count': 0, 'type': 2})
 
 
 @socketio.on('disconnect')
 def test_disconnect():
     print('Client disconnected', request.sid)
+
 
 @app.route('/update_like', methods=['POST'])
 def update_like():
@@ -464,6 +475,7 @@ def update_like():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+
 @app.route('/check', methods=['POST'])
 def check_pw():
     password_receive = request.form['password_give']
@@ -486,33 +498,56 @@ def get_si():
     si = list(db.korea_address.distinct('si'))
     return si
 
+
 @app.route('/get_gu', methods=['GET'])
 def get_gu():
     si = request.args.get('si')
-    if si=='세종특별자치시':
+    if si == '세종특별자치시':
         return jsonify({'gu': '세종특별자치시'})
     gu = list(db.korea_address.distinct('gu', {'si': si}))
     return jsonify({'gu': gu})
 
+
 @app.route('/get_dong', methods=['GET'])
 def get_dong():
     gu = request.args.get('gu')
-    if gu=='세종특별자치시':
+    if gu == '세종특별자치시':
         dong = list(db.korea_address.distinct('dong', {'si': gu}))
     else:
         dong = list(db.korea_address.distinct('dong', {'gu': gu}))
     return jsonify({'dong': dong})
+
 
 @app.route('/search/address', methods=['GET'])
 def search_by_address():
     si = request.args.get('si')
     gu = request.args.get('gu')
     dong = request.args.get('dong')
-    print(si, gu, dong)
+    # 일단 동만 사용해서 검색
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 9개 보여줌
+    limit = 9
 
+    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
 
+    # if order == 'like':
+    #     for i in range(total_count):
+    #         db.posts.update_one({'idx': posts[i]['idx']},
+    #                             {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+    #     posts = list(
+    #         db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+    #                       {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
+    # else:
+    #     posts = list(
+    #         db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+    #                       {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+    #     for i in range(len(posts)):
+    #         posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
-    return jsonify({'result': 'success'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
