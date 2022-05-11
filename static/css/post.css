@@ -1,296 +1,298 @@
-*{
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        body {
-            width: 1200px;
-            margin: auto;
-        }
+* {
+    font-family: 'Noto Sans KR', sans-serif;
+}
 
-        .size {
-            width: 1000px;
-        }
+body {
+    width: 1200px;
+    margin: auto;
+}
+.hero-body{
+    padding: 16px;
+}
 
-        .hero-img {
-            width: 60px;
-            height: 60px;
-        }
+.size {
+    width: 1000px;
+}
 
-        .hero-font {
-            /*color: #C886A4;*/
-            color: #543343;
-            font-family: 'Noto Sans KR', sans-serif;
+.hero-img {
+    width: 60px;
+    height: 60px;
+}
 
-        }
+.hero-font {
+    /*color: #C886A4;*/
+    color: #543343;
+    font-family: 'Noto Sans KR', sans-serif;
 
-        .float-right {
-            float: right;
-        }
+}
 
-        .login-btn {
-            margin-top: 10px;
-        }
+.float-right {
+    float: right;
 
-        .jumbo{
-            padding-top: 30px;
-            margin-bottom: 50px;
-        }
+}
 
-        .container{
-            width : 600px;
-            height : 600px;
-            padding-top: 0px;
-            margin-top: 0px;
-        }
+.login-btn {
+    margin-top: 16px;
+}
 
-        .write-btn {
-            width: 100px;
-            margin: 30px auto;
-            display: block;
-        }
+.jumbo {
+    padding-top: 30px;
+    margin-bottom: 50px;
+}
 
-        .search {
-            position: relative;
-            width: 1000px;
-            margin: 0 auto 40px auto;
-            cursor: pointer;
-        }
+.container {
+    width: 600px;
+    height: 600px;
+    padding-top: 0px;
+    margin-top: 0px;
+}
 
-        .search-input {
-            width: 100%;
-            border: 2px solid #bbb;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 18px;
-        }
+.write-btn {
+    width: 100px;
+    margin: 30px auto;
+    display: block;
+}
 
-        .search-img {
-            position: absolute;
-            width: 18px;
-            top: 16px;
-            right: 12px;
-        }
-        #user_profile{
-            float : left;
-            width : 50px;
-            height : 50px;
-        }
+.search {
+    position: relative;
+    width: 1000px;
+    margin: 0 auto 40px auto;
+    cursor: pointer;
+}
 
-        #user_name{
-            margin-bottom: 0px;
-        }
+.search-input {
+    width: 100%;
+    border: 2px solid #bbb;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 18px;
+}
 
-        .content-name{
-            margin-left: 10px;
-        }
+.search-img {
+    position: absolute;
+    width: 18px;
+    top: 16px;
+    right: 12px;
+}
 
-        .card-box {
-            margin-top: 30px;
-        }
+#user_profile {
+    float: left;
+    width: 50px;
+    height: 50px;
+}
 
-        .text-box {
-            margin-top: 30px;
-        }
+#user_name {
+    margin-bottom: 0px;
+}
 
-        .logout {
-            width: 200px;
-            margin: auto;
-        }
+.content-name {
+    margin-left: 10px;
+}
 
-        .like {
-            width: 400px;
-            margin-left: auto;
-        }
+.card-box {
+    margin-top: 30px;
+}
 
-        #map {
-            width: 60%;
-            height: 500px;
-            margin: 40px auto 40px auto;
-            background-color: antiquewhite;
-        }
+.text-box {
+    margin-top: 30px;
+}
 
-        .sideBanner {
-            float: right;
-            position: relative;
-            width: 150px;
-            height: 150px;
-            top: 1000px;
-            background-size: cover;
-            background-image: url(/static/gogumacat.png);
-        }
+.logout {
+    width: 200px;
+    margin: auto;
+}
 
-        .emphasized {
-            position: fixed;
-            top: 150px;
-            left: 30px;
-            box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
-            z-index: 100;
+.like {
+    width: 400px;
+    margin-left: auto;
+}
 
-        }
+#map {
+    width: 60%;
+    height: 500px;
+    margin: 40px auto 40px auto;
+    background-color: antiquewhite;
+}
 
-        .user {
-            height: 34px;
-        }
+.sideBanner {
+    float: right;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    top: 1000px;
+    background-size: cover;
+    background-image: url(/static/gogumacat.png);
+}
 
-        .like-box {
-            float: right;
-        }
+.emphasized {
+    position: fixed;
+    top: 150px;
+    left: 30px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
+    z-index: 100;
 
-        .like-num {
+}
 
-        }
+/*.user {*/
+/*    height: 34px;*/
+/*}*/
 
-        #heart {
-            color: red;
-        }
+.like-box {
+    float: right;
+}
 
-        .fa-solid{
+.like-num {
 
-        }
+}
 
-        .jello-horizontal {
-            -webkit-animation: jello-horizontal 0.9s both;
-            animation: jello-horizontal 0.9s both;
-        }
+#heart {
+    color: red;
+}
 
-        @-webkit-keyframes jello-horizontal {
-            0% {
-                -webkit-transform: scale3d(1, 1, 1);
-                transform: scale3d(1, 1, 1);
-            }
-            30% {
-                -webkit-transform: scale3d(1.25, 0.75, 1);
-                transform: scale3d(1.25, 0.75, 1);
-            }
-            40% {
-                -webkit-transform: scale3d(0.75, 1.25, 1);
-                transform: scale3d(0.75, 1.25, 1);
-            }
-            50% {
-                -webkit-transform: scale3d(1.15, 0.85, 1);
-                transform: scale3d(1.15, 0.85, 1);
-            }
-            65% {
-                -webkit-transform: scale3d(0.95, 1.05, 1);
-                transform: scale3d(0.95, 1.05, 1);
-            }
-            75% {
-                -webkit-transform: scale3d(1.05, 0.95, 1);
-                transform: scale3d(1.05, 0.95, 1);
-            }
-            100% {
-                -webkit-transform: scale3d(1, 1, 1);
-                transform: scale3d(1, 1, 1);
-            }
-        }
+.fa-solid {
 
-        @keyframes jello-horizontal {
-            0% {
-                -webkit-transform: scale3d(1, 1, 1);
-                transform: scale3d(1, 1, 1);
-            }
-            30% {
-                -webkit-transform: scale3d(1.25, 0.75, 1);
-                transform: scale3d(1.25, 0.75, 1);
-            }
-            40% {
-                -webkit-transform: scale3d(0.75, 1.25, 1);
-                transform: scale3d(0.75, 1.25, 1);
-            }
-            50% {
-                -webkit-transform: scale3d(1.15, 0.85, 1);
-                transform: scale3d(1.15, 0.85, 1);
-            }
-            65% {
-                -webkit-transform: scale3d(0.95, 1.05, 1);
-                transform: scale3d(0.95, 1.05, 1);
-            }
-            75% {
-                -webkit-transform: scale3d(1.05, 0.95, 1);
-                transform: scale3d(1.05, 0.95, 1);
-            }
-            100% {
-                -webkit-transform: scale3d(1, 1, 1);
-                transform: scale3d(1, 1, 1);
-            }
-        }
+}
 
-        .infowindow {
-            width: 150px;
-            text-align: center;
-            padding: 6px 0;
-        }
+.jello-horizontal {
+    -webkit-animation: jello-horizontal 0.9s both;
+    animation: jello-horizontal 0.9s both;
+}
 
-        .overlay_info {
-            border-radius: 6px;
-            margin-bottom: 12px;
-            float: left;
-            position: relative;
-            border: 1px solid #ccc;
-            border-bottom: 2px solid #ddd;
-            background-color: #fff;
-        }
+@-webkit-keyframes jello-horizontal {
+    0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+    30% {
+        -webkit-transform: scale3d(1.25, 0.75, 1);
+        transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+        -webkit-transform: scale3d(0.75, 1.25, 1);
+        transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+        -webkit-transform: scale3d(1.15, 0.85, 1);
+        transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+        -webkit-transform: scale3d(0.95, 1.05, 1);
+        transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+        -webkit-transform: scale3d(1.05, 0.95, 1);
+        transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+}
 
-        .overlay_info:nth-of-type(n) {
-            border: 0;
-            box-shadow: 0px 1px 2px #888;
-        }
+@keyframes jello-horizontal {
+    0% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+    30% {
+        -webkit-transform: scale3d(1.25, 0.75, 1);
+        transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+        -webkit-transform: scale3d(0.75, 1.25, 1);
+        transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+        -webkit-transform: scale3d(1.15, 0.85, 1);
+        transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+        -webkit-transform: scale3d(0.95, 1.05, 1);
+        transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+        -webkit-transform: scale3d(1.05, 0.95, 1);
+        transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+}
 
-        .overlay_info a {
-            display: block;
-            background: #d95050;
-            background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
-            text-decoration: none;
-            color: #fff;
-            padding: 12px 36px 12px 14px;
-            font-size: 14px;
-            border-radius: 6px 6px 0 0
-        }
 
-        .overlay_info a strong {
-            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_icon.png) no-repeat;
-            padding-left: 27px;
-        }
+/*지도 커스텀 오버레이 CSS*/
+.overlay_info {
+    border-radius: 6px;
+    margin-bottom: 10px;
+    float: left;
+    position: relative;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ddd;
+    background-color: #fff;
+}
 
-        .overlay_info .desc {
-            padding: 14px;
-            position: relative;
-            min-width: 190px;
-            height: 56px
-        }
+.overlay_info:nth-of-type(n) {
+    border: 0;
+    box-shadow: 0px 1px 2px #888;
+}
 
-        .overlay_info img {
-            vertical-align: top;
-        }
+.overlay_info a {
+    display: block;
+    background: #c886a4;
+    /*background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;*/
+    /*text-decoration: none;*/
+    color: #fff;
+    padding: 12px 25px 5px 20px;
+    font-size: 15px;
+    border-radius: 6px 6px 0 0
+}
 
-        .overlay_info .address {
-            font-size: 12px;
-            color: #333;
-            position: absolute;
-            left: 80px;
-            right: 14px;
-            top: 24px;
-            white-space: normal
-        }
+.overlay_info a strong {
+    /*background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_icon.png) no-repeat;*/
+    padding-left: 27px;
+}
 
-        .overlay_info:after {
-            content: '';
-            position: absolute;
-            margin-left: -11px;
-            left: 50%;
-            bottom: -12px;
-            width: 22px;
-            height: 12px;
-            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
-        }
+.overlay_info .desc {
+    padding: 8px 15px 15px;
+    position: relative;
+    min-width: 190px;
+    height: 60px
+}
 
- /* Dropdown Button */
+.overlay_info img {
+    vertical-align: top;
+}
+
+.overlay_info .address {
+    font-size: 12px;
+    color: #333;
+    position: absolute;
+    left: 80px;
+    right: 14px;
+    top: 5px;
+    white-space: normal
+}
+
+.overlay_info:after {
+    content: '';
+    position: absolute;
+    margin-left: -11px;
+    left: 50%;
+    bottom: -12px;
+    width: 22px;
+    height: 12px;
+    background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
+}
+
+/* Dropdown Button */
 .dropbtn {
     color: black;
     padding: 16px;
     font-size: 23px;
     border: none;
     cursor: pointer;
-    float : right;
+    float: right;
 }
 
 /* Dropdown button on hover & focus */
@@ -310,7 +312,7 @@
     position: absolute;
     background-color: #f9f9f9;
     min-width: 110px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
 /* Links inside the dropdown */
@@ -322,7 +324,11 @@
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-.show {display:block;}
+.show {
+    display: block;
+}
