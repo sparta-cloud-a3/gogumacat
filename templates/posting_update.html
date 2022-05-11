@@ -37,21 +37,11 @@
 
 
     <!--javascript 분리-->
-    <script src="{{ url_for('static', filename='posting.js') }}"></script>
+    <script src="{{ url_for('static', filename='posting_update.js') }}"></script>
 
     <!-- css 분리-->
     <link rel="stylesheet" type="text/css" href="/static/css/posting.css"/>
     <meta charset="UTF-8">
-    <script>
-        $(document).ready(function () {
-            $('#title').val('{{ post.title }}');
-            $('#calender').val('{{ post.date}}');
-            $('#price').val('{{ post.price }}');
-            $('#resume').val('{{ post.file }}');
-            $('#content').val('{{ post.content }}');
-            $('#local_address').val('{{ post.address }}');
-        })
-    </script>
 </head>
 <body>
 {#상단 배너#}
@@ -107,6 +97,6 @@
     {#지도api#}
     <div id="map" class="is-hidden" style="width: 500px;height:300px;margin:10px auto 50px auto;"></div>
 </div>
-<button class="button is-info posting" onclick="posting()">등록하기</button>
+<button class="button is-info posting" onclick="posting()">수정하기</button>
 </body>
 </html>
