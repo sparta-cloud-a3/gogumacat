@@ -155,6 +155,25 @@
             }
         }
 
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // Close the dropdown menu if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -207,8 +226,18 @@
 <div class="content">
     <div class="user-info" id="user_information">
         <img src = "/static/{{user.profile_pic_real}}" id = user_profile>
+        {% if user_info.nickname == user.nickname %}
+            <div class="menu dropdown" style="float: right">
+                <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()" style="float:right; margin: auto 20px 0px auto; "></i>
+                 <div id="myDropdown" class="dropdown-content">
+                    <a href="#">수정하기<i class="fa-solid fa-pencil" ></i></a>
+                    <a href="#">삭제하기<i class="fa-solid fa-trash-can" style="color: red"></i></a>
+                  </div>
+            </div>
+        {% endif %}
         <h4 id="user_name">{{post.nickname}}</h4>
         <h6 id="user_locate"> {{post.address}}</h6>
+
         <hr>
         <div class="like-box">
             <a class="heart-icon" id="heart_a" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
