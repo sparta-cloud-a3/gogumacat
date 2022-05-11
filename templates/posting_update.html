@@ -49,10 +49,13 @@
             $('#title').val('{{ post.title }}');
             $('#calender').val('{{ post.date}}');
             $('#price').val('{{ post.price }}');
-            $('#resume').val('{{ post.file }}');
             $('#content').val('{{ post.content }}');
             $('#local_address').val('{{ post.address }}');
         })
+        function file_name(){
+            const fileName = document.querySelector('#file-js-example .file-name');
+            fileName.textContent = `{{ post.file }}`
+        }
 
         //포스팅하기
         function posting() {

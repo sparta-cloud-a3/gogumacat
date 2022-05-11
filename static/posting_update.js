@@ -1,19 +1,4 @@
-$(document).ready(function () {
-    fileupload()
-    calender_select()
-    $('#title').val('{{ post.title }}');
-    $('#calender').val('{{ post.date}}');
-    $('#price').val('{{ post.price }}');
-    $('#resume').val('{{ post.file }}');
-    $('#content').val('{{ post.content }}');
-    $('#local_address').val('{{ post.address }}');
-})
 
-//파일 이름 텍스트 값만 채우기
-function file_name() {
-    const fileName = document.querySelector('#file-js-example .file-name');
-    fileName.textContent = `{{post.file}}`
-}
 
 //파일 업로드 시 제목 띄우기
 function fileupload() {
