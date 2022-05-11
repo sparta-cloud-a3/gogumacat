@@ -261,6 +261,7 @@
         function get_gu(si) {
             $("#gu-box").addClass("is-hidden")
             $("#dong-box").addClass("is-hidden")
+            $("#juso-search-btn").addClass("is-hidden")
             $.ajax({
                 type: "GET",
                 url: `/get_gu?si=${si}`,
@@ -300,6 +301,19 @@
             });
         }
 
+        function search_by_address() {
+            let si = $("#si-select").val()
+            let gu = $("#gu-select").val()
+            let dong = $("#dong-select").val()
+            $.ajax({
+                type: "GET",
+                url: `/search/address?si=${si}&gu=${gu}&dong=${dong}`,
+                data: {},
+                success: function (response) {
+
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -333,7 +347,7 @@
 
 <section class="float-right">
     <div class="select">
-        <select onchange="get_gu(this.options[this.selectedIndex].value)">
+        <select id="si-select" onchange="get_gu(this.options[this.selectedIndex].value)">
             <option>지역을 선택하세요</option>
             {% for si in si_s %}
                 <option value="{{si}}">{{si}}</option>
@@ -345,9 +359,10 @@
         </select>
     </div>
     <div class="select is-hidden" id="dong-box">
-        <select id="dong-select" onchange="(this.options[this.selectedIndex].value)">
+        <select id="dong-select" onchange="$('#juso-search-btn').removeClass('is-hidden')">
         </select>
     </div>
+    <button class="button is-hidden" id="juso-search-btn" onclick="search_by_address()">검색</button>
 </section>
 <section>
     <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium">최신순</span></a>
