@@ -29,24 +29,30 @@
     <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+
 
     <style>
         body {
             width: 1000px;
             margin: auto;
         }
+
         .hero-img {
             width: 60px;
             height: 60px;
         }
-        .hero-body{
-            padding:16px;
+
+        .hero-body {
+            padding: 16px;
         }
+
         .hero-font {
-            /*color: #C886A4;*/
-            color: #543343;
-            font-family: 'Noto Sans KR', sans-serif;
+            color: #C886A4;
+            font-family: 'Do Hyeon', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.125;
         }
 
         #tabs-with-content .tabs:not(:last-child) {
@@ -220,7 +226,6 @@
             }
 
 
-
             let form_data = new FormData()
             form_data.append("file_give", file)
             form_data.append("name_give", name)
@@ -336,18 +341,24 @@
 
 </head>
 <body>
-{#<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">#}
-{#    <div class="navbar-brand">#}
-{#        <a class="navbar-item" href="/">#}
-{#            <strong class="is-sparta"#}
-{#                    style="font-family: 'Stylish', sans-serif;font-size: larger;">고구마캣</strong>#}
-{#        </a>#}
-{#    </div>#}
-{#</nav>#}
+{#
+<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">#}
+    {#
+    <div class="navbar-brand">#}
+        {# <a class="navbar-item" href="/">#}
+            {# <strong class="is-sparta" #}
+                       {# style="font-family: 'Stylish', sans-serif;font-size: larger;">고구마캣</strong>#}
+            {# </a>#}
+        {#
+    </div>
+    #}
+    {#
+</nav>
+#}
 <section class="hero is-white">
-<div class="hero-body" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
+    <div class="hero-body" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
         <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
+        <span class="hero-font">
             고구마캣
         </span>
     </div>

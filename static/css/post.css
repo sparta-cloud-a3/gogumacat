@@ -20,10 +20,8 @@ body {
 }
 
 .hero-font {
-    /*color: #C886A4;*/
-    color: #543343;
-    font-family: 'Noto Sans KR', sans-serif;
-
+    color: #C886A4;
+    font-family: 'Do Hyeon', sans-serif;
 }
 
 .float-right {
@@ -119,7 +117,7 @@ body {
     position: relative;
     width: 150px;
     height: 150px;
-    top: 1000px;
+    top: 750px;
     background-size: cover;
     background-image: url(/static/gogumacat.png);
 }
