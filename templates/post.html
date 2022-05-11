@@ -221,6 +221,27 @@
             height: 12px;
             background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
         }
+        .map {
+            width: 50%;
+            margin: 10px auto;
+            display: flex;
+        }
+
+        .local {
+            border: 1px solid red;
+            flex: 1;
+            width: 30%;
+            box-sizing: border-box;
+        }
+
+        .road {
+            border: 1px solid green;
+            flex: 1;
+            margin: 40px 5%;
+            width: 30%;
+            box-sizing: border-box;
+        }
+
 
     </style>
 
@@ -316,6 +337,10 @@
             }
         }
 
+        function roadview() {
+
+        }
+
     </script>
 </head>
 <body>
@@ -389,11 +414,12 @@
             <h1>{{ post.title }}</h1>
             <h3>가격:{{ post.price }}</h3>
         </div>
-    <div>
-       <div id="map" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
-        <div id="roadview" style="width:400px;height:350px"></div> <!-- 로드뷰를 표시할 div 입니다 -->
-    </div>
-
+{#지도, 로드뷰 띄우기 #}
+        <div class="map" id="mapping">
+            <div id="map" class="local" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
+            <div id="roadview" class="road is-hidden" style="width:400px;height:350px"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+        </div>
+        <button class="button is-info" style="display:block;margin:  auto" onclick="roadview()">로드뷰 보기</button>
         <div class="content-info">
             <h1> {{ post.content }}</h1>
         </div>
