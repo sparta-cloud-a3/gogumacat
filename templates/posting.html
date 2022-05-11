@@ -172,10 +172,11 @@
         function local_search() {
             new daum.Postcode({
                 oncomplete: function (data) {
-                    var addr = data.address; // 최종 주소 변수
 
+                    var jibun = data.autoJibunAddress
                     // 주소 정보를 해당 필드에 넣는다.
-                    document.getElementById("local_address").value = addr
+                    console.log(data,jibun)
+                    document.getElementById("local_address").value = jibun
                 }
             }).open();
         }
@@ -197,6 +198,7 @@
             form_data.append("price_give", price)
             form_data.append("content_give", content)
             form_data.append("address_give", address)
+            //동작 조건 만들기
             if (title == "") {
                 alert("제목,물품명을 입력해주세요")
             } else if (date == "") {
@@ -327,7 +329,7 @@
     <textarea id="content" class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>
     {#주소 검색부분#}
     <div class="field">
-        <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력" style="width: 400px"
+        <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력(지번주소)" style="width: 400px"
                onclick="local_search()">
         <input type="button" class="button is-info" onclick="map()" value="지도 확인" style="margin-top: 30px">
     </div>
