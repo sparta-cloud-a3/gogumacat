@@ -524,6 +524,7 @@ def search_by_address():
     gu = request.args.get('gu')
     dong = request.args.get('dong')
     # 일단 동만 사용해서 검색
+    order = request.args.get('order')
     # default는 1이고 type은 int
     page = request.args.get('page', 1, type=int)
     # 한 페이지당 9개 보여줌
@@ -533,19 +534,18 @@ def search_by_address():
     total_count = len(posts)
     last_page_num = math.ceil(total_count / limit)
 
-    # if order == 'like':
-    #     for i in range(total_count):
-    #         db.posts.update_one({'idx': posts[i]['idx']},
-    #                             {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
-    #     posts = list(
-    #         db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-    #                       {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
-    # else:
-    #     posts = list(
-    #         db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-    #                       {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-    #     for i in range(len(posts)):
-    #         posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+    if order == 'like':
+        for i in range(total_count):
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
+            (page - 1) * limit).limit(limit))
+    else:
+        posts = list(
+            db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+                limit))
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
