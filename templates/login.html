@@ -26,7 +26,7 @@
         <script src="/static/login.js"></script>
         <style>
             body {
-                background-color: RGBA(232, 52, 78, 0.2);
+                background-color: rgba(200, 134, 164, 0.85);
                 min-height: 100vh;
             }
 
@@ -40,6 +40,7 @@
                 font-weight: 800;
                 font-size: 5rem;
                 font-family: 'Do Hyeon', sans-serif;
+                text-align: center;
             }
 
             .subtitle {
@@ -48,18 +49,18 @@
             }
 
             .is-sparta {
-                color: #e8344e !important;
+                color: #c886a4 !important;
             }
             .button.is-sparta {
-                background-color: #e8344e;
+                background-color: #c886a4;
                 border-color: transparent;
                 color: #fff !important;
             }
 
             .button.is-sparta.is-outlined {
                 background-color: transparent;
-                border-color: #e8344e;
-                color: #e8344e !important;
+                border-color: #c886a4;
+                color: #c886a4 !important;
             }
 
             .help {
@@ -88,6 +89,18 @@
                 margin-left: 6px;
                 line-height: 32px;
             }
+            .hero-img {
+                width: 60px;
+                height: 60px;
+                position: relative;
+                top:76px;
+                left:-170px;
+            }
+            .hero-body {
+                flex-grow: 1;
+                flex-shrink: 0;
+                padding: 0rem 1.5rem;
+            }
         </style>
 
 
@@ -95,6 +108,7 @@
     <body>
         <section class="hero is-white">
             <div class="hero-body has-text-centered" style="padding-bottom:1rem;margin:auto;">
+                <img class="hero-img" src="/static/gogumacat.png">
                 <h1 class="title is-sparta">고구마켓</h1>
                 <h3 class="subtitle is-sparta">고구마 캣</h3>
             </div>
