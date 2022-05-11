@@ -48,43 +48,46 @@ function map() {
         $("#map").toggleClass("is-hidden")
         //지도 작동
         var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapCenter = new kakao.maps.LatLng(33.5563, 126.7958), // 지도의 중심좌표
             mapOption = {
-                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                center: mapCenter, // 지도의 중심좌표
                 level: 3 // 지도의 확대 레벨
             };
 
-        // 지도를 생성합니다
         var map = new kakao.maps.Map(mapContainer, mapOption);
 
-        // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new kakao.maps.services.Geocoder();
 
-        // 주소로 좌표를 검색합니다
+        // 커스텀 오버레이에 표시할 내용입니다
+        // HTML 문자열 또는 Dom Element 입니다
+        var content = '<div class="overlay_info">';
+        content += '    <a><strong>여기서 만나요!</strong></a>';
+        content += '    <div class="desc">';
+        content += '        <img src="/static/info_image.png" style="object-fit: fill" >';
+        content += `        <span class="address">${local}</span>`;
+        content += '    </div>';
+        content += '</div>';
+
         geocoder.addressSearch(local, function (result, status) {
-
-            // 정상적으로 검색이 완료됐으면
             if (status === kakao.maps.services.Status.OK) {
+                // 커스텀 오버레이가 표시될 위치입니다
+                var position = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                // 결과값으로 받은 위치를 마커로 표시합니다
-                var marker = new kakao.maps.Marker({
-                    map: map,
-                    position: coords
+                // 커스텀 오버레이를 생성합니다
+                var mapCustomOverlay = new kakao.maps.CustomOverlay({
+                    position: position,
+                    content: content,
+                    xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
+                    yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
                 });
 
-                // 인포윈도우로 장소에 대한 설명을 표시합니다
-                var infowindow = new kakao.maps.InfoWindow({
-                    content: '<div style="width:150px;text-align:center;padding:6px 0;">직거래장소</div>'
-                });
-                infowindow.open(map, marker);
+                // 커스텀 오버레이를 지도에 표시합니다
+                mapCustomOverlay.setMap(map);
 
-                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                map.setCenter(coords);
+                map.setCenter(position);
             }
         });
     }
-
 }
 
 
