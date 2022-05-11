@@ -33,8 +33,12 @@
 
     <style>
         body {
-            width: 1000px;
+            width: 1200px;
             margin: auto;
+        }
+
+        .size{
+            width: 1000px;
         }
 
         .hero-img {
@@ -141,27 +145,19 @@
 
         }
 
-        .heart-icon {
-
+        #heart {
+            color : red;
         }
+
     </style>
 
     <script>
-        let y_cen = {
-        {
-            post.y
-        }
-        }
-        ;   // lat
-        let x_cen = {
-        {
-            post.x
-        }
-        }
-        ;  // long
+        {#let y_cen = {{post.y }};   // lat#}
+        {#let x_cen = {{post.x}};  // long#}
         let map;
         let markers = [];
         let infowindows = [];
+
         $(document).ready(function () {
             var floatPosition = parseInt($(".sideBanner").css('top'))
 
@@ -179,7 +175,6 @@
             }).scroll();
 
             $(".sideBanner").click(function () {
-                // window.open('http://localhost:5000/detail/100','new','width= 320px,height=480px,scrollbars=yes');
                 console.log(document.getElementById("frame").style.visibility)
                 if (document.getElementById("frame").style.visibility == "hidden") {
                     document.getElementById("frame").style.visibility = "visible"
@@ -187,7 +182,7 @@
 
                 } else {
                     document.getElementById("frame").style.visibility = "hidden"
-                    window.location.href = "http://localhost:5000/"
+                    window.location.href = "http://localhost:5000/posts/{{ post.idx }}"
                 }
             });
 
@@ -202,7 +197,7 @@
                 }
             });
 
-            get_locate();
+            //get_locate();
 
         });
 
@@ -251,10 +246,14 @@
             }
         }
 
-
     </script>
 </head>
 <body>
+<div class="sideBanner">
+    <span class="txt-label">
+    </span>
+</div>
+<div class = "size">
 <div class="user">
     <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
         <!--로그인-->
@@ -274,10 +273,7 @@
         <!--로그인-->
     </section>
 </div>
-<div class="sideBanner">
-    <span class="txt-label">
-    </span>
-</div>
+
 <section class="hero" onclick="window.location.href='/'">
     <div class="hero-body">
         <img class="hero-img" src="/static/gogumacat.png">
@@ -295,15 +291,16 @@
 </div>
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
-        <img src="{{ post.img_url}}"></h1>
+        <img src="{{post.img_url}}"></h1>
     </div>
 </div>
 <div class="content">
     <div class="user-info" id="user_information">
-        <p id="user_name">{{post.username}}</p>
-        <p id="user_locate"> {{post.address}}</p>
+        <h4 id="user_name">{{post.username}}</h4>
+        <h6 id="user_locate"> {{post.address}}</h6>
+        <hr>
         <div class="like-box">
-            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right">
+            <a class="heart-icon" aria-label="like" onclick="toggle_like({{post.idx}})" style="float:right; margin: 40px 20px 0px 0px">
             <span class="icon is-small">
                 {% if post.like_by_me %}
                     <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
@@ -327,8 +324,9 @@
     </div>
 </div>
 
-<div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden;">
-    <iframe src="http://localhost:5000/posts/{{ post.post_id }}/chat" width="320" height="480"></iframe>
+<div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
+    <iframe src="http://localhost:5000/posts/{{ post.idx }}/chat" width="300" height="468" ></iframe>
+</div>
 </div>
 </body>
 </html>

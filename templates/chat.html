@@ -1,7 +1,9 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
+<html lang="en">
 <html>
 <head>
-    <title>Flask-SocketIO Test</title>
+    <meta charset="UTF-8">
+    <title>고구마캣</title>
     <!--socket -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
@@ -14,8 +16,18 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+       <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Google font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 
     <style>
+        * {
+         font-family: 'Noto Sans KR', sans-serif;
+        }
         .jstalktheme {
             background-color: #9bbad8;
             padding: 4px 4px 0px 4px;
@@ -37,41 +49,10 @@
             font-size: 12px;
         }
 
-        .jstalktheme .msg .time {
-            font-size: 10px;
+         .jstalktheme .msg .othertalk .box .time {
+            float: right;
         }
 
-        .jstalktheme .msg .mytalk {
-            float: right;
-            width: 100%;
-        }
-
-        .jstalktheme .msg .mytalk .time {
-            float: right;
-            bottom: 0;
-        }
-
-        .jstalktheme .msg .mytalk .a {
-            float: right;
-            position: relative;
-            min-height: 24px;
-            max-width: calc(100% - 64px);
-            left: 2px;
-            background-color: #ffec42;
-            border-radius: 3px;
-            z-index: 2;
-            padding: 0px 4px 0px 4px;
-            word-break: break-all;
-        }
-
-        .jstalktheme .msg .mytalk .b {
-            float: right;
-            position: relative;
-            width: 8px;
-            height: 22px;
-            /*background: url(/static/chat_balloon_yellow.right.png) no-repeat;*/
-            z-index: 1;
-        }
 
         .jstalktheme .msg .othertalk {
             float: left;
@@ -151,6 +132,12 @@
             display: table-cell;
             vertical-align: middle;
         }
+        .quit{
+            background-color: #9bbad8;
+            width: 300px;
+            height: 36px;
+        }
+
 
     </style>
     <script type="text/javascript" charset="utf-8">
@@ -174,24 +161,19 @@
                     m = "0"+m;
                 }
                 let time = ampm + " " + h + ":" + m;
-                if (msg.type==0) {
-                    let temp_html = `<div class="mytalk">
-                                            <div class="b"></div>
-                                            <div class="a">${msg.data}</div>
-                                            <div class="time">${time}</div>
-                                            <div class="clear"></div>
-                                       </div>
-                                      <div class="blank"></div>`
+                if(msg.type==2){
+                    let temp_html = `<h5>${msg.data}</h5>`
                      $('#msg').append(temp_html)
-                } else if(msg.type==2){
-                    let temp_html = `<h2>${msg.data}</h2>`
-                     $('#msg').append(temp_html)
+                }
+                else if(msg.type==3){
+                     let temp_html = `<h5>방에서 나가집니다.</h5>`
+                    $('#msg').append(temp_html)
                 }
                 else {
                     let temp_html = `<div class="othertalk">
-                                            <div class="profile_image" style="background:url(/static/profile_image.png) no-repeat;"></div>
+                                            <div class="profile_image" style=" background:url('/static/${msg.image}') no-repeat; background-size: cover;"></div>
                                             <div class="box">
-                                                <div class="profile_name">상대방</div>
+                                                <div class="profile_name"><strong>${msg.name}</strong></div>
                                                 <div class="a"></div>
                                                 <div class="b">${msg.data}</div>
                                                 <div class="time">${time}</div>
@@ -207,7 +189,7 @@
                     cb();
             });
 
-            socket.emit('join', {room: '{{idx}}'});
+            socket.emit('join', {room: '{{post.idx}}',type:2});
 
             $('form#leave').submit(function(event) { //방나가기
                 socket.emit('leave', {room: $('#leave_room').val()});
@@ -222,17 +204,20 @@
                  if($('#jstalktheme_testmsg').val()==''){ // 메세지가 없으면 함수 종료
                     return;
                 }
-                socket.emit('my_room_event', {room: '{{idx}}', data: $('#jstalktheme_testmsg').val(),type : 0});
+                socket.emit('my_room_event', {room: '{{post.idx}}', data: $('#jstalktheme_testmsg').val(),
+                                name : '{{ user_info.username }}'});
                 $('#jstalktheme_testmsg').val("");
                 return false;
              });
 
+             $('#quit_room').click(function (){ //연결끊기
+                 socket.emit('leave', {room: '{{ post.idx }}'});
+                 window.top.location.href = 'http://localhost:5000/posts/{{ post.idx }}'
+                 return false;
+             });
+
             $('form#close').submit(function(event) { //방을 아예 닫기
                 socket.emit('close_room', {room: $('#close_room').val()});
-                return false;
-            });
-            $('form#disconnect').submit(function(event) { //연결 끊기
-                socket.emit('disconnect_request');
                 return false;
             });
 
@@ -242,18 +227,22 @@
                     return;
                 }
                 if(e.keyCode == 13) {
-                    socket.emit('my_room_event', {room: '{{idx}}', data: $('textarea#jstalktheme_testmsg').val() ,type : 1});
+                    socket.emit('my_room_event', {room: '{{post.idx}}', data: $('textarea#jstalktheme_testmsg').val() ,name : '{{user_info.username}}'});
                     $('textarea#jstalktheme_testmsg').val("");
                     return false;
-                    }else if(event.keyCode==10){
-                        this.value += '\n';
-                    }
+                }
+                else if(event.keyCode==10){
+                    this.value += '\n';
+                }
             });
         });
 
     </script>
 </head>
 <body>
+    <div class="quit">
+        <button type="button" class="btn btn-outline-danger" id="quit_room" style="float: right; " >x</button>
+    </div>
     <div class="jstalktheme" id="jstalktheme_test" style="width: 300px; height: 430px;">
 
     <div class="msg" id="msg">
