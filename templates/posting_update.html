@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Webpage Title -->
+    <title>GOGUMACAT</title>
+
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <!-- 주소 검색 API-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!--지도 api-->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
+
+    <!--달력-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+
+    <!--javascript 분리-->
+    <script src="{{ url_for('static', filename='posting.js') }}"></script>
+
+    <!-- css 분리-->
+    <link rel="stylesheet" type="text/css" href="/static/css/posting.css"/>
+    <meta charset="UTF-8">
+    <script>
+        $(document).ready(function () {
+            $('#title').val('{{ post.title }}');
+            $('#calender').val('{{ post.date}}');
+            $('#price').val('{{ post.price }}');
+            $('#resume').val('{{ post.file }}');
+            $('#content').val('{{ post.content }}');
+            $('#local_address').val('{{ post.address }}');
+        })
+    </script>
+</head>
+<body>
+{#상단 배너#}
+<div>
+    <section class="hero" onclick="window.location.href='/'" style="width: 250px;height: 50px; cursor: pointer; ">
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font" style="vertical-align: 26px">고구마캣</span>
+        </div>
+    </section>
+    <section>
+        <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+    </section>
+</div>
+
+
+{#전체 입력 글#}
+<div class="wrap">
+    <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
+    {#캘린더 부분#}
+    <div class="calender">
+        <span style="font-size: 20px">대여 가능 기간</span>
+        <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
+    </div>
+    {#가격#}
+    <input id="price" class="input is-normal" type="text" onchange="price(this)"
+           placeholder="가격(1일 기준 대여가격)" style="width: 350px" maxlength="15">
+    <p id="price_warning" class="is-hidden"><span style="color: red;font-weight: bold;">※숫자만 입력해 주세요!</span></p>
+    {#이미지 업로드 부분#}
+    <div id="file-js-example" class="file has-name is-info">
+        <label class="file-label " style="margin-top: 10px">
+            <input class="file-input" type="file" name="resume" id="img" onclick="img_up()"
+                   accept="image/jpeg, image/jpg, image/png"/>
+            <span class="file-cta">
+      <span class="file-label">제품 사진</span>
+    </span>
+            <span class="file-name"></span>
+        </label>
+    </div>
+    {#이미지 미리보기#}
+    <div id="image_preview" class="is-hidden">
+        <img style="width:300px;height: 200px">
+    </div>
+    {#상세내용#}
+    <textarea id="content" class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>
+    {#주소 검색부분#}
+    <div class="field">
+        <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력(지번주소)" style="width: 400px"
+               onclick="local_search()">
+        <input type="button" class="button is-info" onclick="map()" value="지도 확인" style="margin-top: 30px">
+    </div>
+    <p id="local_warning" class="is-hidden" style="font-weight: bold; color: red">※주소 창에 주소를 먼저 입력해 주세요.</p>
+    {#지도api#}
+    <div id="map" class="is-hidden" style="width: 500px;height:300px;margin:10px auto 50px auto;"></div>
+</div>
+<button class="button is-info posting" onclick="posting()">등록하기</button>
+</body>
+</html>
