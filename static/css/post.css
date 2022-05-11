@@ -118,7 +118,7 @@ body {
     position: relative;
     width: 150px;
     height: 150px;
-    top: 1000px;
+    top: 750px;
     background-size: cover;
     background-image: url(/static/gogumacat.png);
 }
