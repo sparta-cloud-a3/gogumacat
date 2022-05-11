@@ -6,6 +6,9 @@ body {
     width: 1200px;
     margin: auto;
 }
+.hero-body{
+    padding: 16px;
+}
 
 .size {
     width: 1000px;
@@ -25,10 +28,11 @@ body {
 
 .float-right {
     float: right;
+
 }
 
 .login-btn {
-    margin-top: 10px;
+    margin-top: 16px;
 }
 
 .jumbo {
@@ -129,9 +133,9 @@ body {
 
 }
 
-.user {
-    height: 34px;
-}
+/*.user {*/
+/*    height: 34px;*/
+/*}*/
 
 .like-box {
     float: right;
