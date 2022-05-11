@@ -70,6 +70,7 @@
 
         //맵 생성하기
         function map() {
+            var local = `{{ post.address }}`
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div
                 mapCenter = new kakao.maps.LatLng(33.5563, 126.7958), // 지도의 중심좌표
                 mapOption = {
@@ -78,6 +79,8 @@
                 };
 
             var map = new kakao.maps.Map(mapContainer, mapOption);
+
+            var geocoder = new kakao.maps.services.Geocoder();
 
             // 커스텀 오버레이에 표시할 내용입니다
             // HTML 문자열 또는 Dom Element 입니다
@@ -89,50 +92,41 @@
             content += '    </div>';
             content += '</div>';
 
-            // 커스텀 오버레이가 표시될 위치입니다
-            var position = new kakao.maps.LatLng(33.55635, 126.795841);
+            geocoder.addressSearch(local, function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    // 커스텀 오버레이가 표시될 위치입니다
+                    var position = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-            // 커스텀 오버레이를 생성합니다
-            var mapCustomOverlay = new kakao.maps.CustomOverlay({
-                position: position,
-                content: content,
-                xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
-                yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
-            });
+                    // 커스텀 오버레이를 생성합니다
+                    var mapCustomOverlay = new kakao.maps.CustomOverlay({
+                        position: position,
+                        content: content,
+                        xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
+                        yAnchor: 1.1 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
+                    });
 
-            // 커스텀 오버레이를 지도에 표시합니다
-            mapCustomOverlay.setMap(map);
+                    // 커스텀 오버레이를 지도에 표시합니다
+                    mapCustomOverlay.setMap(map);
 
-            var rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
-            var rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
-            var rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+                    map.setCenter(position);
 
-            //지도의 중심좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
-            rvClient.getNearestPanoId(mapCenter, 50, function (panoId) {
-                rv.setPanoId(panoId, mapCenter); //panoId와 중심좌표를 통해 로드뷰 실행
-            });
+                    var rvContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
+                    var rv = new kakao.maps.Roadview(rvContainer); //로드뷰 객체
+                    var rvClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
 
-            kakao.maps.event.addListener(rv, 'init', function () {
+                    //지도의 오버레이좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+                    rvClient.getNearestPanoId(position, 50, function (panoId) {
+                        rv.setPanoId(panoId, position); //panoId와 오버레이좌표를 통해 로드뷰 실행
+                    });
 
-                // 커스텀 오버레이를 생성합니다
-                var rvCustomOverlay = new kakao.maps.CustomOverlay({
-                    position: position,
-                    content: content,
-                    xAnchor: 0.5, // 커스텀 오버레이의 x축 위치입니다. 1에 가까울수록 왼쪽에 위치합니다. 기본값은 0.5 입니다
-                    yAnchor: 0.5 // 커스텀 오버레이의 y축 위치입니다. 1에 가까울수록 위쪽에 위치합니다. 기본값은 0.5 입니다
-                });
+                    kakao.maps.event.addListener(rv, 'init', function () {
 
-                //rvCustomOverlay.setAltitude(2); //커스텀 오버레이의 고도값을 설정합니다.(로드뷰 화면 중앙이 0입니다)
-                rvCustomOverlay.setMap(rv);
+                    });
+                }}
+            )
 
-                var projection = rv.getProjection(); // viewpoint(화면좌표)값을 추출할 수 있는 projection 객체를 가져옵니다.
-
-                // 커스텀오버레이의 position과 altitude값을 통해 viewpoint값(화면좌표)를 추출합니다.
-                var viewpoint = projection.viewpointFromCoords(rvCustomOverlay.getPosition(), rvCustomOverlay.getAltitude());
-
-                rv.setViewpoint(viewpoint); //커스텀 오버레이를 로드뷰의 가운데에 오도록 로드뷰의 시점을 변화 시킵니다.
-            });
         }
+
 
         function sign_out() {
             $.removeCookie('mytoken', {path: '/'});
@@ -155,6 +149,7 @@
             }
         }
 
+    //로드뷰 창 띄우기
         function roadview() {
             $('#map').toggleClass('is-hidden')
             $('#roadview').toggleClass('is-hidden')
@@ -269,7 +264,8 @@
         {#지도, 로드뷰 띄우기 #}
         <div class="map" id="mapping">
             <div id="map" class="local" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
-            <div id="roadview" class="road is-hidden" style="width:400px;height:350px;margin: 40px auto 40px auto"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+            <div id="roadview" class="road is-hidden"
+                 style="width:400px;height:350px;margin: 40px auto 40px auto"></div> <!-- 로드뷰를 표시할 div 입니다 -->
         </div>
         <button class="button is-info" style="display:block;margin:  auto" onclick="roadview()">로드뷰 보기</button>
 
