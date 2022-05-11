@@ -1,193 +1,284 @@
-body {
-    width: 1000px;
-    margin: auto;
-}
+*{
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        body {
+            width: 1200px;
+            margin: auto;
+        }
 
-.hero-body {
-    padding: 16px;
-}
+        .size {
+            width: 1000px;
+        }
 
-.size {
-    width: 1000px;
-}
+        .hero-img {
+            width: 60px;
+            height: 60px;
+        }
 
-.hero-img {
-    width: 60px;
-    height: 60px;
-}
+        .hero-font {
+            /*color: #C886A4;*/
+            color: #543343;
+            font-family: 'Noto Sans KR', sans-serif;
 
-.hero-font {
-    /*color: #C886A4;*/
-    color: #543343;
-    font-family: 'Noto Sans KR', sans-serif;
+        }
 
+        .float-right {
+            float: right;
+        }
 
-}
+        .login-btn {
+            margin-top: 10px;
+        }
 
-.float-right {
-    float: right;
-    position: relative;
-    right: -150px;
-}
+        .jumbo{
+            padding-top: 30px;
+            margin-bottom: 50px;
+        }
 
-.login-btn {
-    margin-top: 16px;
-}
+        .container{
+            width : 600px;
+            height : 600px;
+            padding-top: 0px;
+            margin-top: 0px;
+        }
 
-.write-btn {
-    width: 100px;
-    margin: 30px auto;
-    display: block;
-}
+        .write-btn {
+            width: 100px;
+            margin: 30px auto;
+            display: block;
+        }
 
-.search {
-    position: relative;
-    width: 1000px;
-    margin: 65px auto 40px auto;
-    cursor: pointer;
-}
+        .search {
+            position: relative;
+            width: 1000px;
+            margin: 0 auto 40px auto;
+            cursor: pointer;
+        }
 
-.search-input {
-    width: 100%;
-    border: 2px solid #bbb;
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 18px;
-}
+        .search-input {
+            width: 100%;
+            border: 2px solid #bbb;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 18px;
+        }
 
-.search-img {
-    position: absolute;
-    width: 18px;
-    top: 16px;
-    right: 12px;
-}
+        .search-img {
+            position: absolute;
+            width: 18px;
+            top: 16px;
+            right: 12px;
+        }
+        #user_profile{
+            float : left;
+            width : 50px;
+            height : 50px;
+        }
 
-.card-box {
-    margin-top: 30px;
-}
+        #user_name{
+            margin-bottom: 0px;
+        }
 
-.text-box {
-    margin-top: 30px;
-}
+        .content-name{
+            margin-left: 10px;
+        }
 
-.logout {
-    width: 200px;
-    margin: auto;
-}
+        .card-box {
+            margin-top: 30px;
+        }
 
-.like {
-    width: 400px;
-    margin-left: auto;
-}
+        .text-box {
+            margin-top: 30px;
+        }
 
-#map {
-    width: 60%;
-    height: 500px;
-    margin: 40px auto 40px auto;
-    background-color: antiquewhite;
-}
+        .logout {
+            width: 200px;
+            margin: auto;
+        }
 
-.sideBanner {
-    float: right;
-    position: relative;
-    width: 150px;
-    height: 150px;
-    top: 750px;
-    background-size: cover;
-    background-image: url(/static/gogumacat.png);
-}
+        .like {
+            width: 400px;
+            margin-left: auto;
+        }
 
-.emphasized {
-    position: fixed;
-    top: 150px;
-    left: 30px;
-    box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
-    z-index: 100;
+        #map {
+            width: 60%;
+            height: 500px;
+            margin: 40px auto 40px auto;
+            background-color: antiquewhite;
+        }
 
-}
+        .sideBanner {
+            float: right;
+            position: relative;
+            width: 150px;
+            height: 150px;
+            top: 1000px;
+            background-size: cover;
+            background-image: url(/static/gogumacat.png);
+        }
 
+        .emphasized {
+            position: fixed;
+            top: 150px;
+            left: 30px;
+            box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
+            z-index: 100;
 
-/*.user {*/
-/*    height: 34px;*/
-/*}*/
+        }
 
-.like-box {
-    float: right;
-}
+        .user {
+            height: 34px;
+        }
 
-.like-num {
+        .like-box {
+            float: right;
+        }
 
-}
+        .like-num {
 
-#heart {
-    color: red;
-}
+        }
 
-.infowindow {
-    width: 150px;
-    text-align: center;
-    padding: 6px 0;
-}
+        #heart {
+            color: red;
+        }
 
-.overlay_info {
-    border-radius: 6px;
-    margin-bottom: 12px;
-    float: left;
-    position: relative;
-    border: 1px solid #ccc;
-    border-bottom: 2px solid #ddd;
-    background-color: #fff;
-}
+        .fa-solid{
 
-.overlay_info:nth-of-type(n) {
-    border: 0;
-    box-shadow: 0px 1px 2px #888;
-}
+        }
 
-.overlay_info a {
-    display: block;
-    background: #d95050;
-    background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
-    text-decoration: none;
-    color: #fff;
-    padding: 12px 36px 12px 14px;
-    font-size: 14px;
-    border-radius: 6px 6px 0 0
-}
+        .jello-horizontal {
+            -webkit-animation: jello-horizontal 0.9s both;
+            animation: jello-horizontal 0.9s both;
+        }
 
-.overlay_info a strong {
-    background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_icon.png) no-repeat;
-    padding-left: 27px;
-}
+        @-webkit-keyframes jello-horizontal {
+            0% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+            30% {
+                -webkit-transform: scale3d(1.25, 0.75, 1);
+                transform: scale3d(1.25, 0.75, 1);
+            }
+            40% {
+                -webkit-transform: scale3d(0.75, 1.25, 1);
+                transform: scale3d(0.75, 1.25, 1);
+            }
+            50% {
+                -webkit-transform: scale3d(1.15, 0.85, 1);
+                transform: scale3d(1.15, 0.85, 1);
+            }
+            65% {
+                -webkit-transform: scale3d(0.95, 1.05, 1);
+                transform: scale3d(0.95, 1.05, 1);
+            }
+            75% {
+                -webkit-transform: scale3d(1.05, 0.95, 1);
+                transform: scale3d(1.05, 0.95, 1);
+            }
+            100% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
 
-.overlay_info .desc {
-    padding: 14px;
-    position: relative;
-    min-width: 190px;
-    height: 56px
-}
+        @keyframes jello-horizontal {
+            0% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+            30% {
+                -webkit-transform: scale3d(1.25, 0.75, 1);
+                transform: scale3d(1.25, 0.75, 1);
+            }
+            40% {
+                -webkit-transform: scale3d(0.75, 1.25, 1);
+                transform: scale3d(0.75, 1.25, 1);
+            }
+            50% {
+                -webkit-transform: scale3d(1.15, 0.85, 1);
+                transform: scale3d(1.15, 0.85, 1);
+            }
+            65% {
+                -webkit-transform: scale3d(0.95, 1.05, 1);
+                transform: scale3d(0.95, 1.05, 1);
+            }
+            75% {
+                -webkit-transform: scale3d(1.05, 0.95, 1);
+                transform: scale3d(1.05, 0.95, 1);
+            }
+            100% {
+                -webkit-transform: scale3d(1, 1, 1);
+                transform: scale3d(1, 1, 1);
+            }
+        }
 
-.overlay_info img {
-    vertical-align: top;
-}
+        .infowindow {
+            width: 150px;
+            text-align: center;
+            padding: 6px 0;
+        }
 
-.overlay_info .address {
-    font-size: 12px;
-    color: #333;
-    position: absolute;
-    left: 80px;
-    right: 14px;
-    top: 24px;
-    white-space: normal
-}
+        .overlay_info {
+            border-radius: 6px;
+            margin-bottom: 12px;
+            float: left;
+            position: relative;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid #ddd;
+            background-color: #fff;
+        }
 
-.overlay_info:after {
-    content: '';
-    position: absolute;
-    margin-left: -11px;
-    left: 50%;
-    bottom: -12px;
-    width: 22px;
-    height: 12px;
-    background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
-}
+        .overlay_info:nth-of-type(n) {
+            border: 0;
+            box-shadow: 0px 1px 2px #888;
+        }
+
+        .overlay_info a {
+            display: block;
+            background: #d95050;
+            background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+            text-decoration: none;
+            color: #fff;
+            padding: 12px 36px 12px 14px;
+            font-size: 14px;
+            border-radius: 6px 6px 0 0
+        }
+
+        .overlay_info a strong {
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/place_icon.png) no-repeat;
+            padding-left: 27px;
+        }
+
+        .overlay_info .desc {
+            padding: 14px;
+            position: relative;
+            min-width: 190px;
+            height: 56px
+        }
+
+        .overlay_info img {
+            vertical-align: top;
+        }
+
+        .overlay_info .address {
+            font-size: 12px;
+            color: #333;
+            position: absolute;
+            left: 80px;
+            right: 14px;
+            top: 24px;
+            white-space: normal
+        }
+
+        .overlay_info:after {
+            content: '';
+            position: absolute;
+            margin-left: -11px;
+            left: 50%;
+            bottom: -12px;
+            width: 22px;
+            height: 12px;
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png) no-repeat 0 bottom;
+        }
