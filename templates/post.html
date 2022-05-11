@@ -34,6 +34,8 @@
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
 
     <script src="{{ url_for('static',filename='like.js') }}"></script>
+    <!-- css 분리-->
+    <link rel="stylesheet" type="text/css" href="/static/css/post.css"/>
 
     <style>
         *{
@@ -415,7 +417,6 @@
             }
         }
 
-
     </script>
 </head>
 <body>
@@ -423,6 +424,7 @@
     <span class="txt-label">
     </span>
 </div>
+
 <div class="size">
     <div class="user">
         <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
@@ -444,7 +446,7 @@
         </section>
     </div>
 
-    <section class="hero" onclick="window.location.href='/'">
+    <section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
         <div class="hero-body">
             <img class="hero-img" src="/static/gogumacat.png">
             <span class="title hero-font">
