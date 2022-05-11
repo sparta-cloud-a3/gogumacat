@@ -391,7 +391,7 @@ def leave(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
          {'data': 'In rooms: ' + ', '.join(rooms()),
-          'count': session['receive_count'], 'type': 0})
+          'count': session['receive_count'], 'type': 3})
 
 
 @socketio.on('close_room')

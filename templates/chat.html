@@ -165,6 +165,10 @@
                     let temp_html = `<h5>${msg.data}</h5>`
                      $('#msg').append(temp_html)
                 }
+                else if(msg.type==3){
+                     let temp_html = `<h5>방에서 나가집니다.</h5>`
+                    $('#msg').append(temp_html)
+                }
                 else {
                     let temp_html = `<div class="othertalk">
                                             <div class="profile_image" style=" background:url('/static/${msg.image}') no-repeat; background-size: cover;"></div>
