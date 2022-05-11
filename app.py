@@ -584,7 +584,7 @@ def get_my_address():
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
-
+#update페이지로 이동할 때 사용하는 함수
 @app.route('/posting_update/<username>/<int:idx>')
 def update_page(username,idx):
     token_receive = request.cookies.get('mytoken')
@@ -600,6 +600,59 @@ def update_page(username,idx):
         return render_template("posting_update.html", user_info=user_info, post = post)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
+@app.route('/user_post_update/<int:idx>', methods=['POST'])
+def updating(idx):
+    # 토큰확인
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        userdata = db.users.find_one({"username": payload["id"]})  # payload속 id 값 받기
+        # 클라이언트 post 데이터 받기
+        username = userdata['username']
+        nickname = userdata['nickname']
+        title = request.form['title_give']
+        date = request.form['date_give']
+        price = request.form['price_give']
+        file = request.files['file_give']
+        content = request.form['content_give']
+        address = request.form['address_give']
+        post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+
+        if(post["title"]!=title) : #타이틀 업데이트
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
+
+
+
+
+        # 현재 시각 체크하기
+        today = datetime.now()
+        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+        # 파일 확장자 빼고 시간을 이름에 붙이기
+        extension = file.filename.split('.')[-1]
+        filename = f'file-{mytime}'
+        print(extension, filename)
+        # static폴더에 파일 저장
+        save_to = f'static/post_pic/{filename}.{extension}'
+        file.save(save_to)
+        # 데이터 DB에 저장하기
+        doc = {
+            'idx': idx,
+            'username': username,
+            'nickname': nickname,
+            'title': title,
+            'date': date,
+            'price': price,
+            'file': f'{filename}.{extension}',
+            'content': content,
+            'address': address,
+            'like_count': 0
+        }
+
+        return jsonify({"result": "success", 'msg': '수정이 완료되었습니다.'})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect()
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
