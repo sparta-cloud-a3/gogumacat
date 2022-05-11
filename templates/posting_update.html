@@ -52,7 +52,10 @@
             file_name()
             fileupload()
         })
-
+        function file_name(){
+            const fileName = document.querySelector('#file-js-example .file-name');
+            fileName.textContent = `{{ post.file }}`
+        }
 
     </script>
 </head>
