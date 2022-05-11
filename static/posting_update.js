@@ -9,6 +9,12 @@ $(document).ready(function () {
     $('#local_address').val('{{ post.address }}');
 })
 
+//파일 이름 텍스트 값만 채우기
+function file_name() {
+    const fileName = document.querySelector('#file-js-example .file-name');
+    fileName.textContent = `{{post.file}}`
+}
+
 //파일 업로드 시 제목 띄우기
 function fileupload() {
     const fileInput = document.querySelector('#file-js-example input[type=file]');
@@ -116,6 +122,7 @@ function local_search() {
 
 //포스팅하기
 function posting() {
+    const fileName = document.querySelector('#file-js-example .file-name');
     //input값 가져오기
     let title = $('#title').val()
     let date = $('#calender').val()
@@ -139,7 +146,7 @@ function posting() {
         alert("대여 기간을 입력해주세요")
     } else if (price == "") {
         alert("가격을 입력해주세요")
-    } else if (file == undefined) {
+    } else if (fileName.textContent = "") {
         alert("제품 사진을 첨부해주세요")
     } else if (content == "") {
         alert("내용을 적어주세요")
