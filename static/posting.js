@@ -131,8 +131,6 @@ function posting() {
         alert("가격을 입력해주세요")
     } else if (file == undefined) {
         alert("제품 사진을 첨부해주세요")
-    } else if (file.name.split('.').reverse()[0].indexOf("jpg", "png", "jpeg") == -1) {
-        alert("jpg,png,jpeg 이미지 파일만 첨부 가능합니다.")
     } else if (content == "") {
         alert("내용을 적어주세요")
     } else if (address == "") {
