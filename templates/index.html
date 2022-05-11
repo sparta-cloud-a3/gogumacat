@@ -29,6 +29,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
+    <!--지도 api-->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
+
+    <script src="{{ url_for('static', filename='geolocation.js') }}"></script>
+
 
     <style>
         body {
@@ -221,7 +227,9 @@
                         temp_html += `<li><a class="pagination-link" onclick="searching(order,${i})">${i}</a></li>`
                     } else if (type == "address") {
                         temp_html += `<li><a class="pagination-link" onclick="search_by_address(order,${i})">${i}</a></li>`
-                    } else {
+                    } else if (type=="my_address") {
+                        temp_html += `<li><a class="pagination-link" onclick="find_location(order,${i})">${i}</a></li>`
+                    } else{
                         temp_html += `<li><a class="pagination-link" onclick="listing(order,${i})">${i}</a></li>`
                     }
                 }
@@ -243,9 +251,11 @@
             if (order_type=="latest") {
                 $('#latest-tag').addClass("is-dark")
                 $('#like-tag').removeClass("is-dark")
+                $('#address-tag').removeClass("is-dark")
             } else {
                 $('#like-tag').addClass("is-dark")
                 $('#latest-tag').removeClass("is-dark")
+                $('#address-tag').removeClass("is-dark")
             }
         }
 
@@ -365,6 +375,7 @@
 <section>
     <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium is-dark" id="latest-tag">최신순</span></a>
     <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium" id="like-tag">관심순</span></a>
+    <a onclick="find_location()"><span class="tag is-medium" id="address-tag">현재 위치!</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">
