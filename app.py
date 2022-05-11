@@ -197,15 +197,21 @@ def listing_page():
     order = request.args.get('order')
     # default는 1이고 type은 int
     page = request.args.get('page', 1, type=int)
-    # 한 페이지당 10개 보여줌
+    # 한 페이지당 9개 보여줌
     limit = 9
+
+    posts = list(db.posts.find({}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
     if order == 'like':
-        posts = list(db.posts.find({}, {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
+        for i in range(total_count):
+            db.posts.update_one({'idx':posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(db.posts.find({}, {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-
-    total_count = db.posts.estimated_document_count({})
-    last_page_num = math.ceil(total_count / limit)
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
     return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
@@ -216,23 +222,27 @@ def searching_page():
     order = request.args.get('order')
     # default는 1이고 type은 int
     page = request.args.get('page', 1, type=int)
-    # 한 페이지당 10개 보여줌
-    limit = 3
+    # 한 페이지당 9개 보여줌
+    limit = 9
+
+    posts = list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                      {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
 
     if order == 'like':
+        for i in range(total_count):
+            db.posts.update_one({'idx': posts[i]['idx']}, {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                          {'_id': False}).sort('liked', -1).skip((page - 1) * limit).limit(limit))
+                          {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
     else:
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
                           {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
-    total_count = len(list(
-        db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                      {'_id': False})))
-    last_page_num = math.ceil(total_count / limit)
-    print(total_count)
     return jsonify(
         {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
@@ -307,7 +317,7 @@ def posting():
         filename = f'file-{mytime}'
         print(extension, filename)
         # static폴더에 파일 저장
-        save_to = f'static/{filename}.{extension}'
+        save_to = f'static/post_pic/{filename}.{extension}'
         file.save(save_to)
         # 데이터 DB에 저장하기
         doc = {
@@ -320,7 +330,6 @@ def posting():
             'file': f'{filename}.{extension}',
             'content': content,
             'address': address,
-            'like_count': ""
         }
         print(doc)
         db.posts.insert_one(doc)
