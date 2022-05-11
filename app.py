@@ -177,6 +177,9 @@ def update_profile():
             "address": address_receive,
             "password": pw_hash
         }
+
+        db.posts.update_many({'username': username}, {'$set': {'nickname': name_receive}})
+
         if 'file_give' in request.files:
             file = request.files["file_give"]
             filename = secure_filename(file.filename)
@@ -185,7 +188,7 @@ def update_profile():
             file.save("./static/" + file_path)
             new_doc["profile_pic"] = filename
             new_doc["profile_pic_real"] = file_path
-        db.users.update_one({'username': payload['id']}, {'$set': new_doc})
+        db.users.update_one({'username': username}, {'$set': new_doc})
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
