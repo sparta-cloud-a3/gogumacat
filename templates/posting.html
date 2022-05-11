@@ -30,72 +30,35 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+
     <!--javascript 분리-->
     <script src="{{ url_for('static', filename='posting.js') }}"></script>
 
+    <!-- css 분리-->
+    <link rel="stylesheet" type="text/css" href="/static/css/posting.css"/>
     <meta charset="UTF-8">
-
-
-    <style>
-        .hero-img {
-            width: 60px;
-            height: 60px;
-        }
-
-        .hero-font {
-            /*color: #C886A4;*/
-            color: #543343;
-            font-family: 'Noto Sans KR', sans-serif;
-
-        }
-
-        .wrap {
-            width: 700px;
-            margin: 100px auto 0px auto;
-        }
-
-        .input {
-            margin-top: 30px;
-        }
-
-        input::placeholder {
-            color: black;
-            font-weight: bold;
-        }
-
-        textarea::placeholder {
-            color: black;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .posting {
-            margin-right: 20px;
-            float: right;
-        }
-
-        .calender {
-            font-size: 17px;
-            margin: 15px 0px 0px 5px;
-        }
-
-    </style>
-    <script>
-
-    </script>
 
 </head>
 <body>
 {#상단 배너#}
-<section class="hero" onclick="window.location.href='/'" style="width: 250px;height: 50px; cursor: pointer; ">
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
-            고구마캣
-        </span>
-    </div>
-</section>
-<h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+<div>
+    <section class="hero" onclick="window.location.href='/'" style="width: 250px;height: 50px; cursor: pointer; ">
+        <div class="hero-body">
+            <img class="hero-img" src="/static/gogumacat.png">
+            <span class="title hero-font" style="vertical-align: 26px">고구마캣</span>
+        </div>
+    </section>
+    <section>
+        <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+    </section>
+</div>
+
+
 {#전체 입력 글#}
 <div class="wrap">
     <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">

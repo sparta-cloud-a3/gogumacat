@@ -41,6 +41,10 @@
             height: 60px;
         }
 
+        .hero-body {
+            padding: 16px;
+        }
+
         .hero-font {
             /*color: #C886A4;*/
             color: #543343;
@@ -53,7 +57,7 @@
         }
 
         .login-btn {
-            margin-top: 10px;
+            margin-top: 16px;
         }
 
         .write-btn {
@@ -96,14 +100,16 @@
         .address-text {
             font-size: 14px;
         }
+
         .small-text {
             font-size: 12px;
             color: gray;
             margin-top: 5px;
         }
+
         .image {
-            width :280px;
-            height:240px;
+            width: 280px;
+            height: 240px;
             margin: 5px auto 0px auto;
         }
 
@@ -148,7 +154,6 @@
                                     <div class="card-body">
                                         <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
                                         <p class="card-text" style="font-weight: bold;">${post['price']}원</p>
-<!--                                        동으로 뜨면 좋을듯-->
                                         <p class="address-text">${post['address']}</p>
                                         <p class="card-text small-text">관심 ${post['like_count']}</p>
                                     </div>
@@ -191,16 +196,8 @@
         function pagination(last_page_num, page, type) {
             $("#pagination-list").empty()
 
-            if (page == 1) {
-                $("#pre-btn").addClass("is-hidden")
-            } else {
-                $("#pre-btn").removeClass("is-hidden")
-            }
-
-            if (page == last_page_num) {
-                $("#next-btn").addClass("is-hidden")
-            } else {
-                $("#next-btn").removeClass("is-hidden")
+            if (last_page_num == 1) {
+                $("#page-box").addClass("is-hidden")
             }
 
             let temp_html = ""
@@ -222,6 +219,8 @@
                 } else {
                     if (type == "search") {
                         temp_html += `<li><a class="pagination-link" onclick="searching(order,${i})">${i}</a></li>`
+                    } else if (type == "address") {
+                        temp_html += `<li><a class="pagination-link" onclick="search_by_address(order,${i})">${i}</a></li>`
                     } else {
                         temp_html += `<li><a class="pagination-link" onclick="listing(order,${i})">${i}</a></li>`
                     }
@@ -232,38 +231,95 @@
             $("#pagination-list").append(temp_html)
         }
 
-        function click_pre_btn() {
-            if ($("#query-text-box").hasClass("is-hidden")) {
-                listing(order, page - 1)
-            } else {
-                searching(order, page - 1)
-            }
-        }
-
-        function click_next_btn() {
-            if ($("#query-text-box").hasClass("is-hidden")) {
-                listing(order, page + 1)
-            } else {
-                searching(order, page + 1)
-            }
-        }
-
         function click_sort_btn(order_type, page) {
-            if ($("#query-text-box").hasClass("is-hidden")) {
+            if ($("#query-text-box").hasClass("is-hidden") && $("#juso-search-btn").hasClass("is-hidden")) {
                 listing(order_type, page)
+            } else if ($("#query-text-box").hasClass("is-hidden")) {
+                search_by_address(order_type, page)
             } else {
                 searching(order_type, page)
             }
+
+            if (order_type=="latest") {
+                $('#latest-tag').addClass("is-dark")
+                $('#like-tag').removeClass("is-dark")
+            } else {
+                $('#like-tag').addClass("is-dark")
+                $('#latest-tag').removeClass("is-dark")
+            }
         }
 
+        function get_gu(si) {
+            $("#gu-box").addClass("is-hidden")
+            $("#dong-box").addClass("is-hidden")
+            $("#juso-search-btn").addClass("is-hidden")
+            $.ajax({
+                type: "GET",
+                url: `/get_gu?si=${si}`,
+                data: {},
+                success: function (response) {
+                    if (response["gu"] == "세종특별자치시") {
+                        get_dong("세종특별자치시")
+                        return
+                    }
+                    $("#gu-select").empty();
+                    let gu = response["gu"];
+                    let temp_html = "<option>동네를 선택하세요</option>"
+                    for (let i = 0; i < gu.length; i++) {
+                        temp_html += `<option value="${gu[i]}">${gu[i]}</option>`
+                    }
+                    $("#gu-select").append(temp_html)
+                    $("#gu-box").removeClass("is-hidden")
+                }
+            });
+        }
+
+        function get_dong(gu) {
+            $.ajax({
+                type: "GET",
+                url: `/get_dong?gu=${gu}`,
+                data: {},
+                success: function (response) {
+                    $("#dong-select").empty();
+                    let dong = response["dong"];
+                    let temp_html = "<option>동을 선택하세요</option>"
+                    for (let i = 0; i < dong.length; i++) {
+                        temp_html += `<option value="${dong[i]}">${dong[i]}</option>`
+                    }
+                    $("#dong-select").append(temp_html)
+                    $("#dong-box").removeClass("is-hidden")
+                }
+            });
+        }
+
+        function search_by_address(new_order, new_page) {
+            order = new_order
+            page = new_page
+            let si = $("#si-select").val()
+            let gu = $("#gu-select").val()
+            let dong = $("#dong-select").val()
+            $.ajax({
+                type: "GET",
+                url: `/search/address?si=${si}&gu=${gu}&dong=${dong}&order=${order}&page=${page}`,
+                data: {},
+                success: function (response) {
+                    $("#card-box").empty();
+                    let posts = response["posts"];
+                    pagination(parseInt(response["last_page_num"]), page, "address")
+                    for (let i = 0; i < posts.length; i++) {
+                        make_post(posts[i], i);
+                    }
+                }
+            });
+        }
     </script>
 </head>
 <body>
-<section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'">
+<section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'" style='cursor:pointer;'>
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
 </section>
-<section class="hero" onclick="window.location.href='/'">
+<section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
     <div class="hero-body">
         <img class="hero-img" src="/static/gogumacat.png">
         <span class="title hero-font">
@@ -288,54 +344,38 @@
 </div>
 
 <section class="float-right">
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-si" data-toggle="dropdown"
-                aria-expanded="true">
-            지역을 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-si">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">서울특별시</a></li>
-        </ul>
+    <div class="select">
+        <select id="si-select" onchange="get_gu(this.options[this.selectedIndex].value)">
+            <option>지역을 선택하세요</option>
+            {% for si in si_s %}
+            <option value="{{si}}">{{si}}</option>
+            {% endfor %}
+        </select>
     </div>
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-gu" data-toggle="dropdown"
-                aria-expanded="true">
-            동네를 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-gu">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">강남구</a></li>
-        </ul>
+    <div class="select is-hidden" id="gu-box">
+        <select id="gu-select" onchange="get_dong(this.options[this.selectedIndex].value)">
+        </select>
     </div>
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-dong" data-toggle="dropdown"
-                aria-expanded="true">
-            동을 선택하세요
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-dong">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#"></a>강남동</li>
-        </ul>
+    <div class="select is-hidden" id="dong-box">
+        <select id="dong-select" onchange="$('#juso-search-btn').removeClass('is-hidden')">
+        </select>
     </div>
+    <button class="button is-hidden" id="juso-search-btn" onclick="search_by_address(order,1)">검색</button>
 </section>
 <section>
-    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium">최신순</span></a>
-    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium">관심순</span></a>
+    <a onclick="click_sort_btn('latest', 1)"><span class="tag is-medium is-dark" id="latest-tag">최신순</span></a>
+    <a onclick="click_sort_btn('like', 1)"><span class="tag is-medium" id="like-tag">관심순</span></a>
 </section>
 
 <section class="text-box is-hidden" id="query-text-box">
 </section>
 
-<div class="card-columns" style="margin-top: 30px;">
+<div class="card-columns" style="margin: 50px auto;">
     <div class="card-box" id="card-box"></div>
 </div>
 
-<nav class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
-    <a class="pagination-previous" id="pre-btn" onclick="click_pre_btn()">Previous</a>
-    <a class="pagination-next" id="next-btn" onclick="click_next_btn()">Next page</a>
-    <ul class="pagination-list" id="pagination-list">
-    </ul>
+<nav id="page-box" class="pagination is-centered" role="navigation" aria-label="pagination" style="margin-top: 30px;">
+    <ul class="pagination-list" id="pagination-list"></ul>
 </nav>
 </body>
 </html>

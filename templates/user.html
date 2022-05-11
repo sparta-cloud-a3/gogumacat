@@ -26,11 +26,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
     <style>
         body {
             width: 1000px;
             margin: auto;
+        }
+        .hero-img {
+            width: 60px;
+            height: 60px;
+        }
+        .hero-body{
+            padding:16px;
+        }
+        .hero-font {
+            /*color: #C886A4;*/
+            color: #543343;
+            font-family: 'Noto Sans KR', sans-serif;
         }
 
         #tabs-with-content .tabs:not(:last-child) {
@@ -144,11 +160,10 @@
             let temp_html = `<div class="col">
                                 <div class="card h-100" id="card-${post['idx']}">
                                     <!--사진 수정-->
-                                    <img src="" class="card-img-top" onclick="location.href='/posts/${post['idx']}'">
+                                    <img src="/static/post_pic/${post['file']}" class="card-img-top image" onclick="location.href='/posts/${post['idx']}'">
                                     <div class="card-body">
                                         <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
                                         <p class="card-text" style="font-weight: bold;">${post['price']}원</p>
-<!--                                        동으로 뜨면 좋을듯-->
                                         <p class="address-text">${post['address']}</p>
                                         <p class="card-text small-text">관심 ${post['like_count']}</p>
                                     </div>
@@ -320,16 +335,22 @@
     </script>
 
 </head>
-<body class="has-navbar-fixed-top">
-<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-            <strong class="is-sparta"
-                    style="font-family: 'Stylish', sans-serif;font-size: larger;">고구마캣</strong>
-        </a>
-    </div>
-</nav>
+<body>
+{#<nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation">#}
+{#    <div class="navbar-brand">#}
+{#        <a class="navbar-item" href="/">#}
+{#            <strong class="is-sparta"#}
+{#                    style="font-family: 'Stylish', sans-serif;font-size: larger;">고구마캣</strong>#}
+{#        </a>#}
+{#    </div>#}
+{#</nav>#}
 <section class="hero is-white">
+<div class="hero-body" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
+        <img class="hero-img" src="/static/gogumacat.png">
+        <span class="title hero-font">
+            고구마캣
+        </span>
+    </div>
     <div class="hero-body" style="padding-bottom:1rem;margin:auto;min-width: 400px">
         <article class="media">
             <figure class="media-left" style="align-self: center">
