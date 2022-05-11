@@ -549,6 +549,18 @@ def search_by_address():
             posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
+#게시물 삭제
+@app.route('/posts/delete', methods=['POST'])
+def delete_post():
+
+    idx = request.form.get('idx');
+    #해당 게시물 삭제
+    db.posts.delete_one({"idx": int(idx)})
+    #해당 게시물에 좋아요를 누른 기록들 삭제
+    db.likes.delete_many({'idx': int(idx)})
+
+    return {"result": "success"}
+
 
 @app.route('/myaddress', methods=['GET'])
 def get_my_address():
@@ -571,6 +583,23 @@ def get_my_address():
 
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
+
+
+@app.route('/posting_update/<username>/<int:idx>')
+def update_page(username,idx):
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        username_payload = payload["id"]
+        user_info = db.users.find_one({"username": username_payload}, {"_id": False})
+        #현재가입된 값과 유저네임이 같지 않다면 home으로
+        if(username_payload!=username) :
+            return redirect(url_for("home"))
+
+        post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+        return render_template("posting_update.html", user_info=user_info, post = post)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

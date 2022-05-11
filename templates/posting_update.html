@@ -33,7 +33,7 @@
     <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 
 
     <!--javascript 분리-->
@@ -42,7 +42,16 @@
     <!-- css 분리-->
     <link rel="stylesheet" type="text/css" href="/static/css/posting.css"/>
     <meta charset="UTF-8">
-
+    <script>
+        $(document).ready(function () {
+            $('#title').val('{{ post.title }}');
+            $('#calender').val('{{ post.date}}');
+            $('#price').val('{{ post.price }}');
+            $('#resume').val('{{ post.file }}');
+            $('#content').val('{{ post.content }}');
+            $('#local_address').val('{{ post.address }}');
+        })
+    </script>
 </head>
 <body>
 {#상단 배너#}
