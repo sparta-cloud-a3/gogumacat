@@ -609,12 +609,10 @@ def updating(idx):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         userdata = db.users.find_one({"username": payload["id"]})  # payload속 id 값 받기
         # 클라이언트 post 데이터 받기
-        username = userdata['username']
-        nickname = userdata['nickname']
         title = request.form['title_give']
         date = request.form['date_give']
         price = request.form['price_give']
-        file = request.files['file_give']
+        #file = request.files['file_give']
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
@@ -626,22 +624,24 @@ def updating(idx):
             db.posts.update_one({'idx': int(idx)}, {'$set': {'date': date}})
 
         if (post["price"] != price):  # 가격 업데이트
-            db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'price': price}})
 
         # if (post["file"] != file):  # 타이틀 업데이트
         #     db.posts.update_one({'idx': int(idx)}, {'$set': {'file': file}})
-
-        # 현재 시각 체크하기
-        today = datetime.now()
-        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
-
-        # 파일 확장자 빼고 시간을 이름에 붙이기
-        extension = file.filename.split('.')[-1]
-        filename = f'file-{mytime}'
-        print(extension, filename)
-        # static폴더에 파일 저장
-        save_to = f'static/post_pic/{filename}.{extension}'
-        file.save(save_to)
+        #print(file)
+        #
+        # print(post.file)
+        # # 현재 시각 체크하기
+        # today = datetime.now()
+        # mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+        #
+        # # 파일 확장자 빼고 시간을 이름에 붙이기
+        # extension = file.filename.split('.')[-1]
+        # filename = f'file-{mytime}'
+        # print(extension, filename)
+        # # static폴더에 파일 저장
+        # save_to = f'static/post_pic/{filename}.{extension}'
+        # file.save(save_to)
 
         if (post["content"] != content):  # 내용 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'content': content}})
