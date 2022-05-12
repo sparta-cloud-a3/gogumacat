@@ -152,97 +152,92 @@
 
     </script>
 </head>
-<body>
-<div class="sideBanner">
-    <span class="txt-label">
-    </span>
-</div>
-
-<div class="size">
-    <div class="user">
-        <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
-            <i class="fa-solid fa-cat fa-lg"></i>
-            <span style="font-weight: bold">&nbsp;&nbsp;"{{ user_info.nickname }}"</span>님 환영합니다.
-        </section>
-    </div>
-
-    <section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
-        <div class="hero-body">
-            <img class="hero-img" src="/static/gogumacat.png">
-            <span class="title hero-font">고구마캣</span>
-        </div>
-    </section>
-    </section>
-
-<div class="search">
-    <input type="text" class="search-input" id="search-box" name="query" placeholder="검색어 입력">
-    <img class="search-img" onclick="search()"
-         src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
-</div>
-<div class="jumbo" >
-    <div class="container">
-        <img src="/static/post_pic/{{post.file}}" style="width : 600px; height: 600px;">
-    </div>
-</div>
-<div class="content">
-    <div class="user-info" id="user_information">
-        <img src = "/static/{{user.profile_pic_real}}" id = user_profile>
-        {% if user_info.nickname == user.nickname %}
-            <div class="menu dropdown" style="float: right">
-                <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()" style="float:right; margin: auto 20px 0px auto; "></i>
-                 <div id="myDropdown" class="dropdown-content">
-                    <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기&nbsp&nbsp<i class="fa-solid fa-pencil" ></i></a>
-                    <a href="javascript:deletePost()">삭제하기&nbsp&nbsp<i class="fa-solid fa-trash-can" style="color: red"></i></a>
-                  </div>
-            </div>
-        {% endif %}
-        <h4 id="user_name">{{post.nickname}}</h4>
-        <h6 id="user_locate"> {{post.address}}</h6>
-
-            <hr>
-            <div class="like-box">
-                <a class="heart-icon" id="heart_a" aria-label="like" onclick="toggle_like({{ post.idx }})"
-                   style="float:right; margin: 40px 20px 0px 0px">
-            <span class="icon is-small">
-                {% if post.like_by_me %}
-                    <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
-                {% else %}
-                    <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
-                {% endif %}
+    <body>
+        <div class="sideBanner">
+            <span class="txt-label">
             </span>
-                </a>
-                <div class="like-num" id="heart-count-box">
-                    <script>num2str({
-                    {
-                        post.like_count
-                    }
-                    })</script>
+        </div>
+
+        <div class="size">
+            <div class="user">
+                <section class="float-right login-btn" onclick="location.href='/user/{{ user_info.username }}'">
+                    <i class="fa-solid fa-cat fa-lg"></i>
+                    <span style="font-weight: bold">&nbsp;&nbsp;"{{ user_info.nickname }}"</span>님 환영합니다.
+                </section>
+            </div>
+
+            <section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
+                <div class="hero-body">
+                    <img class="hero-img" src="/static/gogumacat.png">
+                    <span class="title hero-font">고구마캣</span>
+                </div>
+            </section>
+            </section>
+
+        </div>
+        <div class="jumbo">
+            <div class="container">
+                <img src="/static/post_pic/{{ post.file }}" style="width : 600px; height: 600px;">
+            </div>
+        </div>
+        <div class="content">
+            <div class="user-info" id="user_information">
+                <img src="/static/{{ user.profile_pic_real }}" id=user_profile>
+                {% if user_info.nickname == user.nickname %}
+                    <div class="menu dropdown" style="float: right">
+                        <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
+                           style="float:right; margin: auto 20px 0px auto; "></i>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기&nbsp&nbsp<i
+                                    class="fa-solid fa-pencil"></i></a>
+                            <a href="javascript:deletePost()">삭제하기&nbsp&nbsp<i class="fa-solid fa-trash-can" style="color: red"></i></a>
+                        </div>
+                    </div>
+                {% endif %}
+                <h4 id="user_name">{{ post.nickname }}</h4>
+                <h6 id="user_locate"> {{ post.address }}</h6>
+
+                <hr>
+                <div class="like-box">
+                    <a class="heart-icon" id="heart_a" aria-label="like" onclick="toggle_like({{ post.idx }})"
+                       style="float:right; margin: 40px 20px 0px 0px">
+                    <span class="icon is-small">
+                        {% if post.like_by_me %}
+                            <i id="heart" class="fa-solid fa-heart fa-3x" aria-hidden="true"></i>
+                        {% else %}
+                            <i id="heart" class="fa-regular fa-heart fa-3x" aria-hidden="true"></i>
+                        {% endif %}
+                    </span>
+                    </a>
+                    <div class="like-num" id="heart-count-box">
+                        <script>num2str({{post.like_count}})</script>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class=content-name;>
-            <h1>{{ post.title }}</h1>
-            <h3>{{ post.price }}원 (1일 기준) <small>{{ post.date }}</small></h3>
+            <div class=content-name;>
+                <h1>{{ post.title }}</h1>
+                <h3>{{ post.price }}원 (1일 기준) <small>{{ post.date }}</small></h3>
+            </div>
+
+            {#지도, 로드뷰 띄우기 #}
+            <div class="map" id="mapping">
+                <div id="map" class="local" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
+                <div id="roadview" class="road is-hidden"
+                     style="width:400px;height:350px;margin: 40px auto 40px auto"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+            </div>
+            <button id="map_btn" class="button is-info" style="display:block;margin:  auto" onclick="roadview()">로드뷰 보기
+            </button>
+
+
+            <div class="content-info">
+                <p>상품 설명</p>
+                <h1> {{ post.content }}</h1>
+            </div>
         </div>
 
-        {#지도, 로드뷰 띄우기 #}
-        <div class="map" id="mapping">
-            <div id="map" class="local" style="width:400px;height:350px;"></div> <!-- 지도를 표시할 div 입니다 -->
-            <div id="roadview" class="road is-hidden"
-                 style="width:400px;height:350px;margin: 40px auto 40px auto"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+        <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
+            <iframe src="/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>
         </div>
-        <button id="map_btn" class="button is-info" style="display:block;margin:  auto" onclick="roadview()">로드뷰 보기</button>
-
-
-        <div class="content-info">
-            <p>상품 설명</p>
-            <h1> {{ post.content }}</h1>
         </div>
-    </div>
-
-    <div class="popup" id="frame" data-popup="popup-1" style="visibility:hidden; overflow-x:hidden;overflow-y:hidden">
-        <iframe src="/posts/{{ post.idx }}/chat" width="300" height="468"></iframe>
-    </div>
-</div>
-</body>
+    </body>
 </html>
