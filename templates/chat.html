@@ -171,7 +171,7 @@
                 }
                 else {
                     let temp_html = `<div class="othertalk">
-                                            <div class="profile_image" style=" background:url('/static/${msg.image}') no-repeat; background-size: cover;"></div>
+                                            <div class="profile_image" style=" background:url('${msg.image}') no-repeat; background-size: cover;"></div>
                                             <div class="box">
                                                 <div class="profile_name"><strong>${msg.name}</strong></div>
                                                 <div class="a"></div>
@@ -212,7 +212,7 @@
 
              $('#quit_room').click(function (){ //연결끊기
                  socket.emit('leave', {room: '{{ post.idx }}'});
-                 window.top.location.href = 'http://localhost:5000/posts/{{ post.idx }}'
+                 window.top.location.href = '/posts/{{ post.idx }}'
                  return false;
              });
 
