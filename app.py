@@ -616,6 +616,7 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+        #파일 수정시 실행
         try:
             file = request.files['file_give']
             #현재 시간 체크
@@ -633,7 +634,9 @@ def updating(idx):
             file_remove=f'static/post_pic/{file_name}'
             if os.path.isfile(file_remove):
                 os.remove(file_remove)
+
             db.posts.update_one({'idx': int(idx)}, {'$set': {'file': f'{filename}.{extension}'}})
+        # 파일 없으면 패스
         except: pass
 
         if(post["title"]!=title) : #타이틀 업데이트
