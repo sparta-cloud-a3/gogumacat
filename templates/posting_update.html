@@ -54,7 +54,7 @@
             $('#local_address').val('{{ post.address }}');
 
         })
-
+    //이미지 파일 이름 넣기
         function file_name() {
             const fileName = document.querySelector('#file-js-example .file-name');
             fileName.textContent = `{{ post.file }}`
@@ -166,7 +166,7 @@
     </div>
     {#이미지 미리보기#}
     <div id="image_preview">
-        <img style="width:300px;height: 200px;margin-top: 10px" src="/static/post_pic/{{ post.file }}">
+        <img style="width:300px;height: 200px;margin-top: 10px" src="{{ post.file }}">
     </div>
     {#상세내용#}
     <textarea id="content" class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>

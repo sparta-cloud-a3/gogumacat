@@ -448,7 +448,8 @@ def posting():
             'file': image_url,
             'content': content,
             'address': address,
-            'like_count': 0
+            'like_count': 0,
+            'file_name': name
         }
         print(doc)
         db.posts.insert_one(doc)
@@ -641,6 +642,9 @@ def update_page(username, idx):
 @app.route('/user_post_update/<int:idx>', methods=['POST'])
 def updating(idx):
     # 토큰확인
+    AWS_ACCESS_KEY_ID = "AKIA6AVDKCZBAOTGDOHA"
+    AWS_SECRET_ACCESS_KEY = "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"
+    BUCKET_NAME = "gogumacat-bucket"
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -652,7 +656,16 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
+        delete_name = post['file_name']
+        print(delete_name)
         try:
+            # s3 엑세스 키
+            s3 = boto3.client('s3',
+                              aws_access_key_id=AWS_ACCESS_KEY_ID,
+                              aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+                              )
+
+            #파일 값 받아오기
             file = request.files['file_give']
             # 현재 시간 체크
             today = datetime.now()
@@ -660,18 +673,26 @@ def updating(idx):
 
             # 파일 확장자 빼고 시간을 이름에 붙이기
             extension = file.filename.split('.')[-1]
-            filename = f'file-{mytime}'
-            print(extension, filename)
-            # static폴더에 파일 저장
-            save_to = f'static/post_pic/{filename}.{extension}'
-            file.save(save_to)
-            file_name = post['file']
-            file_remove = f'static/post_pic/{file_name}'
-            if os.path.isfile(file_remove):
-                os.remove(file_remove)
-            db.posts.update_one({'idx': int(idx)}, {'$set': {'file': f'{filename}.{extension}'}})
-        except:
-            pass
+            file_name = f'file-{mytime}'
+            name = f'{file_name}.{extension}'
+            # s3 파일 저장
+            s3.put_object(
+                ACL="public-read",
+                Bucket=BUCKET_NAME,
+                Body=file,
+                Key=name,
+                ContentType=file.content_type
+            )
+            # s3 url 불러오기
+            location = s3.get_bucket_location(Bucket=BUCKET_NAME)['LocationConstraint']
+            image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/{name}'
+            print(image_url)
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'file': image_url}})
+            db.posts.update_one({'idx': int(idx)}, {'$set': {'file_name': name}})
+        except Exception as ex :
+            print(str(ex))
+            return False
+
 
         if (post["title"] != title):  # 타이틀 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
