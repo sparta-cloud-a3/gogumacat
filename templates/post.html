@@ -186,8 +186,8 @@
                         <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
                            style="float:right; margin: auto 20px 0px auto; "></i>
                         <div id="myDropdown" class="dropdown-content">
-                            <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기<i class="fa-solid fa-pencil"></i></a>
-                            <a href="javascript:deletePost()">삭제하기<i class="fa-solid fa-trash-can" style="color: red"></i></a>
+                            <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기&nbsp&nbsp<i class="fa-solid fa-pencil"></i></a>
+                            <a href="javascript:deletePost()">삭제하기&nbsp&nbsp<i class="fa-solid fa-trash-can" style="color: red"></i></a>
                         </div>
                     </div>
                 {% endif %}
@@ -216,7 +216,7 @@
                 <h4>{{ post.price }}원 (1일 기준) <small>{{ post.date }}</small></h4>
             </div>
 
-            <div class="content-info">
+            <div class="content-info" style="white-space: pre-line">
                 <br>
                 <p> {{ post.content }}</p>
             </div>

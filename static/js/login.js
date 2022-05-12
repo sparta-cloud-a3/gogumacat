@@ -215,7 +215,6 @@ function kakaoLogin() {
                     let username = kakao_account['email']
                     console.log(nickname,email,gender)
                     console.log(accesstoken);
-                    kakaoLogout();
                     $.ajax({
                         type: "POST",
                         url: "/kakao_sign_in",
