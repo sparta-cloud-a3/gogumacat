@@ -45,10 +45,10 @@
     <script>
         $(document).ready(function () {
             fileupload()
-            calender_select()
+            calendar_select()
             file_name()
             $('#title').val('{{ post.title }}');
-            $('#calender').val('{{ post.date}}');
+            $('#calendar').val('{{ post.date}}');
             $('#price').val('{{ post.price }}');
             $('#content').val('{{ post.content }}');
             $('#local_address').val('{{ post.address }}');
@@ -65,7 +65,7 @@
             const fileName = document.querySelector('#file-js-example .file-name');
             //input값 가져오기
             let title = $('#title').val()
-            let date = $('#calender').val()
+            let date = $('#calendar').val()
             let price = $('#price').val()
             let content = $('#content').val()
             let address = $('#local_address').val()
@@ -145,13 +145,12 @@
 <div class="wrap">
     <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
     {#캘린더 부분#}
-    <div class="calender">
-        <span style="font-size: 20px">대여 가능 기간</span>
-        <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
+    <div>
+        <input id="calendar" class="input" type="text" name="datefilter" autocomplete="off"/>
     </div>
     {#가격#}
     <input id="price" class="input" type="text" onchange="price(this)"
-           placeholder="가격(1일 기준 대여가격)" style="width: 400px" maxlength="15">
+           placeholder="가격(1일 기준 대여가격)" maxlength="15">
     <p id="price_warning" class="is-hidden"><span style="color: red;font-weight: bold;">※숫자만 입력해 주세요!</span></p>
     {#이미지 업로드 부분#}
     <div id="file-js-example" class="file has-name">

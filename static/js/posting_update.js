@@ -106,9 +106,9 @@ function local_search() {
 
 
 //캘린더 함수
-function calender_select() {
+function calendar_select() {
     $(function () {
-        $('#calender').daterangepicker({ //한글로 번역
+        $('#calendar').daterangepicker({ //한글로 번역
             "locale": {
                 "format": "YYYY-MM-DD",
                 "separator": " ~ ",

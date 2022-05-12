@@ -326,18 +326,9 @@ def user(username):
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
     token_receive = request.cookies.get('mytoken')
-    AWS_ACCESS_KEY_ID = "AKIA6AVDKCZBAOTGDOHA"
-    AWS_SECRET_ACCESS_KEY = "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"
-    BUCKET_NAME = "gogumacat-bucket"
-    s3 = boto3.client('s3',
-                      aws_access_key_id=AWS_ACCESS_KEY_ID,
-                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-                      )
-
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         username = payload["id"]
-        userdata = db.users.find_one({"username": payload["id"]})
         name_receive = request.form["name_give"]
         about_receive = request.form["about_give"]
         address_receive = request.form["address_give"]
@@ -354,23 +345,12 @@ def update_profile():
 
         if 'file_give' in request.files:
             file = request.files["file_give"]
-            extension = file.filename.split('.')[-1]
-            name = userdata['username']
-            file_name = f'file-{name}'
-            name = f'{file_name}.{extension}'
-            print(name)
-            # s3 파일 저장
-            s3.put_object(
-                ACL="public-read",
-                Bucket=BUCKET_NAME,
-                Body=file,
-                Key='profile_pics/'+name,
-                ContentType=file.content_type
-            )
-            location = s3.get_bucket_location(Bucket=BUCKET_NAME)['LocationConstraint']
-            image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/profile_pics/{name}'
-
-            new_doc["profile_pic"] = image_url
+            filename = secure_filename(file.filename)
+            extension = filename.split(".")[-1]
+            file_path = f"profile_pics/{username}.{extension}"
+            file.save("./static/" + file_path)
+            new_doc["profile_pic"] = filename
+            new_doc["profile_pic_real"] = file_path
         db.users.update_one({'username': username}, {'$set': new_doc})
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -689,7 +669,8 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-
+        delete_name = post['file_name']
+        print(delete_name)
         try:
             # s3 엑세스 키
             s3 = boto3.client('s3',

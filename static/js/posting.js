@@ -1,6 +1,6 @@
 $(document).ready(function () {
     fileupload()
-    calender_select()
+    calendar_select()
 })
 
 //파일 업로드 시 제목 띄우기
@@ -112,7 +112,7 @@ function local_search() {
 function posting() {
     //input값 가져오기
     let title = $('#title').val()
-    let date = $('#calender').val()
+    let date = $('#calendar').val()
     let price = $('#price').val()
     let content = $('#content').val()
     let address = $('#local_address').val()
@@ -162,9 +162,9 @@ function posting() {
 }
 
 //캘린더 함수
-function calender_select() {
+function calendar_select() {
     $(function () {
-        $('#calender').daterangepicker({ //한글로 번역
+        $('#calendar').daterangepicker({ //한글로 번역
             "locale": {
                 "format": "YYYY-MM-DD",
                 "separator": " ~ ",
