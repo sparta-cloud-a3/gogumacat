@@ -3,7 +3,7 @@
 }
 
 body {
-    width: 1200px;
+    width: 1000px;
     margin: auto;
 }
 .hero-body{
@@ -26,6 +26,8 @@ body {
 
 .float-right {
     float: right;
+    position: relative;
+    right: -150px;
 
 }
 
@@ -35,14 +37,13 @@ body {
 
 .jumbo {
     padding-top: 30px;
-    margin-bottom: 50px;
+    padding-bottom: 30px;
 }
 
 .container {
     width: 600px;
-    height: 600px;
-    padding-top: 0px;
-    margin-top: 0px;
+    height: 100%;
+    object-fit: cover;
 }
 
 .write-btn {
@@ -115,6 +116,7 @@ body {
 .sideBanner {
     float: right;
     position: relative;
+    right: -150px;
     width: 150px;
     height: 150px;
     top: 680px;
@@ -128,12 +130,7 @@ body {
     left: 30px;
     box-shadow: rgba(0, 0, 0, 0.5) 0 0 0 9999px, rgba(0, 0, 0, 0.5) 2px 2px 3px 3px;
     z-index: 100;
-
 }
-
-/*.user {*/
-/*    height: 34px;*/
-/*}*/
 
 .like-box {
     float: right;
