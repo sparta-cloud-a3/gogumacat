@@ -63,9 +63,9 @@
 <div class="wrap">
     <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
     {#캘린더 부분#}
-    <div class="calendar-box">
-        <input id="calender" class="calender input is-normal" type="text"
-               name="datefilter" autocomplete="off" style="width: 350px;" placeholder="대여 가능 기간"/>
+    <div class="calender">
+        <span style="font-size: 20px">대여 가능 기간</span>
+        <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
     </div>
     {#가격#}
     <input id="price" class="input" type="text" onchange="price(this)"

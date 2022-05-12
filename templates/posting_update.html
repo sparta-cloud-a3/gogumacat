@@ -136,7 +136,7 @@
         </div>
     </section>
     <section>
-        <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+        <h3 class="title is-3" style="text-align: center;">글 수정하기 </h3>
     </section>
 </div>
 
@@ -150,18 +150,18 @@
         <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
     </div>
     {#가격#}
-    <input id="price" class="input is-normal" type="text" onchange="price(this)"
+    <input id="price" class="input" type="text" onchange="price(this)"
            placeholder="가격(1일 기준 대여가격)" style="width: 350px" maxlength="15">
     <p id="price_warning" class="is-hidden"><span style="color: red;font-weight: bold;">※숫자만 입력해 주세요!</span></p>
     {#이미지 업로드 부분#}
-    <div id="file-js-example" class="file has-name is-info">
+    <div id="file-js-example" class="file has-name">
         <label class="file-label " style="margin-top: 10px">
             <input class="file-input" type="file" name="resume" id="img" onclick="img_up()"
                    accept="image/jpeg, image/jpg, image/png"/>
             <span class="file-cta">
       <span class="file-label">제품 사진</span>
     </span>
-            <span class="file-name"></span>
+            <span class="file-name">업로드하기</span>
         </label>
     </div>
     {#이미지 미리보기#}
@@ -174,12 +174,12 @@
     <div class="field">
         <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력(지번주소)" style="width: 400px"
                onclick="local_search()">
-        <input type="button" class="button is-info" onclick="map()" value="지도 확인" style="margin-top: 30px">
+        <input type="button" class="button is-light" onclick="map()" value="지도 확인" style="margin-top: 30px">
     </div>
     <p id="local_warning" class="is-hidden" style="font-weight: bold; color: red">※주소 창에 주소를 먼저 입력해 주세요.</p>
     {#지도api#}
     <div id="map" class="is-hidden" style="width: 500px;height:300px;margin:10px auto 50px auto;"></div>
 </div>
-<button class="button is-info posting" onclick="posting()">수정하기</button>
+<button class="button is-dark posting" onclick="posting()">수정하기</button>
 </body>
 </html>
