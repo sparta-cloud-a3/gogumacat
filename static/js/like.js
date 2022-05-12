@@ -45,3 +45,32 @@ function num2str(count) {
     }
     return count
 }
+
+function roadview() {
+    $('#map').toggleClass('is-hidden')
+    $('#roadview').toggleClass('is-hidden')
+    if ($('#map').hasClass('is-hidden')) {
+        $('#map_btn').text("지도 보기")
+    } else {
+        $('#map_btn').text("로드뷰 보기")
+    }
+}
+
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function (event) {
+    if (!event.target.matches('.dropbtn')) {
+
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}

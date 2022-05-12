@@ -1,0 +1,76 @@
+
+body {
+    background-color: rgba(200, 134, 164, 0.85);
+    min-height: 100vh;
+}
+
+.section {
+    padding: 1rem 1.5rem;
+    max-width: 750px;
+    margin: auto;
+}
+
+.title {
+    font-weight: 800;
+    font-size: 5rem;
+    font-family: 'Do Hyeon', sans-serif;
+    text-align: center;
+}
+
+.is-sparta {
+    color: #c886a4 !important;
+}
+
+.button.is-sparta {
+    background-color: #c886a4;
+    border-color: transparent;
+    color: #fff !important;
+}
+
+.button.is-sparta.is-outlined {
+    background-color: transparent;
+    border-color: #c886a4;
+    color: #c886a4 !important;
+}
+
+.help {
+    color: gray;
+}
+
+.kakao_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 6px;
+    width: 100%;
+    max-width: 440px;
+    height: 40px;
+    border-radius: 6px;
+    background-color: #FFDE02;
+    color: #000000;
+    cursor: pointer;
+}
+
+.kakao_button > img {
+    height: 28px;
+}
+
+.kakao_button > span {
+    margin-left: 6px;
+    line-height: 32px;
+}
+
+.hero-img {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    top: 76px;
+    left: -170px;
+}
+
+.hero-body {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 0rem 1.5rem;
+}
