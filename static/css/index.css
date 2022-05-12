@@ -55,8 +55,12 @@ body {
 }
 
 .card-box {
-    /*display: flex;*/
-    /*flex-wrap: wrap;*/
+    display: flex;
+    flex-wrap: wrap;
+}
+.col {
+    padding-bottom: 10px;
+    flex: 0 0 32%;
 }
 
 .text-box {
@@ -74,9 +78,9 @@ body {
 }
 
 .image {
-    width: 280px;
+    width: 284px;
     height: 240px;
-    margin: 5px auto 0px auto;
+    margin: auto;
 }
 
 .home-img {
