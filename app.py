@@ -367,9 +367,10 @@ def update_profile():
                 Key='profile_pics/'+name,
                 ContentType=file.content_type
             )
+            # s3 파일 불러오기
             location = s3.get_bucket_location(Bucket=BUCKET_NAME)['LocationConstraint']
             image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/profile_pics/{name}'
-
+            #db업데이트
             new_doc["profile_pic"] = image_url
         db.users.update_one({'username': username}, {'$set': new_doc})
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
@@ -689,13 +690,16 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-
+        delete_name = post['file_name']
+        print(delete_name)
         try:
             # s3 엑세스 키
             s3 = boto3.client('s3',
                               aws_access_key_id=AWS_ACCESS_KEY_ID,
                               aws_secret_access_key=AWS_SECRET_ACCESS_KEY
                               )
+
+            s3.delete_object(Bucket=BUCKET_NAME,Key=delete_name)
 
             #파일 값 받아오기
             file = request.files['file_give']
@@ -721,9 +725,9 @@ def updating(idx):
             print(image_url)
             db.posts.update_one({'idx': int(idx)}, {'$set': {'file': image_url}})
             db.posts.update_one({'idx': int(idx)}, {'$set': {'file_name': name}})
-        except Exception as ex :
-            print(str(ex))
-            return False
+
+        except : pass
+
 
 
         if (post["title"] != title):  # 타이틀 업데이트
