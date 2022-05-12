@@ -180,7 +180,7 @@
                 </div>
             </div>
             <div class="user-info" id="user_information">
-                <img src="{{ user.profile_pic_real }}" id=user_profile>
+                <img src="{{ user.profile_pic_real }}" id=user_profile style="margin-right: 8px;">
                 {% if user_info.nickname == user.nickname %}
                     <div class="menu dropdown" style="float: right;">
                         <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
@@ -191,7 +191,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <h4 id="user_name">{{ post.nickname }}</h4>
+                <h4 id="user_name" style="margin-bottom: 8px;">{{ post.nickname }}</h4>
                 <h6 id="user_locate"> {{ post.address }}</h6>
 
                 <hr>
