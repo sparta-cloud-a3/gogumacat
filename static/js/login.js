@@ -255,8 +255,7 @@ function kakaoLogout() {
 function juso() {
     new daum.Postcode({
         oncomplete: function (data) {
-
-            var roadAddr = data.roadAddress; // 도로명 주소 변수
+            var jibun = data.autoJibunAddress
             var extraRoadAddr = ''; // 참고 항목 변수
 
             if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
@@ -267,10 +266,13 @@ function juso() {
             }
             if (extraRoadAddr !== '') {
                 extraRoadAddr = ' (' + extraRoadAddr + ')';
+            }if (jibun == "") {
+                newjuso = data.jibunAddress.split(' ').slice(0,-1).join(' ')
+                document.getElementById("input-address").value = newjuso
+            } else {
+                newjuso = data.jibunAddress.split(' ').slice(0,-1).join(' ')
+                document.getElementById("input-address").value = newjuso
             }
-            // document.getElementById("input-address").value = roadAddr; //도로명주소
-            newjuso = data.jibunAddress.split(' ').slice(0,-1).join(' ')
-            document.getElementById("input-address").value = newjuso // 지번주소
         }
     }).open();
 }
