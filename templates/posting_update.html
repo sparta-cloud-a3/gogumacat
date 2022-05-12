@@ -33,7 +33,7 @@
     <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
 
 
     <!--javascript 분리-->
@@ -45,10 +45,10 @@
     <script>
         $(document).ready(function () {
             fileupload()
-            calender_select()
+            calendar_select()
             file_name()
             $('#title').val('{{ post.title }}');
-            $('#calender').val('{{ post.date}}');
+            $('#calendar').val('{{ post.date}}');
             $('#price').val('{{ post.price }}');
             $('#content').val('{{ post.content }}');
             $('#local_address').val('{{ post.address }}');
@@ -65,7 +65,7 @@
             const fileName = document.querySelector('#file-js-example .file-name');
             //input값 가져오기
             let title = $('#title').val()
-            let date = $('#calender').val()
+            let date = $('#calendar').val()
             let price = $('#price').val()
             let content = $('#content').val()
             let address = $('#local_address').val()
@@ -136,7 +136,7 @@
         </div>
     </section>
     <section>
-        <h3 class="title is-3" style="text-align: center;">글 수정하기 </h3>
+        <h3 class="title is-3" style="text-align: center; margin-top: 60px;">글 수정하기 </h3>
     </section>
 </div>
 
@@ -145,13 +145,12 @@
 <div class="wrap">
     <input id="title" class="input is-normal" type="text" placeholder="제목, 물품명을 적어주세요">
     {#캘린더 부분#}
-    <div class="calender">
-        <span style="font-size: 20px">대여 가능 기간</span>
-        <input id="calender" class="calender" type="text" name="datefilter" autocomplete="off"/>
+    <div>
+        <input id="calendar" class="input" type="text" name="datefilter" autocomplete="off"/>
     </div>
     {#가격#}
     <input id="price" class="input" type="text" onchange="price(this)"
-           placeholder="가격(1일 기준 대여가격)" style="width: 350px" maxlength="15">
+           placeholder="가격(1일 기준 대여가격)" maxlength="15">
     <p id="price_warning" class="is-hidden"><span style="color: red;font-weight: bold;">※숫자만 입력해 주세요!</span></p>
     {#이미지 업로드 부분#}
     <div id="file-js-example" class="file has-name">
@@ -174,7 +173,7 @@
     <div class="field">
         <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력(지번주소)" style="width: 400px"
                onclick="local_search()">
-        <input type="button" class="button is-light" onclick="map()" value="지도 확인" style="margin-top: 30px">
+        <input type="button" class="button is-light" onclick="map()" value="지도 확인" style="margin-top: 10px">
     </div>
     <p id="local_warning" class="is-hidden" style="font-weight: bold; color: red">※주소 창에 주소를 먼저 입력해 주세요.</p>
     {#지도api#}

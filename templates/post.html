@@ -191,15 +191,17 @@
                 <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
                    style="float:right; margin: auto 20px 0px auto; "></i>
                 <div id="myDropdown" class="dropdown-content">
-                    <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기&nbsp&nbsp<i
-                            class="fa-solid fa-pencil"></i></a>
-                    <a href="javascript:deletePost()">삭제하기&nbsp&nbsp<i class="fa-solid fa-trash-can"
-                                                                       style="color: red"></i></a>
+                    <a href="/posting_update/{{ post.username }}/{{ post.idx }}">수정하기<i
+                            class="fa-solid fa-pencil" style="margin-left: 8px"></i></a>
+                    <a href="javascript:deletePost()">삭제하기<i class="fa-solid fa-trash-can"
+                                                                       style="color: red; margin-left: 8px"></i></a>
                 </div>
             </div>
         {% endif %}
-        <h4 id="user_name">{{ post.nickname }}</h4>
-        <h6 id="user_locate"> {{ post.address }}</h6>
+        <div style="margin-left: 10px;">
+            <h4 id="user_name">{{ post.nickname }}</h4>
+            <h6 id="user_locate" style="margin-top: 6px;"> {{ post.address }}</h6>
+        </div>
 
         <hr>
         <div class="like-box">

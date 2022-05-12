@@ -690,16 +690,13 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-        delete_name = post['file_name']
-        print(delete_name)
+
         try:
             # s3 엑세스 키
             s3 = boto3.client('s3',
                               aws_access_key_id=AWS_ACCESS_KEY_ID,
                               aws_secret_access_key=AWS_SECRET_ACCESS_KEY
                               )
-
-            s3.delete_object(Bucket=BUCKET_NAME,Key=delete_name)
 
             #파일 값 받아오기
             file = request.files['file_give']

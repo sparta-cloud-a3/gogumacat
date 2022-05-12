@@ -19,11 +19,11 @@ body {
 
 .wrap {
     width: 700px;
-    margin: 100px auto 0px auto;
+    margin: 30px auto 0px auto;
 }
 
 .input {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 input::placeholder {
@@ -33,18 +33,12 @@ input::placeholder {
 
 textarea::placeholder {
     color: black;
-    font-size: 1.2em;
     font-weight: bold;
 }
 
 .posting {
     margin-right: 20px;
     float: right;
-}
-
-.calender-box {
-    margin-top: 15px;
-    font-size: 16px;
 }
 
 /*지도 커스텀 오버레이 CSS*/
