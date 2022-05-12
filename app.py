@@ -76,8 +76,9 @@ def kakao_sign_in():
     password_receive = request.form['password_give']
     nickname_receive = request.form['nickname_give']
     img_receive = request.form['img_give']
+    password = password_receive.split('@')[0]
 
-    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    pw_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
     result = db.users.find_one({'username': username_receive, 'password': pw_hash})
 
     if result is not None:
@@ -110,7 +111,7 @@ def kakao_sign_in():
 
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg': f'카카오 회원가입 성공\n초기 비밀번호는 "{username_receive}"입니다.\n비밀번호를 꼭 변경해주세요!'})
+        return jsonify({'result': 'success', 'token': token, 'msg': f'카카오 회원가입 성공\n초기 비밀번호는 "{password}"입니다.\n비밀번호를 꼭 변경해주세요!'})
 
 
 # 회원가입
