@@ -24,18 +24,12 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
 
-    <!-- google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-
     <!--지도 api-->
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
 
-    <script src="{{ url_for('static', filename='/js/geolocation.js') }}"></script>
-
     <!--javascript 분리-->
+    <script src="{{ url_for('static', filename='/js/geolocation.js') }}"></script>
     <script src="{{ url_for('static', filename='/js/index.js') }}"></script>
 
     <!-- css 분리-->
@@ -46,14 +40,6 @@
 <section class="float-right login-btn" onclick="location.href='/user/{{user_info.username}}'" style='cursor:pointer;'>
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
-</section>
-<section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
-            고구마캣
-        </span>
-    </div>
 </section>
 </section>
 <div class="home-img" onclick="window.location.href='/'">
