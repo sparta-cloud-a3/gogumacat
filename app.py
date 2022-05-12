@@ -94,20 +94,11 @@ def kakao_sign_in():
         return jsonify({'result': 'success', 'token': token, 'msg': '카카오 로그인 성공'})
     # 카카오로 로그인이 처음이라면 DB에 저장해서 회원가입을 먼저 시킨다.
     else:
-        url = f'{img_receive}'
-        save_path = f'./static/profile_pics/{password}.jpg'
-        img_file = requests.get(url)
-
-        photo = open(save_path, 'wb')
-        photo.write(img_file.content)
-        photo.close()
-        kakao_img = f'profile_pics/{password}.jpg'
-
         doc = {
             "username": username_receive,
             "password": pw_hash,
-            "profile_pic": kakao_img,
-            "profile_pic_real": kakao_img,  # [수정]카카오 프로필로 수정 필요
+            "profile_pic": f'{img_receive}',
+            "profile_pic_real": f'{img_receive}',
             "profile_info": "",
             "nickname": nickname_receive,
             "address": ''
