@@ -1,7 +1,4 @@
-$(document).ready(function () {
-    fileupload()
-    calender_select()
-})
+
 
 //파일 업로드 시 제목 띄우기
 function fileupload() {
@@ -63,7 +60,7 @@ function map() {
         var content = '<div class="overlay_info">';
         content += '    <a><strong>여기서 만나요!</strong></a>';
         content += '    <div class="desc">';
-        content += '        <img src="/static/info_image.png" style="object-fit: fill" >';
+        content += '        <img src="/info_image.png" style="object-fit: fill" >';
         content += `        <span class="address">${local}</span>`;
         content += '    </div>';
         content += '</div>';
@@ -103,63 +100,10 @@ function local_search() {
             } else {
                 document.getElementById("local_address").value = jibun
             }
-
         }
     }).open();
 }
 
-//포스팅하기
-function posting() {
-    //input값 가져오기
-    let title = $('#title').val()
-    let date = $('#calender').val()
-    let price = $('#price').val()
-    let content = $('#content').val()
-    let address = $('#local_address').val()
-    let file = $('#img')[0].files[0]
-    //form 데이터 넣기
-    let form_data = new FormData()
-    form_data.append("title_give", title)
-    form_data.append("file_give", file)
-    form_data.append("date_give", date)
-    form_data.append("price_give", price)
-    form_data.append("content_give", content)
-    form_data.append("address_give", address)
-    //동작 조건 만들기
-    if (title == "") {
-        alert("제목,물품명을 입력해주세요")
-    } else if (date == "") {
-        alert("대여 기간을 입력해주세요")
-    } else if (price == "") {
-        alert("가격을 입력해주세요")
-    } else if (file == undefined) {
-        alert("제품 사진을 첨부해주세요")
-    } else if (content == "") {
-        alert("내용을 적어주세요")
-    } else if (address == "") {
-        alert("주소를 입력해주세요")
-    } else {
-        //포스팅 aJax 콜
-        $.ajax({
-            type: "POST",
-            url: "/user_post",
-            data: form_data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            enctype: "multipart/form-data",
-            success: function (response) {
-                if (response["result"] == "success") {
-                    alert(response["msg"])
-                    console.log(response)
-                    window.location.href = '/'
-                } else {
-                    alert("내용을 다시 확인해 주세요")
-                }
-            }
-        })
-    }
-}
 
 //캘린더 함수
 function calender_select() {
