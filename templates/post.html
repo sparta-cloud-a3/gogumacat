@@ -176,11 +176,11 @@
         <div class="content">
             <div class="jumbo">
                 <div class="container">
-                    <img src="/static/post_pic/{{ post.file }}">
+                    <img src="{{ post.file }}">
                 </div>
             </div>
             <div class="user-info" id="user_information">
-                <img src="/static/{{ user.profile_pic_real }}" id=user_profile>
+                <img src="{{ user.profile_pic_real }}" id=user_profile>
                 {% if user_info.nickname == user.nickname %}
                     <div class="menu dropdown" style="float: right;">
                         <i class="fa-solid fa-ellipsis-vertical fa-2x dropbtn" onclick="myFunction()"
@@ -216,7 +216,7 @@
                 <h4>{{ post.price }}원 (1일 기준) <small>{{ post.date }}</small></h4>
             </div>
 
-            <div class="content-info">
+            <div class="content-info" style="white-space: pre-line">
                 <br>
                 <p> {{ post.content }}</p>
             </div>

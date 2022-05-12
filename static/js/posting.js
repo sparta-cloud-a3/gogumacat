@@ -63,7 +63,7 @@ function map() {
         var content = '<div class="overlay_info">';
         content += '    <a><strong>여기서 만나요!</strong></a>';
         content += '    <div class="desc">';
-        content += '        <img src="/info_image.png" style="object-fit: fill" >';
+        content += '        <img src="/static/info_image.png" style="object-fit: fill" >';
         content += `        <span class="address">${local}</span>`;
         content += '    </div>';
         content += '</div>';
