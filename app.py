@@ -388,11 +388,15 @@ def posting():
         idx = 1
     else:
         idx = list(db.posts.find({}, sort=[('_id', -1)]).limit(1))[0]['idx'] + 1
+
+    AWS_ACCESS_KEY_ID = "AKIA6AVDKCZBAOTGDOHA"
+    AWS_SECRET_ACCESS_KEY = "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"
+    BUCKET_NAME = "gogumacat-bucket"
     #s3 엑세스 키
-        s3 = boto3.client('s3',
-                          aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-                          aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
-                          )
+    s3 = boto3.client('s3',
+                    aws_access_key_id=AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+                    )
 
     # 토큰확인
     token_receive = request.cookies.get('mytoken')
@@ -411,19 +415,28 @@ def posting():
         address = request.form['address_give']
         print(title, date, price, file, content, address)
 
+        # 현재 시간 체크
+        today = datetime.now()
+        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+        # 파일 확장자 빼고 시간을 이름에 붙이기
+        extension = file.filename.split('.')[-1]
+        file_name = f'file-{mytime}'
+        print(extension, file_name)
+        name = f'{file_name}.{extension}'
         # s3 파일 저장
         s3.put_object(
             ACL="public-read",
-            Bucket=os.environ["BUCKET_NAME"],
+            Bucket=BUCKET_NAME,
             Body=file,
-            Key=file.filename,
+            Key=name,
             ContentType=file.content_type
         )
         #s3 url 불러오기
-        BUCKET_NAME = ["BUCKET_NAME"],
-        location = s3.get_bucket_location(Bucket=["BUCKET_NAME"])['LocationConstraint']
-        image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/{file.filename}'
-
+        location = s3.get_bucket_location(Bucket=BUCKET_NAME)['LocationConstraint']
+        image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/{name}'
+        print(location)
+        print(image_url)
         #DB에 저장
         doc = {
             'idx': idx,
