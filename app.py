@@ -2,18 +2,16 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, s
 from pymongo import MongoClient
 from threading import Lock
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
-
 import os
 import jwt
 import hashlib
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
-
 import math
 
-async_mode = None
-
 app = Flask(__name__)
+
+async_mode = None
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
@@ -24,7 +22,7 @@ db = client.gogumacat
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 
-SECRET_KEY = 'MSG'
+SECRET_KEY = 'MSG'  # [수정]배포 전 삭제해야됨
 
 
 @app.route('/')
@@ -39,12 +37,35 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
-
-# 회원 로그인
+### 로그인 페이지 시작
+# 로그인 페이지 이동
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
     return render_template('login.html', msg=msg)
+
+
+# 로그인
+@app.route('/sign_in', methods=['POST'])
+def sign_in():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+
+    if result is not None:
+        payload = {
+            'id': username_receive,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
+
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+        return jsonify({'result': 'success', 'token': token})
+    # 찾지 못하면
+    else:
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
 # 카카오 로그인
@@ -71,29 +92,210 @@ def kakao_sign_in():
         doc = {
             "username": username_receive,
             "password": pw_hash,
-            "profile_name": username_receive,
             "profile_pic": img_receive,
-            "profile_pic_real": "profile_pics/profile_placeholder.png",
+            "profile_pic_real": "profile_pics/profile_placeholder.png",  # [수정]카카오 프로필로 수정 필요
             "profile_info": "",
             "nickname": nickname_receive,
             "address": ''
         }
+
         db.users.insert_one(doc)
 
         # DB 업데이트 이후 토큰 발행
-
         payload = {
             'id': username_receive,
             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)
         }
+
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
         return jsonify({'result': 'success', 'token': token, 'msg': '카카오 회원가입 성공'})
 
 
+# 회원가입
+@app.route('/sign_up/save', methods=['POST'])
+def sign_up():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    nickname_receive = request.form['nickname_give']
+    address_receive = request.form['address_give']
+
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
+    doc = {
+        "username": username_receive,  # 아이디
+        "password": password_hash,  # 비밀번호
+        "profile_pic": "",  # 프로필 사진 파일 이름
+        "profile_pic_real": "profile_pics/profile_placeholder.png",  # 프로필 사진 기본 이미지
+        "profile_info": "",  # 프로필 한 마디
+        "nickname": nickname_receive,  # 닉네임
+        "address": address_receive  # 주소
+    }
+
+    db.users.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+
+# id 중복 확인
+@app.route('/sign_up/check_dup', methods=['POST'])
+def check_dup_id():
+    username_receive = request.form['username_give']
+    exists = bool(db.users.find_one({"username": username_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+
+# 닉네임 중복 확인
+@app.route('/sign_up/check_dup_nick', methods=['POST'])
+def check_dup_nick():
+    nickname_receive = request.form['nickname_give']
+    exists = bool(db.users.find_one({"nickname": nickname_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+### 메인 페이지 시작
+# 상품 목록 전체 조회
+@app.route('/listing', methods=['GET'])
+def listing_page():
+    order = request.args.get('order') # 순서
+
+    # pagination을 위해 필요한 정보
+    page = request.args.get('page', 1, type=int)  # default는 1이고 type은 int
+    limit = 9  # 한 페이지당 9개 보여줌
+    posts = list(db.posts.find({}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
+    if order == 'like': # 관심순 요청이면
+        for i in range(total_count): # 관심 개수 update(관심순이기때문에 전체 게시물을 먼저 update)
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+
+        # 요청한 페이지에 맞는 게시물을 limit만큼 전달
+        posts = list(db.posts.find({}, {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
+    else: # 최신순 요청이면
+        # 요청한 페이지에 맞는 게시물을 limit만큼 전달
+        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+        #관심 개수 update
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
+    return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
+# 검색 상품 목록 전체 조회
+@app.route('/search', methods=['GET'])
+def searching_page():
+    query_receive = request.args.get('query') # 검색어
+
+    order = request.args.get('order') # 순서
+
+    # pagination을 위해 필요한 정보
+    page = request.args.get('page', 1, type=int) # default는 1이고 type은 int
+    limit = 9 # 한 페이지당 9개 보여줌
+    posts = list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
+    if order == 'like': # 관심순 요청이면
+        for i in range(total_count): # 관심 개수 update(관심순이기때문에 전체 게시물을 먼저 update)
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(
+            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                          {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
+    else: # 최신순 요청이면
+        posts = list(
+            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
+                          {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
+        for i in range(len(posts)): # 관심 개수 update
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
+    return jsonify(
+        {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
+# 지역 데이터 리턴
+def get_si():
+    si = list(db.korea_address.distinct('si'))
+    return si
+
+
+# 입력받은 지역에 속한 동네 리턴
+@app.route('/get_gu', methods=['GET'])
+def get_gu():
+    si = request.args.get('si') # 입력받은 지역
+    if si == '세종특별자치시': # 세종시는 시군구 데이터가 없기 때문에 바로 읍면동 데이터로 넘어가게 함
+        return jsonify({'gu': '세종특별자치시'})
+    gu = list(db.korea_address.distinct('gu', {'si': si}))
+    return jsonify({'gu': gu})
+
+
+# 입력받은 동네에 속한 동 리턴
+@app.route('/get_dong', methods=['GET'])
+def get_dong():
+    gu = request.args.get('gu') # 입력받은 동네
+    if gu == '세종특별자치시': # 세종시는 시군구 데이터가 없기 때문에 지역데이터로 검색
+        dong = list(db.korea_address.distinct('dong', {'si': gu}))
+    else:
+        dong = list(db.korea_address.distinct('dong', {'gu': gu}))
+    return jsonify({'dong': dong})
+
+
+# 입력받은 주소를 바탕으로 검색
+@app.route('/search/address', methods=['GET'])
+def search_by_address():
+    si = request.args.get('si')
+    gu = request.args.get('gu')
+    dong = request.args.get('dong')
+
+    order = request.args.get('order') # 순서
+
+    #pagination에 필요한 정보
+    page = request.args.get('page', 1, type=int) # default는 1이고 type은 int
+    limit = 9 # 한 페이지당 9개 보여줌
+    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False})) # 일단 동만 사용해서 검색
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
+    if order == 'like': # 관심순 요청이면
+        for i in range(total_count): # 관심 개수 update(관심순이기때문에 전체 게시물을 먼저 update)
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
+            (page - 1) * limit).limit(limit))
+    else: # 최신순 요청이면
+        posts = list(
+            db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+                limit))
+        for i in range(len(posts)): # 관심 개수 update
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
+# 현재 위치와 관련된 게시물 보여줌
+@app.route('/search/myloc', methods=['GET'])
+def search_by_location():
+    # 일단 동만 사용해서 검색
+    address = request.args.get("address")
+
+    # pagination에 필요한 정보
+    page = request.args.get('page', 1, type=int) # default는 1이고 type은 int
+    limit = 9  # 한 페이지당 9개 보여줌
+    total_count = db.posts.count_documents({})
+    last_page_num = math.ceil(total_count / limit)
+    posts = list(
+        db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+            limit))
+
+    for i in range(len(posts)): # 관심 개수 update
+        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
+### 마이페이지 시작
+# 각 사용자의 프로필과 글을 모아볼 수 있는 공간(마이페이지)로 이동
 @app.route('/user/<username>')
 def user(username):
-    # 각 사용자의 프로필과 글을 모아볼 수 있는 공간
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -106,63 +308,7 @@ def user(username):
         return redirect(url_for("home"))
 
 
-@app.route('/sign_in', methods=['POST'])
-def sign_in():
-    # 로그인
-    username_receive = request.form['username_give']
-    password_receive = request.form['password_give']
-
-    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
-
-    if result is not None:
-        payload = {
-            'id': username_receive,
-            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
-        }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
-        return jsonify({'result': 'success', 'token': token})
-    # 찾지 못하면
-    else:
-        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
-
-
-@app.route('/sign_up/save', methods=['POST'])
-def sign_up():
-    username_receive = request.form['username_give']
-    password_receive = request.form['password_give']
-    nickname_receive = request.form['nickname_give']
-    address_receive = request.form['address_give']
-    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    doc = {
-        "username": username_receive,  # 아이디
-        "password": password_hash,  # 비밀번호
-        # "profile_name": username_receive,                           # 프로필 이름 기본값은 아이디 -> 이부분이 닉네임이 이니깐 없어도 될듯
-        "profile_pic": "",  # 프로필 사진 파일 이름
-        "profile_pic_real": "profile_pics/profile_placeholder.png",  # 프로필 사진 기본 이미지
-        "profile_info": "",  # 프로필 한 마디
-        "nickname": nickname_receive,  # 닉네임
-        "address": address_receive
-    }
-    db.users.insert_one(doc)
-    return jsonify({'result': 'success'})
-
-
-@app.route('/sign_up/check_dup', methods=['POST'])
-def check_dup():
-    username_receive = request.form['username_give']
-    exists = bool(db.users.find_one({"username": username_receive}))
-    return jsonify({'result': 'success', 'exists': exists})
-
-
-@app.route('/sign_up/check_dup_nick', methods=['POST'])
-def check_dup_nick():
-    nickname_receive = request.form['nickname_give']
-    exists = bool(db.users.find_one({"nickname": nickname_receive}))
-    return jsonify({'result': 'success', 'exists': exists})
-
-
+# 개인정보 수정
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
     token_receive = request.cookies.get('mytoken')
@@ -195,63 +341,6 @@ def update_profile():
         return jsonify({"result": "success", 'msg': '프로필을 업데이트했습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
-
-
-@app.route('/listing', methods=['GET'])
-def listing_page():
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    posts = list(db.posts.find({}, {'_id': False}))
-    total_count = len(posts)
-    last_page_num = math.ceil(total_count / limit)
-
-    if order == 'like':
-        for i in range(total_count):
-            db.posts.update_one({'idx': posts[i]['idx']},
-                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
-        posts = list(db.posts.find({}, {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
-    else:
-        posts = list(db.posts.find({}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-        for i in range(len(posts)):
-            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-
-    return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
-
-
-@app.route('/search', methods=['GET'])
-def searching_page():
-    query_receive = request.args.get('query')
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    posts = list(db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                               {'_id': False}))
-    total_count = len(posts)
-    last_page_num = math.ceil(total_count / limit)
-
-    if order == 'like':
-        for i in range(total_count):
-            db.posts.update_one({'idx': posts[i]['idx']},
-                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
-        posts = list(
-            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                          {'_id': False}).sort('like_count', -1).skip((page - 1) * limit).limit(limit))
-    else:
-        posts = list(
-            db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
-                          {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-        for i in range(len(posts)):
-            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-
-    return jsonify(
-        {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
 @app.route("/get_posts", methods=['GET'])
@@ -358,7 +447,7 @@ def detail(idx):
     post["like_count"] = db.likes.count_documents({"idx": int(idx)})
     post["like_by_me"] = bool(db.likes.find_one({"idx": int(idx), "username": payload['id']}))
 
-    return render_template("post.html", post = post, user_info=user_info, user = user)
+    return render_template("post.html", post=post, user_info=user_info, user=user)
 
 
 @app.route('/posts/<int:idx>/chat')
@@ -496,111 +585,36 @@ def check_pw():
         return redirect(url_for("home"))
 
 
-def get_si():
-    si = list(db.korea_address.distinct('si'))
-    return si
 
-
-@app.route('/get_gu', methods=['GET'])
-def get_gu():
-    si = request.args.get('si')
-    if si == '세종특별자치시':
-        return jsonify({'gu': '세종특별자치시'})
-    gu = list(db.korea_address.distinct('gu', {'si': si}))
-    return jsonify({'gu': gu})
-
-
-@app.route('/get_dong', methods=['GET'])
-def get_dong():
-    gu = request.args.get('gu')
-    if gu == '세종특별자치시':
-        dong = list(db.korea_address.distinct('dong', {'si': gu}))
-    else:
-        dong = list(db.korea_address.distinct('dong', {'gu': gu}))
-    return jsonify({'dong': dong})
-
-
-@app.route('/search/address', methods=['GET'])
-def search_by_address():
-    si = request.args.get('si')
-    gu = request.args.get('gu')
-    dong = request.args.get('dong')
-    # 일단 동만 사용해서 검색
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}))
-    total_count = len(posts)
-    last_page_num = math.ceil(total_count / limit)
-
-    if order == 'like':
-        for i in range(total_count):
-            db.posts.update_one({'idx': posts[i]['idx']},
-                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
-        posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
-            (page - 1) * limit).limit(limit))
-    else:
-        posts = list(
-            db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
-                limit))
-        for i in range(len(posts)):
-            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
-
-#게시물 삭제
+# 게시물 삭제
 @app.route('/posts/delete', methods=['POST'])
 def delete_post():
-
     idx = request.form.get('idx');
-    #해당 게시물 삭제
+    # 해당 게시물 삭제
     db.posts.delete_one({"idx": int(idx)})
-    #해당 게시물에 좋아요를 누른 기록들 삭제
+    # 해당 게시물에 좋아요를 누른 기록들 삭제
     db.likes.delete_many({'idx': int(idx)})
 
     return {"result": "success"}
 
 
-@app.route('/myaddress', methods=['GET'])
-def get_my_address():
-    # 일단 동만 사용해서 검색
-    address = request.args.get("address")
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    total_count = db.posts.count_documents({})
-    last_page_num = math.ceil(total_count / limit)
-
-    posts = list(
-        db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
-            limit))
-    for i in range(len(posts)):
-        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-
-    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
-
-
-#update페이지로 이동할 때 사용하는 함수
+# update페이지로 이동할 때 사용하는 함수
 @app.route('/posting_update/<username>/<int:idx>')
-def update_page(username,idx):
+def update_page(username, idx):
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         username_payload = payload["id"]
         user_info = db.users.find_one({"username": username_payload}, {"_id": False})
-        #현재가입된 값과 유저네임이 같지 않다면 home으로
-        if(username_payload!=username) :
+        # 현재가입된 값과 유저네임이 같지 않다면 home으로
+        if (username_payload != username):
             return redirect(url_for("home"))
 
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-        return render_template("posting_update.html", user_info=user_info, post = post)
+        return render_template("posting_update.html", user_info=user_info, post=post)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
 
 @app.route('/user_post_update/<int:idx>', methods=['POST'])
 def updating(idx):
@@ -616,10 +630,9 @@ def updating(idx):
         content = request.form['content_give']
         address = request.form['address_give']
         post = db.posts.find_one({'idx': int(idx)}, {'_id': False})
-        #파일 수정시 실행
         try:
             file = request.files['file_give']
-            #현재 시간 체크
+            # 현재 시간 체크
             today = datetime.now()
             mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
@@ -631,15 +644,14 @@ def updating(idx):
             save_to = f'static/post_pic/{filename}.{extension}'
             file.save(save_to)
             file_name = post['file']
-            file_remove=f'static/post_pic/{file_name}'
+            file_remove = f'static/post_pic/{file_name}'
             if os.path.isfile(file_remove):
                 os.remove(file_remove)
-
             db.posts.update_one({'idx': int(idx)}, {'$set': {'file': f'{filename}.{extension}'}})
-        # 파일 없으면 패스
-        except: pass
+        except:
+            pass
 
-        if(post["title"]!=title) : #타이틀 업데이트
+        if (post["title"] != title):  # 타이틀 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'title': title}})
 
         if (post["date"] != date):  # 날짜 업데이트
@@ -647,7 +659,6 @@ def updating(idx):
 
         if (post["price"] != price):  # 가격 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'price': price}})
-
 
         if (post["content"] != content):  # 내용 업데이트
             db.posts.update_one({'idx': int(idx)}, {'$set': {'content': content}})
@@ -658,6 +669,7 @@ def updating(idx):
         return jsonify({"result": "success", 'msg': '수정이 완료되었습니다.'})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
