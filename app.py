@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, s
 from pymongo import MongoClient
 from threading import Lock
 from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
+import boto3
 import os
 import jwt
 import hashlib
@@ -387,6 +388,12 @@ def posting():
         idx = 1
     else:
         idx = list(db.posts.find({}, sort=[('_id', -1)]).limit(1))[0]['idx'] + 1
+    #s3 엑세스 키
+        s3 = boto3.client('s3',
+                          aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                          aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
+                          )
+
     # 토큰확인
     token_receive = request.cookies.get('mytoken')
     try:
@@ -404,18 +411,20 @@ def posting():
         address = request.form['address_give']
         print(title, date, price, file, content, address)
 
-        # 현재 시각 체크하기
-        today = datetime.now()
-        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+        # s3 파일 저장
+        s3.put_object(
+            ACL="public-read",
+            Bucket=os.environ["BUCKET_NAME"],
+            Body=file,
+            Key=file.filename,
+            ContentType=file.content_type
+        )
+        #s3 url 불러오기
+        BUCKET_NAME = ["BUCKET_NAME"],
+        location = s3.get_bucket_location(Bucket=["BUCKET_NAME"])['LocationConstraint']
+        image_url = f'https://{BUCKET_NAME}.s3.{location}.amazonaws.com/{file.filename}'
 
-        # 파일 확장자 빼고 시간을 이름에 붙이기
-        extension = file.filename.split('.')[-1]
-        filename = f'file-{mytime}'
-        print(extension, filename)
-        # static폴더에 파일 저장
-        save_to = f'static/post_pic/{filename}.{extension}'
-        file.save(save_to)
-        # 데이터 DB에 저장하기
+        #DB에 저장
         doc = {
             'idx': idx,
             'username': username,
@@ -423,7 +432,7 @@ def posting():
             'title': title,
             'date': date,
             'price': price,
-            'file': f'{filename}.{extension}',
+            'file': image_url,
             'content': content,
             'address': address,
             'like_count': 0
