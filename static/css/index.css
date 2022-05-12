@@ -4,26 +4,13 @@ body {
     margin: auto;
 }
 
-.hero-img {
-    width: 60px;
-    height: 60px;
-}
-
-.hero-body {
-    padding: 16px;
-}
-
-.hero-font {
-    color: #C886A4;
-    font-family: 'Do Hyeon', sans-serif;
-}
-
 .float-right {
     float: right;
 }
 
 .login-btn {
-    margin-top: 16px;
+    margin: 16px auto;
+
 }
 
 .write-btn {

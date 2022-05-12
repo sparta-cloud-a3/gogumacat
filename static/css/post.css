@@ -44,6 +44,7 @@ body {
     width: 600px;
     height: 100%;
     object-fit: cover;
+    margin-bottom: 10px;
 }
 
 .write-btn {
@@ -134,18 +135,11 @@ body {
 
 .like-box {
     float: right;
-}
-
-.like-num {
-
+    margin-right: 30px;
 }
 
 #heart {
     color: red;
-}
-
-.fa-solid {
-
 }
 
 .jello-horizontal {

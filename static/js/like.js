@@ -11,7 +11,6 @@ function toggle_like(idx) {
             success: function (response) {
                 console.log("unlike")
                 $("#heart").addClass("fa-regular").removeClass("fa-solid")
-                $("#heart-count-box").text(num2str(response["count"]))
                 $("#heart_a").removeClass("jello-horizontal")
             }
         })
@@ -26,24 +25,10 @@ function toggle_like(idx) {
             success: function (response) {
                 console.log("like")
                 $("#heart").addClass("fa-solid").removeClass("fa-regular")
-                $("#heart-count-box").text(num2str(response["count"]))
                 $("#heart_a").addClass("jello-horizontal")
             }
         })
     }
-}
-
-function num2str(count) {
-    if (count > 10000) {
-        return parseInt(count / 1000) + "k"
-    }
-    if (count > 500) {
-        return parseInt(count / 100) / 10 + "k"
-    }
-    if (count == 0) {
-        return ""
-    }
-    return count
 }
 
 function roadview() {

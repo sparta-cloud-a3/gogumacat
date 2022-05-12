@@ -24,18 +24,12 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
 
-    <!-- google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-
     <!--지도 api-->
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9600c7eddf2d8ec432aa9d8791d1e471&libraries=services,clusterer,drawing"></script>
 
-    <script src="{{ url_for('static', filename='/js/geolocation.js') }}"></script>
-
     <!--javascript 분리-->
+    <script src="{{ url_for('static', filename='/js/geolocation.js') }}"></script>
     <script src="{{ url_for('static', filename='/js/index.js') }}"></script>
 
     <!-- css 분리-->
@@ -47,18 +41,10 @@
     <i class="fa-solid fa-cat fa-lg"></i>
     <span style="font-weight: bold">&nbsp;&nbsp;"{{user_info.nickname}}"</span>님 환영합니다.
 </section>
-<section class="hero" onclick="window.location.href='/'" style='width: 300px; cursor:pointer;'>
-    <div class="hero-body">
-        <img class="hero-img" src="/static/gogumacat.png">
-        <span class="title hero-font">
-            고구마캣
-        </span>
-    </div>
-</section>
 </section>
 <div class="home-img" onclick="window.location.href='/'">
     <video autoplay="autoplay" muted="muted" loop="loop" preload="auto">
-        <source src="/static/167824144-1ecd6e1e-5c8e-4642-8e09-5b8c24a8770a.mp4" type="video/mp4">
+        <source src="/static/main_banner_gogumacat.mp4" type="video/mp4">
     </video>
 </div>
 <section class="write-btn">

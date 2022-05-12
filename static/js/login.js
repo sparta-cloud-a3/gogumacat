@@ -211,7 +211,7 @@ function kakaoLogin() {
                     let nickname = kakao_account['profile']['nickname']
                     let email = kakao_account['email']
                     let gender = kakao_account['gender']
-                    let img = kakao_account['profile']['profile_image_url']
+                    let img = kakao_account['profile']['thumbnail_image_url']
                     let username = kakao_account['email']
                     console.log(nickname,email,gender)
                     console.log(accesstoken);
