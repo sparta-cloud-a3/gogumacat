@@ -37,7 +37,8 @@ def home():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
-
+### 로그인 페이지 시작
+# 로그인 페이지 이동
 @app.route('/login')
 def login():
     msg = request.args.get("msg")
@@ -111,6 +112,7 @@ def kakao_sign_in():
         return jsonify({'result': 'success', 'token': token, 'msg': '카카오 회원가입 성공'})
 
 
+# 회원가입
 @app.route('/sign_up/save', methods=['POST'])
 def sign_up():
     username_receive = request.form['username_give']
@@ -134,6 +136,7 @@ def sign_up():
     return jsonify({'result': 'success'})
 
 
+# id 중복 확인
 @app.route('/sign_up/check_dup', methods=['POST'])
 def check_dup_id():
     username_receive = request.form['username_give']
@@ -141,13 +144,15 @@ def check_dup_id():
     return jsonify({'result': 'success', 'exists': exists})
 
 
+# 닉네임 중복 확인
 @app.route('/sign_up/check_dup_nick', methods=['POST'])
 def check_dup_nick():
     nickname_receive = request.form['nickname_give']
     exists = bool(db.users.find_one({"nickname": nickname_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
-
+### 메인 페이지 시작
+# 상품 목록 전체 조회
 @app.route('/listing', methods=['GET'])
 def listing_page():
     order = request.args.get('order') # 순서
@@ -176,6 +181,7 @@ def listing_page():
     return jsonify({'posts': posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
+# 검색 상품 목록 전체 조회
 @app.route('/search', methods=['GET'])
 def searching_page():
     query_receive = request.args.get('query') # 검색어
@@ -200,93 +206,96 @@ def searching_page():
         posts = list(
             db.posts.find({'$or': [{'title': {'$regex': query_receive}}, {'content': {'$regex': query_receive}}]},
                           {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(limit))
-        for i in range(len(posts)):
+        for i in range(len(posts)): # 관심 개수 update
             posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
     return jsonify(
         {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
+# 지역 데이터 리턴
 def get_si():
     si = list(db.korea_address.distinct('si'))
     return si
 
 
+# 입력받은 지역에 속한 동네 리턴
 @app.route('/get_gu', methods=['GET'])
 def get_gu():
-    si = request.args.get('si')
-    if si == '세종특별자치시':
+    si = request.args.get('si') # 입력받은 지역
+    if si == '세종특별자치시': # 세종시는 시군구 데이터가 없기 때문에 바로 읍면동 데이터로 넘어가게 함
         return jsonify({'gu': '세종특별자치시'})
     gu = list(db.korea_address.distinct('gu', {'si': si}))
     return jsonify({'gu': gu})
 
 
+# 입력받은 동네에 속한 동 리턴
 @app.route('/get_dong', methods=['GET'])
 def get_dong():
-    gu = request.args.get('gu')
-    if gu == '세종특별자치시':
+    gu = request.args.get('gu') # 입력받은 동네
+    if gu == '세종특별자치시': # 세종시는 시군구 데이터가 없기 때문에 지역데이터로 검색
         dong = list(db.korea_address.distinct('dong', {'si': gu}))
     else:
         dong = list(db.korea_address.distinct('dong', {'gu': gu}))
     return jsonify({'dong': dong})
 
 
+# 입력받은 주소를 바탕으로 검색
 @app.route('/search/address', methods=['GET'])
 def search_by_address():
     si = request.args.get('si')
     gu = request.args.get('gu')
     dong = request.args.get('dong')
-    # 일단 동만 사용해서 검색
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
 
-    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}))
+    order = request.args.get('order') # 순서
+
+    #pagination에 필요한 정보
+    page = request.args.get('page', 1, type=int) # default는 1이고 type은 int
+    limit = 9 # 한 페이지당 9개 보여줌
+    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False})) # 일단 동만 사용해서 검색
     total_count = len(posts)
     last_page_num = math.ceil(total_count / limit)
 
-    if order == 'like':
-        for i in range(total_count):
+    if order == 'like': # 관심순 요청이면
+        for i in range(total_count): # 관심 개수 update(관심순이기때문에 전체 게시물을 먼저 update)
             db.posts.update_one({'idx': posts[i]['idx']},
                                 {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
         posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
             (page - 1) * limit).limit(limit))
-    else:
+    else: # 최신순 요청이면
         posts = list(
             db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
                 limit))
-        for i in range(len(posts)):
+        for i in range(len(posts)): # 관심 개수 update
             posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
-@app.route('/myaddress', methods=['GET'])
-def get_my_address():
+# 현재 위치와 관련된 게시물 보여줌
+@app.route('/search/myloc', methods=['GET'])
+def search_by_location():
     # 일단 동만 사용해서 검색
     address = request.args.get("address")
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
 
+    # pagination에 필요한 정보
+    page = request.args.get('page', 1, type=int) # default는 1이고 type은 int
+    limit = 9  # 한 페이지당 9개 보여줌
     total_count = db.posts.count_documents({})
     last_page_num = math.ceil(total_count / limit)
-
     posts = list(
         db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
             limit))
-    for i in range(len(posts)):
+
+    for i in range(len(posts)): # 관심 개수 update
         posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
 
     return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
+### 마이페이지 시작
+# 각 사용자의 프로필과 글을 모아볼 수 있는 공간(마이페이지)로 이동
 @app.route('/user/<username>')
 def user(username):
-    # 각 사용자의 프로필과 글을 모아볼 수 있는 공간
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -299,6 +308,7 @@ def user(username):
         return redirect(url_for("home"))
 
 
+# 개인정보 수정
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
     token_receive = request.cookies.get('mytoken')

@@ -11,7 +11,7 @@ var callback = function (result, status) {
 
         $.ajax({
             type: "GET",
-            url: `/myaddress?address=${address_dong}&page=${page}`,
+            url: `/search/myloc?address=${address_dong}&page=${page}`,
             data: {},
             success: function (response) {
                 $("#card-box").empty();
