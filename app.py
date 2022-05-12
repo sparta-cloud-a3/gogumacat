@@ -93,7 +93,7 @@ def kakao_sign_in():
         doc = {
             "username": username_receive,
             "password": pw_hash,
-            "profile_pic": img_receive,
+            "profile_pic": '',
             "profile_pic_real": "profile_pics/profile_placeholder.png",  # [수정]카카오 프로필로 수정 필요
             "profile_info": "",
             "nickname": nickname_receive,
@@ -110,7 +110,7 @@ def kakao_sign_in():
 
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return jsonify({'result': 'success', 'token': token, 'msg': '카카오 회원가입 성공'})
+        return jsonify({'result': 'success', 'token': token, 'msg': f'카카오 회원가입 성공\n초기 비밀번호는 "{username_receive}"입니다.\n비밀번호를 꼭 변경해주세요!'})
 
 
 # 회원가입
