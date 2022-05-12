@@ -54,7 +54,7 @@
         </div>
     </section>
     <section>
-        <h3 class="title is-3" style="text-align: center;">대여 등록하기 </h3>
+        <h1 class="title is-3" style="text-align: center; margin-top: 60px">대여 등록하기 </h1>
     </section>
 </div>
 
@@ -69,11 +69,11 @@
     </div>
     {#가격#}
     <input id="price" class="input" type="text" onchange="price(this)"
-           placeholder="가격(1일 기준 대여가격)" style="width: 350px" maxlength="15">
+           placeholder="가격(1일 기준 대여가격)" style="width: 400px" maxlength="15">
     <p id="price_warning" class="is-hidden"><span style="color: red;font-weight: bold;">※숫자만 입력해 주세요!</span></p>
     {#이미지 업로드 부분#}
     <div id="file-js-example" class="file has-name">
-        <label class="file-label " style="margin-top: 10px">
+        <label class="file-label " style="margin-top: 10px" >
             <input class="file-input" type="file" name="resume" id="img" onclick="img_up()"
                    accept="image/jpeg, image/jpg, image/png"/>
             <span class="file-cta">
@@ -84,7 +84,7 @@
     </div>
     {#이미지 미리보기#}
     <div id="image_preview" class="is-hidden">
-        <img style="width:300px;height: 200px;margin-top: 10px">
+        <img style="width:300px; height: 200px;margin-top: 10px">
     </div>
     {#상세내용#}
     <textarea id="content" class="textarea" style="margin-top: 10px" placeholder="상세 내용을 적어주세요" rows="5"></textarea>
@@ -92,7 +92,7 @@
     <div class="field">
         <input id="local_address" class="input" type="text" placeholder="직거래 주소 입력(지번주소)" style="width: 400px"
                onclick="local_search()">
-        <input type="button" class="button is-light" onclick="map()" value="지도 확인" style="margin-top: 30px">
+        <input type="button" class="button is-light" onclick="map()" value="지도 확인" style="margin-top: 10px">
     </div>
     <p id="local_warning" class="is-hidden" style="font-weight: bold; color: red">※주소 창에 주소를 먼저 입력해 주세요.</p>
     {#지도api#}

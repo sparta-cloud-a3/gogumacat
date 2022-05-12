@@ -19,11 +19,11 @@ body {
 
 .wrap {
     width: 700px;
-    margin: 100px auto 0px auto;
+    margin: 30px auto 0px auto;
 }
 
 .input {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 input::placeholder {
@@ -33,7 +33,6 @@ input::placeholder {
 
 textarea::placeholder {
     color: black;
-    font-size: 1.2em;
     font-weight: bold;
 }
 
