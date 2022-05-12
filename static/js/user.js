@@ -4,6 +4,17 @@ function sign_out() {
     window.location.href = "/login"
 }
 
+function fileupload() {
+    const fileInput = document.querySelector('#file-js-example input[type=file]');
+
+    fileInput.onchange = () => {
+        if (fileInput.files.length > 0) {
+            const fileName = document.querySelector('#file-js-example .file-name');
+            fileName.textContent = fileInput.files[0].name;
+        }
+    }
+}
+
 function get_posts(username) {
     $.ajax({
         type: "GET",
@@ -35,7 +46,7 @@ function make_post(post, type) {
     let temp_html = `<div class="col" style="cursor: pointer">
                                 <div class="card h-100" id="card-${post['idx']}">
                                     <!--사진 수정-->
-                                    <img src="/static/post_pic/${post['file']}" class="card-img-top image" onclick="location.href='/posts/${post['idx']}'">
+                                    <img src="${post['file']}" class="card-img-top image" onclick="location.href='/posts/${post['idx']}'">
                                     <div class="card-body">
                                         <h5 class="card-title" onclick="location.href='/posts/${post['idx']}'">${post['title']}</h5>
                                         <p class="card-text" style="font-weight: bold;">${post['price']}원</p>
