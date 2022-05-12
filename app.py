@@ -207,6 +207,83 @@ def searching_page():
         {"query": query_receive, "posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
+def get_si():
+    si = list(db.korea_address.distinct('si'))
+    return si
+
+
+@app.route('/get_gu', methods=['GET'])
+def get_gu():
+    si = request.args.get('si')
+    if si == '세종특별자치시':
+        return jsonify({'gu': '세종특별자치시'})
+    gu = list(db.korea_address.distinct('gu', {'si': si}))
+    return jsonify({'gu': gu})
+
+
+@app.route('/get_dong', methods=['GET'])
+def get_dong():
+    gu = request.args.get('gu')
+    if gu == '세종특별자치시':
+        dong = list(db.korea_address.distinct('dong', {'si': gu}))
+    else:
+        dong = list(db.korea_address.distinct('dong', {'gu': gu}))
+    return jsonify({'dong': dong})
+
+
+@app.route('/search/address', methods=['GET'])
+def search_by_address():
+    si = request.args.get('si')
+    gu = request.args.get('gu')
+    dong = request.args.get('dong')
+    # 일단 동만 사용해서 검색
+    order = request.args.get('order')
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 9개 보여줌
+    limit = 9
+
+    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}))
+    total_count = len(posts)
+    last_page_num = math.ceil(total_count / limit)
+
+    if order == 'like':
+        for i in range(total_count):
+            db.posts.update_one({'idx': posts[i]['idx']},
+                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
+        posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
+            (page - 1) * limit).limit(limit))
+    else:
+        posts = list(
+            db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+                limit))
+        for i in range(len(posts)):
+            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
+@app.route('/myaddress', methods=['GET'])
+def get_my_address():
+    # 일단 동만 사용해서 검색
+    address = request.args.get("address")
+    order = request.args.get('order')
+    # default는 1이고 type은 int
+    page = request.args.get('page', 1, type=int)
+    # 한 페이지당 9개 보여줌
+    limit = 9
+
+    total_count = db.posts.count_documents({})
+    last_page_num = math.ceil(total_count / limit)
+
+    posts = list(
+        db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
+            limit))
+    for i in range(len(posts)):
+        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
+
+    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
+
+
 @app.route('/user/<username>')
 def user(username):
     # 각 사용자의 프로필과 글을 모아볼 수 있는 공간
@@ -498,60 +575,6 @@ def check_pw():
         return redirect(url_for("home"))
 
 
-def get_si():
-    si = list(db.korea_address.distinct('si'))
-    return si
-
-
-@app.route('/get_gu', methods=['GET'])
-def get_gu():
-    si = request.args.get('si')
-    if si == '세종특별자치시':
-        return jsonify({'gu': '세종특별자치시'})
-    gu = list(db.korea_address.distinct('gu', {'si': si}))
-    return jsonify({'gu': gu})
-
-
-@app.route('/get_dong', methods=['GET'])
-def get_dong():
-    gu = request.args.get('gu')
-    if gu == '세종특별자치시':
-        dong = list(db.korea_address.distinct('dong', {'si': gu}))
-    else:
-        dong = list(db.korea_address.distinct('dong', {'gu': gu}))
-    return jsonify({'dong': dong})
-
-
-@app.route('/search/address', methods=['GET'])
-def search_by_address():
-    si = request.args.get('si')
-    gu = request.args.get('gu')
-    dong = request.args.get('dong')
-    # 일단 동만 사용해서 검색
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}))
-    total_count = len(posts)
-    last_page_num = math.ceil(total_count / limit)
-
-    if order == 'like':
-        for i in range(total_count):
-            db.posts.update_one({'idx': posts[i]['idx']},
-                                {'$set': {'like_count': db.likes.count_documents({"idx": posts[i]['idx']})}})
-        posts = list(db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('like_count', -1).skip(
-            (page - 1) * limit).limit(limit))
-    else:
-        posts = list(
-            db.posts.find({'address': {'$regex': dong}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
-                limit))
-        for i in range(len(posts)):
-            posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
-
 
 # 게시물 삭제
 @app.route('/posts/delete', methods=['POST'])
@@ -563,28 +586,6 @@ def delete_post():
     db.likes.delete_many({'idx': int(idx)})
 
     return {"result": "success"}
-
-
-@app.route('/myaddress', methods=['GET'])
-def get_my_address():
-    # 일단 동만 사용해서 검색
-    address = request.args.get("address")
-    order = request.args.get('order')
-    # default는 1이고 type은 int
-    page = request.args.get('page', 1, type=int)
-    # 한 페이지당 9개 보여줌
-    limit = 9
-
-    total_count = db.posts.count_documents({})
-    last_page_num = math.ceil(total_count / limit)
-
-    posts = list(
-        db.posts.find({'address': {'$regex': address}}, {'_id': False}).sort('_id', -1).skip((page - 1) * limit).limit(
-            limit))
-    for i in range(len(posts)):
-        posts[i]['like_count'] = db.likes.count_documents({"idx": posts[i]['idx']})
-
-    return jsonify({"posts": posts, 'limit': limit, 'page': page, 'last_page_num': last_page_num})
 
 
 # update페이지로 이동할 때 사용하는 함수
